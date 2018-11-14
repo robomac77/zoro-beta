@@ -3703,7 +3703,7 @@ var WebBrowser;
                 asset_id: "应用连",
                 asset_asset: "应用连名",
                 asset_type: "类型",
-                asset_ava: "总量",
+                asset_ava: "高度",
                 asset_pre: "连上交易数",
                 asset_adm: "连上地址数",
                 asset_title2: "资产排名",
