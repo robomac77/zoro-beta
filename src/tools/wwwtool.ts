@@ -133,6 +133,15 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r;
 		}
+
+		static async api_getAppchain(hash: string)        // covered; gets all id from asset
+		{
+			var str = WWW.makeRpcUrl("getappchain" , hash);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r;
+		}
 		static async api_getUTXOCount(address: string) {
 			var str = WWW.makeRpcUrl("getutxo", address);
 			var result = await fetch(str, { "method": "get" });

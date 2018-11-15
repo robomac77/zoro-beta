@@ -73,7 +73,8 @@ var WebBrowser;
                 let block = blocks[0];
                 let time = WebBrowser.DateTool.getTime(block.time);
                 $("#hash").text(block.hash);
-                $("#chainhash").text(block.chainhash);
+                //$("#chainhash").text(block.chainhash);
+                $("#chainhash").html(`<a href="` + WebBrowser.Url.href_appchain(block.chainhash) + `" target="_self">` + (block.chainhash) + `</a>`);
                 $("#size").text(block.size + ' bytes');
                 $("#time").text(time);
                 $("#version").text(block.version);
@@ -372,6 +373,15 @@ var WebBrowser;
         static api_getAllAppchains() {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getallappchains");
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
+        static api_getAppchain(hash) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchain", hash);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -1184,17 +1194,18 @@ var WebBrowser;
             this.div.hidden = true;
             this.footer.hidden = true;
         }
-        loadAssetInfoView(assetid) {
+        loadAssetInfoView(hash) {
             //this.div.innerHTML = pages.asset;
-            WebBrowser.WWW.api_getasset(assetid).then((data) => {
-                var asset = data[0];
-                asset.names = WebBrowser.CoinTool.assetID2name[asset.id];
-                $("#name").text(asset.names);
-                $("#asset-info-type").text(asset.type);
-                $("#id").text(asset.id);
-                $("#available").text(asset.available);
-                $("#precision").text(asset.precision);
-                $("#admin").text(asset.admin);
+            WebBrowser.WWW.api_getAppchain(hash).then((data) => {
+                var appchain = data[0];
+                //asset.names = CoinTool.assetID2name[asset.id];
+                let time = WebBrowser.DateTool.getTime(appchain.timestamp);
+                $("#name").text(appchain.name);
+                $("#asset-info-type").text(appchain.seedlist);
+                $("#id").text(time);
+                $("#available").text(appchain.name);
+                $("#precision").text(appchain.name);
+                $("#admin").text(appchain.name);
             });
         }
         updateAssetBalanceView(assetid, pageUtil) {
@@ -3842,7 +3853,7 @@ var WebBrowser;
                 asset_title: "App Chain Information",
                 asset_id: "App Chain Hash",
                 asset_asset: "App Chain Name",
-                asset_type: "Type",
+                asset_type: "Seedlist",
                 asset_ava: "Block Height",
                 asset_pre: "Trx Count",
                 asset_adm: "Addr Count",

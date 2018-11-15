@@ -101,20 +101,21 @@
             this.div.hidden = true;
             this.footer.hidden = true;
         }
-        loadAssetInfoView(assetid: string)
+        loadAssetInfoView(hash: string)
         {            
             //this.div.innerHTML = pages.asset;
-            WWW.api_getasset(assetid).then((data) =>
+            WWW.api_getAppchain(hash).then((data) =>
             {
-                var asset = data[0];
+                var appchain = data[0];
                 
-                asset.names = CoinTool.assetID2name[asset.id];
-                $("#name").text(asset.names);
-                $("#asset-info-type").text(asset.type);
-                $("#id").text(asset.id);
-                $("#available").text(asset.available);
-                $("#precision").text(asset.precision);
-                $("#admin").text(asset.admin);                
+                //asset.names = CoinTool.assetID2name[asset.id];
+				let time = DateTool.getTime(appchain.timestamp);
+                $("#name").text(appchain.name);
+                $("#asset-info-type").text(appchain.seedlist);
+                $("#id").text(time);
+                $("#available").text(appchain.name);
+                $("#precision").text(appchain.name);
+                $("#admin").text(appchain.name);                
             })
         }
         async updateAssetBalanceView(assetid: string, pageUtil: PageUtil) {
