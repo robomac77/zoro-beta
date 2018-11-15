@@ -83,7 +83,7 @@
 
 			$("#hash").text(block.hash);
 			//$("#chainhash").text(block.chainhash);
-			$("#chainhash").html(`<a href="` + Url.href_appchain(block.chainhash) + `" target="_self">` + (block.chainhash) + `</a>`);
+			$("#chainhash").html(`<a href="` + Url.href_asset(block.chainhash) + `" target="_self">` + (block.chainhash) + `</a>`);
             $("#size" ).text( block.size + ' bytes' );
             $("#time").text(time);
             $("#version" ).text( block.version );

@@ -112,7 +112,7 @@
 				let time = DateTool.getTime(appchain.timestamp);
                 $("#name").text(appchain.name);
                 $("#asset-info-type").text(appchain.seedlist);
-                $("#id").text(time);
+                $("#id").text(appchain.hash);
                 $("#available").text(appchain.name);
                 $("#precision").text(appchain.name);
                 $("#admin").text(appchain.name);                

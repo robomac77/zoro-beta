@@ -74,7 +74,7 @@ var WebBrowser;
                 let time = WebBrowser.DateTool.getTime(block.time);
                 $("#hash").text(block.hash);
                 //$("#chainhash").text(block.chainhash);
-                $("#chainhash").html(`<a href="` + WebBrowser.Url.href_appchain(block.chainhash) + `" target="_self">` + (block.chainhash) + `</a>`);
+                $("#chainhash").html(`<a href="` + WebBrowser.Url.href_asset(block.chainhash) + `" target="_self">` + (block.chainhash) + `</a>`);
                 $("#size").text(block.size + ' bytes');
                 $("#time").text(time);
                 $("#version").text(block.version);
@@ -1202,7 +1202,7 @@ var WebBrowser;
                 let time = WebBrowser.DateTool.getTime(appchain.timestamp);
                 $("#name").text(appchain.name);
                 $("#asset-info-type").text(appchain.seedlist);
-                $("#id").text(time);
+                $("#id").text(appchain.hash);
                 $("#available").text(appchain.name);
                 $("#precision").text(appchain.name);
                 $("#admin").text(appchain.name);
@@ -1702,7 +1702,7 @@ var WebBrowser;
             return WebBrowser.locationtool.getUrl() + "/block/" + block;
         }
         static href_appchain(block) {
-            return WebBrowser.locationtool.getUrl() + "/block/" + block;
+            return WebBrowser.locationtool.getUrl() + '/block/' + block;
         }
         static href_transaction(tx) {
             return WebBrowser.locationtool.getUrl() + "/transaction/" + tx;

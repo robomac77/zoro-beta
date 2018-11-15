@@ -127,7 +127,7 @@ namespace WebBrowser
             return locationtool.getUrl() +  "/block/" + block;
 		}
 		static href_appchain(block: string) {
-			return locationtool.getUrl() + "/block/" + block;
+			return locationtool.getUrl() + '/block/' + block;
 		}
         static href_transaction( tx: string )
         {
