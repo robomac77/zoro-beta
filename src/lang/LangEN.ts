@@ -139,7 +139,7 @@ namespace WebBrowser
             asset_title: "App Chain Information",
             asset_id: "App Chain Hash",
             asset_asset: "App Chain Name",
-            asset_type: "Seedlist",
+            asset_type: "Time Created",
             asset_ava: "Block Height",
             asset_pre: "Trx Count",
             asset_adm: "Addr Count",

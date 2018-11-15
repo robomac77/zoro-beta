@@ -131,13 +131,15 @@ namespace WebBrowser
         {           
             WWW.api_getnep5(nep5id).then((data) =>
             {
-                var nep5 = data[0];
+				var nep5 = data[0];
+				let time = DateTool.getTime(nep5.timestamp);
+
                 $("#name").text(nep5.name);
-                $("#asset-info-type").text("Nep5");
-                $("#id").text(nep5.assetid);
-                $("#available").text(nep5.totalsupply);
-                $("#precision").text(nep5.decimals);
-                $("#admin").text("-");                
+                $("#asset-info-type").text(nep5.hash);
+                $("#id").text(time);
+                $("#available").text(nep5.name);
+                $("#precision").text(nep5.name);
+                $("#admin").text(name);                
             })
         }
 

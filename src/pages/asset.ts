@@ -111,9 +111,9 @@
                 //asset.names = CoinTool.assetID2name[asset.id];
 				let time = DateTool.getTime(appchain.timestamp);
                 $("#name").text(appchain.name);
-                $("#asset-info-type").text(appchain.seedlist);
+                $("#asset-info-type").text(time);
                 $("#id").text(appchain.hash);
-                $("#available").text(appchain.name);
+                $("#available").text(appchain.name +" View AppChain Blocks ");
                 $("#precision").text(appchain.name);
                 $("#admin").text(appchain.name);                
             })

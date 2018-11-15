@@ -193,7 +193,6 @@
                     <td>` + time + `</td>
                     <td>` + appchain.version + `</td>
          
-
                     </tr>`;
 				$("#assets").append(html);
 			});

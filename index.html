@@ -500,80 +500,83 @@
             </div>
         </div>
         <!--资产详情-->
-        <div id="asset-info" style="min-height: 619px;">
-            <div class="title">
-                <span id="asset_title">Asset Information</span>
-                <div class="go-back" id="goallasset"></div>
-            </div>
-            <div class="list-nel">
-                <div class="list-body">
-                    <div class="line"></div>
-                    <div class="line"><div class="title-nel"><span id="asset_id">ID</span></div> <div class="content-nel"><span id="id"></span></div></div>
-                    <div class="line"><div class="title-nel"><span id="asset_asset">Asset</span></div> <div class="content-nel"><span id="name"></span></div></div>
-                    <div class="line"><div class="title-nel"><span id="asset_type">Type</span></div> <div class="content-nel"><span id="asset-info-type"></span></div></div>
-                    <div class="line"><div class="title-nel"><span id="asset_ava">Available</span></div><div class="content-nel"><span id="available"></span></div></div>
-                    <div class="line"><div class="title-nel"><span id="asset_pre">Precision</span></div><div class="content-nel"><span id="precision"></span></div></div>
-                    <div class="line"><div class="title-nel"><span id="asset_adm">Admin</span></div><div class="content-nel"><span id="admin"></span></div></div>
-                </div>
-            </div>
+		<div id="asset-info" style="min-height: 619px;">
+			<div class="title">
+				<span id="asset_title">Asset Information</span>
+				<div class="go-back" id="goallasset"></div>
+			</div>
+			<div class="list-nel">
+				<div class="list-body">
+					<div class="line"></div>
+					<div class="line"><div class="title-nel"><span id="asset_id">ID</span></div> <div class="content-nel"><span id="id"></span></div></div>
+					<div class="line"><div class="title-nel"><span id="asset_asset">Asset</span></div> <div class="content-nel"><span id="name"></span></div></div>
+					<div class="line"><div class="title-nel"><span id="asset_type">Type</span></div> <div class="content-nel"><span id="asset-info-type"></span></div></div>
+					<div class="line"><div class="title-nel"><span id="asset_ava">Available</span></div><div class="content-nel"><span id="available"></span></div></div>
+					<div class="line"><div class="title-nel"><span id="asset_pre">Precision</span></div><div class="content-nel"><span id="precision"></span></div></div>
+					<div class="line"><div class="title-nel"><span id="asset_adm">Admin</span></div><div class="content-nel"><span id="admin"></span></div></div>
+				</div>
+			</div>
+			<div class="tfood">
+				<a class="" id="i_viewtxlist" target="_self">View all &nbsp; >>>></a>
+			</div>
 
-            <div class="asset-nep5-warp">
-                <div class="title"><span id="asset_title2">Balance Rank</span></div>
-                <table class="table cool table-nel">
-                    <thead>
-                        <tr>
-                            <th id="asset_rank">Rank</th>
-                            <th id="asset_addr">Address</th>
-                            <th id="asset_balance">Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody id="assets-balance-list"></tbody>
-                </table>
-                <div class="asset-balance-page">
-                    <div class="page-number">
-                        <span id="assets-balance-msg"></span>
-                    </div>
-                    <div class="page">
-                        <div id="assets-balance-previous" class="page-previous">
-                            <img src="./img/lefttrangle.svg" alt="">
-                        </div>
-                        <div style="width:1px;"></div>
-                        <div id="assets-balance-next" class="page-next">
-                            <img src="./img/righttrangle.svg" alt="">
-                        </div>
-                    </div>
-                </div>
-            </div>
+			<div class="asset-nep5-warp">
+				<div class="title"><span id="asset_title2">Balance Rank</span></div>
+				<table class="table cool table-nel">
+					<thead>
+						<tr>
+							<th id="asset_rank">Rank</th>
+							<th id="asset_addr">Address</th>
+							<th id="asset_balance">Balance</th>
+						</tr>
+					</thead>
+					<tbody id="assets-balance-list"></tbody>
+				</table>
+				<div class="asset-balance-page">
+					<div class="page-number">
+						<span id="assets-balance-msg"></span>
+					</div>
+					<div class="page">
+						<div id="assets-balance-previous" class="page-previous">
+							<img src="./img/lefttrangle.svg" alt="">
+						</div>
+						<div style="width:1px;"></div>
+						<div id="assets-balance-next" class="page-next">
+							<img src="./img/righttrangle.svg" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
 
-            <div class="asset-tran-warp">
-                <div class="title"><span id="asset_title3">Transactions</span></div>
-                <table class="table cool table-nel">
-                    <thead>
-                        <tr>
-                            <th id="asset_txid">TXID</th>
-                            <th id="asset_from">From</th>
-                            <th id="asset_to">To</th>
-                            <th id="asset_height">Height</th>
-                        </tr>
-                    </thead>
-                    <tbody id="assets-tran-list"></tbody>
-                </table>
-                <div class="asset-tran-page">
-                    <div class="page-number">
-                        <span id="assets-tran-msg"></span>
-                    </div>
-                    <div class="page">
-                        <div id="assets-tran-previous" class="page-previous">
-                            <img src="./img/lefttrangle.svg" alt="">
-                        </div>
-                        <div style="width:1px;"></div>
-                        <div id="assets-tran-next" class="page-next">
-                            <img src="./img/righttrangle.svg" alt="">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+			<div class="asset-tran-warp">
+				<div class="title"><span id="asset_title3">Transactions</span></div>
+				<table class="table cool table-nel">
+					<thead>
+						<tr>
+							<th id="asset_txid">TXID</th>
+							<th id="asset_from">From</th>
+							<th id="asset_to">To</th>
+							<th id="asset_height">Height</th>
+						</tr>
+					</thead>
+					<tbody id="assets-tran-list"></tbody>
+				</table>
+				<div class="asset-tran-page">
+					<div class="page-number">
+						<span id="assets-tran-msg"></span>
+					</div>
+					<div class="page">
+						<div id="assets-tran-previous" class="page-previous">
+							<img src="./img/lefttrangle.svg" alt="">
+						</div>
+						<div style="width:1px;"></div>
+						<div id="assets-tran-next" class="page-next">
+							<img src="./img/righttrangle.svg" alt="">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
         <!--交易详情-->
         <div id="transaction-info" style="min-height: 619px;">
             <div class="title">

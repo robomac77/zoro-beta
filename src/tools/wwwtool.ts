@@ -97,10 +97,10 @@ namespace WebBrowser {
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
-			return r as Addr[]; // needs most recent 10 addresses returned
+			return r as Addr[]; 
 		}
 
-		static async getrawtransaction(txid: string) // Covered ; returns a vin vout from a given txid
+		static async getrawtransaction(txid: string) 
 		{
 			var str = WWW.makeRpcUrl("getrawtransaction", txid);
 			var result = await fetch(str, { "method": "get" });
@@ -109,7 +109,7 @@ namespace WebBrowser {
 			return r[0] as Tx;
 		}
 
-		static async getallnep5asset() {         // // covered; gets all assetids from nep5asset
+		static async getallnep5asset() {         
 			var str = WWW.makeRpcUrl("getallnep5asset");
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
@@ -117,7 +117,7 @@ namespace WebBrowser {
 			return r;
 		}
 
-		static async api_getAllAssets()        // covered; gets all id from asset
+		static async api_getAllAssets()        
 		{
 			var str = WWW.makeRpcUrl("getallassets");
 			var result = await fetch(str, { "method": "get" });
@@ -125,7 +125,7 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r;
 		}
-		static async api_getAllAppchains()        // covered; gets all id from asset
+		static async api_getAllAppchains()        
 		{
 			var str = WWW.makeRpcUrl("getallappchains");
 			var result = await fetch(str, { "method": "get" });
@@ -134,7 +134,7 @@ namespace WebBrowser {
 			return r;
 		}
 
-		static async api_getAppchain(hash: string)        // covered; gets all id from asset
+		static async api_getAppchain(hash: string)        
 		{
 			var str = WWW.makeRpcUrl("getappchain" , hash);
 			var result = await fetch(str, { "method": "get" });
@@ -156,7 +156,7 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r;
 		}
-		static async api_getbalances(address: string)   // Covered ; gets a balance from an address
+		static async api_getbalances(address: string)   
 		{
 			var str = WWW.makeRpcUrl("getbalance", address);
 			var result = await fetch(str, { "method": "get" });
@@ -164,14 +164,14 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r;
 		}
-		static async api_getasset(asset: string) {   // covered ; gets all data of an asset using its id
+		static async api_getasset(asset: string) {   
 			var str = WWW.makeRpcUrl("getasset", asset);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
 			return r;
 		}
-		static async api_getnep5(nep5: string) { // covered; gets all data of an nep5asset using assetid
+		static async api_getnep5(nep5: string) { 
 			var str = WWW.makeRpcUrl("getnep5asset", nep5);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
@@ -179,7 +179,7 @@ namespace WebBrowser {
 			return r;
 		}
 
-		static async api_getallnep5assetofaddress(nep5: string) {  // covered
+		static async api_getallnep5assetofaddress(nep5: string) {  
 			var str = WWW.makeRpcUrl("getallnep5assetofaddress", nep5, 1);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
@@ -187,7 +187,7 @@ namespace WebBrowser {
 			return r;
 		}
 
-		static async getaddrsesstxs(addr: string, size: number, page: number) { // covered
+		static async getaddrsesstxs(addr: string, size: number, page: number) { 
 			var str = WWW.makeUrl("getaddresstxs", WWW.apiaggr, addr, size, page);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
@@ -199,7 +199,7 @@ namespace WebBrowser {
 			return r
 		}
 
-		static async api_getaddrMsg(addr: string) {    // covered ; gets the first use, last use and txcount using address
+		static async api_getaddrMsg(addr: string) {    
 			var str = WWW.makeRpcUrl("getaddr", addr);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
@@ -223,7 +223,7 @@ namespace WebBrowser {
 			return r;
 		}
 
-		static async api_getnep5transfersbyasset(nep5id: string, size: number, page: number) { // convered ; needs to return all transfers as array
+		static async api_getnep5transfersbyasset(nep5id: string, size: number, page: number) { 
 			var str = WWW.makeRpcUrl("getnep5transfersbyasset", nep5id, size, page);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
@@ -231,7 +231,7 @@ namespace WebBrowser {
 			return r as TransOfAsset[];
 		}
 
-		static async api_getnep5count(type: string, nep5id: string) {// covered
+		static async api_getnep5count(type: string, nep5id: string) {
 			var str = WWW.makeRpcUrl("getnep5count", type, nep5id);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
@@ -240,7 +240,7 @@ namespace WebBrowser {
 		}
 
 		//根据txid获取nep5
-		static async api_getnep5transferbytxid(txid: string) { // covered , gets the nep5transfer data using its txid
+		static async api_getnep5transferbytxid(txid: string) { 
 			var str = WWW.makeRpcUrl("getnep5transferbytxid", txid);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();

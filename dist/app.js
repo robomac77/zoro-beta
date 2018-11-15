@@ -340,7 +340,7 @@ var WebBrowser;
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
-                return r; // needs most recent 10 addresses returned
+                return r;
             });
         }
         static getrawtransaction(txid) {
@@ -1201,9 +1201,9 @@ var WebBrowser;
                 //asset.names = CoinTool.assetID2name[asset.id];
                 let time = WebBrowser.DateTool.getTime(appchain.timestamp);
                 $("#name").text(appchain.name);
-                $("#asset-info-type").text(appchain.seedlist);
+                $("#asset-info-type").text(time);
                 $("#id").text(appchain.hash);
-                $("#available").text(appchain.name);
+                $("#available").text(appchain.name + " View AppChain Blocks ");
                 $("#precision").text(appchain.name);
                 $("#admin").text(appchain.name);
             });
@@ -1458,7 +1458,6 @@ var WebBrowser;
                     <td>` + time + `</td>
                     <td>` + appchain.version + `</td>
          
-
                     </tr>`;
                 $("#assets").append(html);
             });
@@ -2245,12 +2244,13 @@ var WebBrowser;
         loadNep5InfoView(nep5id) {
             WebBrowser.WWW.api_getnep5(nep5id).then((data) => {
                 var nep5 = data[0];
+                let time = WebBrowser.DateTool.getTime(nep5.timestamp);
                 $("#name").text(nep5.name);
-                $("#asset-info-type").text("Nep5");
-                $("#id").text(nep5.assetid);
-                $("#available").text(nep5.totalsupply);
-                $("#precision").text(nep5.decimals);
-                $("#admin").text("-");
+                $("#asset-info-type").text(nep5.hash);
+                $("#id").text(time);
+                $("#available").text(nep5.name);
+                $("#precision").text(nep5.name);
+                $("#admin").text(name);
             });
         }
         updateAssetBalanceView(nep5id, pageUtil) {
@@ -3713,7 +3713,7 @@ var WebBrowser;
                 asset_title: "应用连信息",
                 asset_id: "应用连",
                 asset_asset: "应用连名",
-                asset_type: "类型",
+                asset_type: "生成时间",
                 asset_ava: "高度",
                 asset_pre: "连上交易数",
                 asset_adm: "连上地址数",
@@ -3853,7 +3853,7 @@ var WebBrowser;
                 asset_title: "App Chain Information",
                 asset_id: "App Chain Hash",
                 asset_asset: "App Chain Name",
-                asset_type: "Seedlist",
+                asset_type: "Time Created",
                 asset_ava: "Block Height",
                 asset_pre: "Trx Count",
                 asset_adm: "Addr Count",
