@@ -64,7 +64,7 @@ namespace WebBrowser {
          * @param size 记录条数
          * @param page 页码
          */
-		static async getblocks(size: number, page: number)      // covered
+		static async getblocks(size: number, page: number)      
 		{
 			var str = WWW.makeRpcUrl("getblocks", size, page);
 			var result = await fetch(str, { "method": "get" });
@@ -73,7 +73,16 @@ namespace WebBrowser {
 			return r as Block[];
 		}
 
-		static async getblock(index: number)      // covered
+		static async getappchainblocks(appchain:string ,size: number, page: number)      
+		{
+			var str = WWW.makeRpcUrl("getappchainblocks", appchain ,size, page);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r as Block[];
+		}
+
+		static async getblock(index: number)      
 		{
 			var str = WWW.makeRpcUrl("getblock", index);
 			var result = await fetch(str, { "method": "get" });

@@ -72,9 +72,12 @@ var WebBrowser;
                 let blocks = yield WebBrowser.WWW.getblock(index);
                 let block = blocks[0];
                 let time = WebBrowser.DateTool.getTime(block.time);
+                var id = block.chainhash;
+                id = id.replace('0x', '');
+                //id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
                 $("#hash").text(block.hash);
                 //$("#chainhash").text(block.chainhash);
-                $("#chainhash").html(`<a href="` + WebBrowser.Url.href_asset(block.chainhash) + `" target="_self">` + (block.chainhash) + `</a>`);
+                $("#chainhash").html(`<a href="` + WebBrowser.Url.href_asset(id) + `" target="_self">` + (id) + `</a>`);
                 $("#size").text(block.size + ' bytes');
                 $("#time").text(time);
                 $("#version").text(block.version);
@@ -225,7 +228,7 @@ var WebBrowser;
                     let time = WebBrowser.DateTool.getTime(item.time);
                     let txcounts = item.tx.length;
                     var id = item.chainhash;
-                    id.replace('0x', '');
+                    id = id.replace('0x', '');
                     id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
                     let html = `
                 <tr>
@@ -309,6 +312,15 @@ var WebBrowser;
         static getblocks(size, page) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getblocks", size, page);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
+        static getappchainblocks(appchain, size, page) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainblocks", appchain, size, page);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -1148,42 +1160,62 @@ var WebBrowser;
         start() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.getLangs();
-                var assetid = WebBrowser.locationtool.getParam();
+                var appchain = WebBrowser.locationtool.getParam();
                 let href = WebBrowser.locationtool.getUrl() + "/assets";
                 let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get('asset_goallasset') + '</a>';
                 $("#goallasset").empty();
                 $("#goallasset").append(html);
-                this.loadAssetInfoView(assetid);
-                var assetType = WebBrowser.locationtool.getType();
-                if (assetType == 'nep5') {
-                    //$(".asset-nep5-warp").show();
-                    $(".asset-tran-warp").show();
-                }
-                else {
-                    //$(".asset-nep5-warp").hide();
-                    $(".asset-tran-warp").hide();
-                }
+                this.loadAssetInfoView(appchain);
+                // var assetType = locationtool.getType();
+                //  if (assetType == 'nep5') {
+                //$(".asset-nep5-warp").show();
+                //      $(".asset-tran-warp").show();
+                //   } else {
+                //$(".asset-nep5-warp").hide();
+                //       $(".asset-tran-warp").hide();
+                //   }
                 //资产排行
-                var rankcount = yield WebBrowser.WWW.api_getrankbyassetcount(assetid);
-                this.rankPageUtil = new WebBrowser.PageUtil(rankcount[0].count, 10);
-                this.updateAssetBalanceView(assetid, this.rankPageUtil);
+                //var rankcount = await WWW.api_getrankbyassetcount(assetid);
+                //   this.rankPageUtil = new PageUtil(rankcount[0].count, 10);
+                //  this.updateAssetBalanceView(assetid, this.rankPageUtil);
                 //排行翻页
-                $("#assets-balance-next").off("click").click(() => {
-                    if (this.rankPageUtil.currentPage == this.rankPageUtil.totalPage) {
-                        this.rankPageUtil.currentPage = this.rankPageUtil.totalPage;
+                //  $("#assets-balance-next").off("click").click(() => {
+                //     if (this.rankPageUtil.currentPage == this.rankPageUtil.totalPage) {
+                //          this.rankPageUtil.currentPage = this.rankPageUtil.totalPage;
+                //      } else {
+                //          this.rankPageUtil.currentPage += 1;
+                //          this.updateAssetBalanceView(assetid, this.rankPageUtil);
+                //       }
+                //   });
+                //    $("#assets-balance-previous").off("click").click(() => {
+                //       if (this.rankPageUtil.currentPage <= 1) {
+                //            this.rankPageUtil.currentPage = 1;
+                //        } else {
+                //            this.rankPageUtil.currentPage -= 1;
+                //           this.updateAssetBalanceView(assetid, this.rankPageUtil);
+                //        }
+                //     });
+                var count = yield WebBrowser.WWW.api_getHeight();
+                this.pageUtil = new WebBrowser.PageUtil(count, 15);
+                yield this.updateBlocks(appchain, this.pageUtil);
+                this.div.hidden = false;
+                this.footer.hidden = false;
+                $("#blocks-page-next").off("click").click(() => {
+                    if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
+                        this.pageUtil.currentPage = this.pageUtil.totalPage;
                     }
                     else {
-                        this.rankPageUtil.currentPage += 1;
-                        this.updateAssetBalanceView(assetid, this.rankPageUtil);
+                        this.pageUtil.currentPage += 1;
+                        this.updateBlocks(appchain, this.pageUtil);
                     }
                 });
-                $("#assets-balance-previous").off("click").click(() => {
-                    if (this.rankPageUtil.currentPage <= 1) {
-                        this.rankPageUtil.currentPage = 1;
+                $("#blocks-page-previous").off("click").click(() => {
+                    if (this.pageUtil.currentPage <= 1) {
+                        this.pageUtil.currentPage = 1;
                     }
                     else {
-                        this.rankPageUtil.currentPage -= 1;
-                        this.updateAssetBalanceView(assetid, this.rankPageUtil);
+                        this.pageUtil.currentPage -= 1;
+                        this.updateBlocks(appchain, this.pageUtil);
                     }
                 });
                 this.div.hidden = false;
@@ -1194,81 +1226,62 @@ var WebBrowser;
             this.div.hidden = true;
             this.footer.hidden = true;
         }
-        loadAssetInfoView(hash) {
+        loadAssetInfoView(appchain) {
             //this.div.innerHTML = pages.asset;
-            WebBrowser.WWW.api_getAppchain(hash).then((data) => {
+            WebBrowser.WWW.api_getAppchain(appchain).then((data) => {
                 var appchain = data[0];
                 //asset.names = CoinTool.assetID2name[asset.id];
                 let time = WebBrowser.DateTool.getTime(appchain.timestamp);
                 $("#name").text(appchain.name);
                 $("#asset-info-type").text(time);
                 $("#id").text(appchain.hash);
-                $("#available").text(appchain.name + " View AppChain Blocks ");
+                $("#available").text(appchain.name);
                 $("#precision").text(appchain.name);
                 $("#admin").text(appchain.name);
             });
         }
-        updateAssetBalanceView(assetid, pageUtil) {
+        updateBlocks(appchain, pageUtil) {
             return __awaiter(this, void 0, void 0, function* () {
-                let balanceList = yield WebBrowser.WWW.getrankbyasset(assetid, pageUtil.pageSize, pageUtil.currentPage);
-                $("#assets-balance-list").empty();
-                if (balanceList) {
-                    let rank = (pageUtil.currentPage - 1) * 10 + 1;
-                    balanceList.forEach((item) => {
-                        let href = WebBrowser.Url.href_address(item.addr);
-                        this.loadAssetBalanceView(rank, href, item.addr, item.balance);
-                        rank++;
-                    });
+                let blocks = yield WebBrowser.WWW.getappchainblocks(appchain, pageUtil.pageSize, pageUtil.currentPage); // the limit for data display here is 15 after each 15
+                $("#assets-balance-list").children("table").children("tbody").empty();
+                if (pageUtil.totalPage - pageUtil.currentPage) {
+                    $("#assets-balance-next").removeClass('disabled');
                 }
                 else {
-                    let html = '<tr><td colspan="3" >' + this.app.langmgr.get('no_data') + '</td></tr>';
+                    $("#assets-balance-next").addClass('disabled');
+                }
+                if (pageUtil.currentPage - 1) {
+                    $("#assets-balance-previous").removeClass('disabled');
+                }
+                else {
+                    $("#assets-balance-previous").addClass('disabled');
+                }
+                let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
+                let maxNum = pageUtil.totalCount;
+                let diffNum = maxNum - minNum;
+                if (diffNum > 15) {
+                    maxNum = pageUtil.currentPage * pageUtil.pageSize;
+                }
+                let pageMsg = "Blocks " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
+                $("#assets-balance-msg").html(pageMsg);
+                $("#assets-balance-list").find("tbody").append(`<tr><td>1</td></tr>`);
+                //let newDate = new Date();
+                blocks.forEach((item, index, input) => {
+                    //newDate.setTime(item.time * 1000);
+                    let time = WebBrowser.DateTool.getTime(item.time);
+                    let txcounts = item.tx.length;
+                    var id = item.hash;
+                    id = id.replace('0x', '');
+                    id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
+                    let html = `
+                <tr>
+                <td><a href="` + WebBrowser.Url.href_appchain(id) + `" target="_self">` + id + `</a></td>
+                <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + WebBrowser.Url.href_block(item.index) + `" target="_self">` + item.index + `</a></td>
+                <td>` + txcounts + `</td>
+                </tr>`;
                     $("#assets-balance-list").append(html);
-                    if (pageUtil.currentPage == 1) {
-                        $(".asset-balance-page").hide();
-                    }
-                    else {
-                        $("#assets-balance-next").addClass('disabled');
-                        $(".asset-balance-page").show();
-                    }
-                }
-                if (pageUtil.totalCount > 10) {
-                    if (pageUtil.totalPage - pageUtil.currentPage) {
-                        $("#assets-balance-next").removeClass('disabled');
-                    }
-                    else {
-                        $("#assets-balance-next").addClass('disabled');
-                    }
-                    if (pageUtil.currentPage - 1) {
-                        $("#assets-balance-previous").removeClass('disabled');
-                    }
-                    else {
-                        $("#assets-balance-previous").addClass('disabled');
-                    }
-                    let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
-                    let maxNum = pageUtil.totalCount;
-                    let diffNum = maxNum - minNum;
-                    if (diffNum > 10) {
-                        maxNum = pageUtil.currentPage * pageUtil.pageSize;
-                    }
-                    let pageMsg = "Banlance Rank " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
-                    $("#assets-balance-msg").html(pageMsg);
-                    $(".asset-balance-page").show();
-                }
-                else {
-                    $(".asset-balance-page").hide();
-                }
+                });
             });
-        }
-        loadAssetBalanceView(rank, href, address, balance) {
-            let html = `
-                    <tr>
-                    <td>` + rank + `
-                    </td>
-                    <td><a target="_self" href="` + href + `">` + address + `
-                    </a></td>
-                    <td>` + balance + `</td>
-                    </tr>`;
-            $("#assets-balance-list").append(html);
         }
     }
     WebBrowser.AssetInfo = AssetInfo;
@@ -1431,7 +1444,7 @@ var WebBrowser;
                 }
                 else {
                     this.loadAssetView(this.appchains);
-                    let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+                    let pageMsg = "App Chains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
                     $("#asset-page").find("#asset-page-msg").html(pageMsg);
                     this.assetlist.find(".page").hide();
                 }
@@ -1446,14 +1459,16 @@ var WebBrowser;
         loadAssetView(appchains) {
             $("#assets").empty();
             appchains.forEach((appchain) => {
-                let href = WebBrowser.Url.href_asset(appchain.hash);
-                let chainhash = appchain.hash.substring(2, 6) + '...' + appchain.hash.substring(appchain.hash.length - 4);
+                var id = appchain.hash;
+                id = id.replace('0x', '');
+                let href = WebBrowser.Url.href_asset(id);
+                id = appchain.hash.substring(0, 4) + '...' + appchain.hash.substring(appchain.hash.length - 4);
                 let chainowner = appchain.owner.substring(2, 6) + '...' + appchain.owner.substring(appchain.owner.length - 4);
                 let time = WebBrowser.DateTool.getTime(appchain.timestamp);
                 let html = `
                     <tr>
                     <td> <a href="` + href + `" target="_self">` + appchain.name + `</a></td>
-                    <td> <a href="` + href + `" target="_self">` + chainhash + `</a></td>
+                    <td> <a href="` + href + `" target="_self">` + id + `</a></td>
                     <td>` + chainowner + `</td>
                     <td>` + time + `</td>
                     <td>` + appchain.version + `</td>
@@ -3857,11 +3872,13 @@ var WebBrowser;
                 asset_ava: "Block Height",
                 asset_pre: "Trx Count",
                 asset_adm: "Addr Count",
-                asset_title2: "Balance Rank",
-                asset_rank: "Rank",
-                asset_addr: "Address",
+                asset_title2: "App Chain Blocks",
+                asset_rank: "Hash",
+                asset_addr: "Time",
                 asset_balance: "Balance",
-                asset_title3: "Transactions",
+                asset_blockheight: "Height",
+                asset_tx: "Tx Count",
+                asset_title3: "App Chain Transactions",
                 asset_txid: "TXID",
                 asset_from: "From",
                 asset_to: "To",

@@ -163,7 +163,7 @@
 				this.assetlist.find(".page").show();
 			} else {
 				this.loadAssetView(this.appchains);
-				let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+				let pageMsg = "App Chains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
 				$("#asset-page").find("#asset-page-msg").html(pageMsg);
 				this.assetlist.find(".page").hide();
 			}
@@ -180,15 +180,22 @@
 		public loadAssetView(appchains: Appchain[]) {
 			$("#assets").empty();
 			appchains.forEach((appchain: Appchain) => {
-				let href = Url.href_asset(appchain.hash);
-				let chainhash = appchain.hash.substring(2, 6) + '...' + appchain.hash.substring(appchain.hash.length - 4);
+				
+				var id = appchain.hash;
+				id = id.replace('0x', '');
+				let href = Url.href_asset(id);
+				id = appchain.hash.substring(0, 4) + '...' + appchain.hash.substring(appchain.hash.length - 4);
+				
+				
 				let chainowner = appchain.owner.substring(2, 6) + '...' + appchain.owner.substring(appchain.owner.length - 4);
+				
+				
 
 				let time = DateTool.getTime(appchain.timestamp);
 				let html = `
                     <tr>
                     <td> <a href="`+ href + `" target="_self">` + appchain.name + `</a></td>
-                    <td> <a href="`+ href + `" target="_self">` + chainhash + `</a></td>
+                    <td> <a href="`+ href + `" target="_self">` + id + `</a></td>
                     <td>` + chainowner + `</td>
                     <td>` + time + `</td>
                     <td>` + appchain.version + `</td>

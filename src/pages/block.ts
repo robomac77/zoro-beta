@@ -79,11 +79,15 @@
             let ajax: Ajax = new Ajax();
 			let blocks: Block[] = await WWW.getblock(index);
             let block: Block = blocks[0];
-            let time = DateTool.getTime(block.time);
+			let time = DateTool.getTime(block.time);
+
+			var id = block.chainhash
+			id = id.replace('0x', '');
+			//id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
 
 			$("#hash").text(block.hash);
 			//$("#chainhash").text(block.chainhash);
-			$("#chainhash").html(`<a href="` + Url.href_asset(block.chainhash) + `" target="_self">` + (block.chainhash) + `</a>`);
+			$("#chainhash").html(`<a href="` + Url.href_asset(id) + `" target="_self">` + (id) + `</a>`);
             $("#size" ).text( block.size + ' bytes' );
             $("#time").text(time);
             $("#version" ).text( block.version );

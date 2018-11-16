@@ -90,7 +90,7 @@ namespace WebBrowser
                 let time = DateTool.getTime(item.time);
 				let txcounts = item.tx.length
 				var id = item.chainhash
-					id.replace('0x', '');
+				id = id.replace('0x', '');
 				id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
 
                 let html = `
