@@ -4,3 +4,4 @@ D:\Software Development\Projects\zoro-beta\BlackCat-Explorer\bin\webapp.pdb
 D:\Software Development\Projects\zoro-beta\BlackCat-Explorer\obj\Debug\webapp.csproj.CoreCompileInputs.cache
 D:\Software Development\Projects\zoro-beta\BlackCat-Explorer\obj\Debug\webapp.dll
 D:\Software Development\Projects\zoro-beta\BlackCat-Explorer\obj\Debug\webapp.pdb
+D:\Software Development\Projects\zoro-beta\BlackCat-Explorer\obj\Debug\webapp.csprojAssemblyReference.cache

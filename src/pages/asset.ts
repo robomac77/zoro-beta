@@ -131,16 +131,18 @@
             //this.div.innerHTML = pages.asset;
             WWW.api_getAppchain(appchain).then((data) =>
             {
-                var appchain = data[0];
-                
+				var appchain = data[0];
+				var appchainblockcount = WWW.api_getAppchainBlockcount(appchain);
+				var appchaintrxcount = WWW.api_getAppchainBlockcount(appchain);
+				var appchainaddrcount = WWW.api_getAppchainBlockcount(appchain);
                 //asset.names = CoinTool.assetID2name[asset.id];
 				let time = DateTool.getTime(appchain.timestamp);
                 $("#name").text(appchain.name);
                 $("#asset-info-type").text(time);
                 $("#id").text(appchain.hash);
-                $("#available").text(appchain.name);
-                $("#precision").text(appchain.name);
-                $("#admin").text(appchain.name);                
+                $("#available").text(appchainblockcount.toString());
+                $("#precision").text(appchaintrxcount.toString());
+                $("#admin").text(appchainaddrcount.toString());                
             })
         }
 		public async updateBlocks(appchain :string , pageUtil: PageUtil) {

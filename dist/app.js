@@ -400,6 +400,15 @@ var WebBrowser;
                 return r;
             });
         }
+        static api_getAppchainBlockcount(hash) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainblockcount", hash);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r[0]['blockcount'];
+            });
+        }
         static api_getUTXOCount(address) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getutxo", address);
@@ -1230,14 +1239,17 @@ var WebBrowser;
             //this.div.innerHTML = pages.asset;
             WebBrowser.WWW.api_getAppchain(appchain).then((data) => {
                 var appchain = data[0];
+                var appchainblockcount = WebBrowser.WWW.api_getAppchainBlockcount(appchain);
+                var appchaintrxcount = WebBrowser.WWW.api_getAppchainBlockcount(appchain);
+                var appchainaddrcount = WebBrowser.WWW.api_getAppchainBlockcount(appchain);
                 //asset.names = CoinTool.assetID2name[asset.id];
                 let time = WebBrowser.DateTool.getTime(appchain.timestamp);
                 $("#name").text(appchain.name);
                 $("#asset-info-type").text(time);
                 $("#id").text(appchain.hash);
-                $("#available").text(appchain.name);
-                $("#precision").text(appchain.name);
-                $("#admin").text(appchain.name);
+                $("#available").text(appchainblockcount.toString());
+                $("#precision").text(appchaintrxcount.toString());
+                $("#admin").text(appchainaddrcount.toString());
             });
         }
         updateBlocks(appchain, pageUtil) {
