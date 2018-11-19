@@ -187,5 +187,50 @@
 				$("#assets-balance-list").append(html);
 			});
 		}
+
+		/*
+		 *public async updateTransactions(pageUtil: PageUtil, txType: string) {
+			this.txlist.find("#assets-tran-list").empty();
+			//分页查询交易记录
+
+			let txs: Tx[] = await WWW.getrawtransactions(pageUtil.pageSize, pageUtil.currentPage, txType);
+			let txCount = await WWW.gettxcount(txType);
+			pageUtil.totalCount = txCount;
+
+			let listLength = 0;
+			if (txs.length < 15) {
+				this.txlist.find(".page").hide();
+				listLength = txs.length;
+			} else {
+				this.txlist.find(".page").show();
+				listLength = pageUtil.pageSize;
+			}
+			for (var n = 0; n < listLength; n++) {
+				//alert(txs[0].txid + " " + txs[n].txid);
+				let txid = txs[n].txid;
+				let html: string = await this.getTxLine(txid, txs[n].type, txs[n].size.toString(), txs[n].blockindex.toString(), txs[n].vin, txs[n].vout);
+				this.txlist.find("#assets-tran-list").append(html);
+			}
+
+			let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize; //
+			let maxNum = pageUtil.totalCount;
+			let diffNum = maxNum - minNum;
+			if (diffNum > 15) {
+				maxNum = pageUtil.currentPage * pageUtil.pageSize;
+			}
+			let pageMsg = "Chain Transactions " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
+			$("#assets-trans-list").find("#assets-trans-msg").html(pageMsg);
+			if (pageUtil.totalPage - pageUtil.currentPage) {
+				$("#assets-tran-next").removeClass('disabled');
+			} else {
+				$("#assets-tran-next").addClass('disabled');
+			}
+			if (pageUtil.currentPage - 1) {
+				$("#assets-tran-previous").removeClass('disabled');
+			} else {
+				$("#assets-tran-previous").addClass('disabled');
+			}
+		}
+		 */
     }
 }
