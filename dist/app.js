@@ -2271,6 +2271,9 @@ var WebBrowser;
         constructor(app) {
             this.div = document.getElementById("asset-info");
             this.footer = document.getElementById('footer-box');
+            this.actxcount = 0;
+            this.acblockcount = 0;
+            this.acaddcount = 0;
             this.app = app;
         }
         getLangs() {
@@ -2308,15 +2311,16 @@ var WebBrowser;
                 $("#goallasset").empty();
                 $("#goallasset").append(html);
                 this.loadNep5InfoView(nep5id);
-                var result = yield WebBrowser.WWW.api_getAppchainBlockcount(nep5id); //change to getappchainblockcount
-                this.rankPageUtil = new WebBrowser.PageUtil(result[0].blockcount, 10);
-                this.updateAssetBalanceView(nep5id, this.rankPageUtil); // update the blocks view
+                this.acaddcount = yield WebBrowser.WWW.api_getAppchainAddrcount(nep5id);
+                this.acblockcount = yield WebBrowser.WWW.api_getAppchainBlockcount(nep5id);
+                this.rankPageUtil = new WebBrowser.PageUtil(this.acblockcount[0].blockcount, 10);
+                this.updateAssetBalanceView(nep5id, this.rankPageUtil);
                 var assetType = WebBrowser.locationtool.getType();
                 if (assetType == 'nep5') {
                     //$(".asset-nep5-warp").show();
-                    let count = yield WebBrowser.WWW.getappchaintxcount(nep5id); // change to getappchaintransactioncount
-                    this.pageUtil = new WebBrowser.PageUtil(count[0].txcount, 10);
-                    this.updateNep5TransView(nep5id, this.pageUtil); // update the transactions view
+                    this.actxcount = yield WebBrowser.WWW.getappchaintxcount(nep5id);
+                    this.pageUtil = new WebBrowser.PageUtil(this.actxcount[0].txcount, 10);
+                    this.updateNep5TransView(nep5id, this.pageUtil);
                     $(".asset-tran-warp").show();
                 }
                 else {
@@ -2375,22 +2379,22 @@ var WebBrowser;
                 var nep5 = data[0];
                 let time = WebBrowser.DateTool.getTime(nep5.timestamp);
                 $("#name").text(nep5.name);
-                $("#asset-info-type").text(nep5.hash);
-                $("#id").text(time);
-                $("#available").text(nep5.name);
-                $("#precision").text(nep5.name);
-                $("#admin").text(name);
+                $("#type").text(time);
+                $("#id").text(nep5.hash);
+                $("#available").text(this.acblockcount.toString());
+                $("#precision").text(this.actxcount.toString());
+                $("#admin").text(this.acaddcount.toString());
             });
         }
         updateAssetBalanceView(nep5id, pageUtil) {
             return __awaiter(this, void 0, void 0, function* () {
-                let balanceList = yield WebBrowser.WWW.getappchainblocks(nep5id, pageUtil.pageSize, pageUtil.currentPage); // change this getappchainblocks
+                let balanceList = yield WebBrowser.WWW.getappchainblocks(nep5id, pageUtil.pageSize, pageUtil.currentPage);
                 $("#assets-balance-list").empty();
                 if (balanceList) {
                     // let rank = (pageUtil.currentPage-1)*10 +1;
                     balanceList.forEach((item) => {
                         let href = WebBrowser.Url.href_address(item.hash);
-                        this.loadAssetBalanceView(item.hash, item.size, item.time, item.index, item.tx.length); // loads the blocks view
+                        this.loadAssetBalanceView(item.hash, item.size, item.time, item.index, item.tx.length);
                         //  rank++;
                     });
                 }
@@ -2435,7 +2439,7 @@ var WebBrowser;
         }
         updateNep5TransView(nep5id, pageUtil) {
             return __awaiter(this, void 0, void 0, function* () {
-                let tranList = yield WebBrowser.WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage); // change to getappchaintransactions
+                let tranList = yield WebBrowser.WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage);
                 $("#assets-tran-list").empty();
                 if (tranList) {
                     tranList.forEach((item) => {
