@@ -55,8 +55,8 @@
 
 		private chaintxlist: JQuery<HTMLElement>;
 
-		public actxcount: number;
-		public acblockcount: number;
+		public actxcount: number = 0;
+		public acblockcount: number = 0;
         async start()
         {
             this.getLangs()
@@ -74,16 +74,16 @@
 			
             this.loadAssetInfoView(appchain);
 			
-
-			var count = await WWW.api_getAppchainBlockcount(appchain);
-			this.acblockcount = count;
-			this.pageUtil = new PageUtil(count, 15); 
+			//var addcount = await WWW.api_getAppchainBlockcount(appchain); 
+			//var count = await WWW.api_getAppchainBlockcount(appchain);
+			this.acblockcount = await WWW.api_getAppchainBlockcount(appchain) as number;
+			this.pageUtil = new PageUtil(this.acblockcount, 15); 
 			await this.updateBlocks(appchain, this.pageUtil);
 
-			let txCount = await WWW.getappchaintxcount(appchain); // change this to call getappchainrawtxcount
-			this.actxcount = txCount;
-			let type = <string>$("#ChainTxType").val();
-			this.transpageUtil = new PageUtil(txCount, 15);
+			//let txCount = await WWW.getappchaintxcount(appchain); // change this to call getappchainrawtxcount
+			this.actxcount = await WWW.getappchaintxcount(appchain) as number;
+			//let type = <string>$("#ChainTxType").val();
+			this.transpageUtil = new PageUtil(this.actxcount, 15);
 			this.updateTransactions(appchain,this.transpageUtil);
 			
 
@@ -157,9 +157,9 @@
                    $("#name").text(appchain.name);
                    $("#type").text(time);
 				   $("#id").text(appchain.hash);
-				   $("#available").text(appchainblockcount.toString); //this.acblockcount
-				   $("#precision").text(appchaintrxcount.toString); //this.actxcount
-				   $("#admin").text(appchaintrxcount.toString);                
+				   $("#available").text(this.acblockcount.toString()); //this.acblockcount
+				   $("#precision").text(this.actxcount.toString()); //this.actxcount
+				   $("#admin").text(appchaintrxcount.toString());                
 			})
 
 			
@@ -209,7 +209,7 @@
 		}
 
 		
-		 public async updateTransactions(appchain:string ,pageUtil: PageUtil, ) {
+		 public async updateTransactions(appchain:string ,pageUtil: PageUtil) {
 			$("#assets-tran-list").empty();
 			//分页查询交易记录
 

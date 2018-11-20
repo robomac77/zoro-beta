@@ -1156,6 +1156,8 @@ var WebBrowser;
         constructor(app) {
             this.div = document.getElementById("asset-info");
             this.footer = document.getElementById('footer-box');
+            this.actxcount = 0;
+            this.acblockcount = 0;
             this.app = app;
         }
         getLangs() {
@@ -1195,14 +1197,15 @@ var WebBrowser;
                 $("#goallasset").empty();
                 $("#goallasset").append(html);
                 this.loadAssetInfoView(appchain);
-                var count = yield WebBrowser.WWW.api_getAppchainBlockcount(appchain);
-                this.acblockcount = count;
-                this.pageUtil = new WebBrowser.PageUtil(count, 15);
+                //var addcount = await WWW.api_getAppchainBlockcount(appchain); 
+                //var count = await WWW.api_getAppchainBlockcount(appchain);
+                this.acblockcount = (yield WebBrowser.WWW.api_getAppchainBlockcount(appchain));
+                this.pageUtil = new WebBrowser.PageUtil(this.acblockcount, 15);
                 yield this.updateBlocks(appchain, this.pageUtil);
-                let txCount = yield WebBrowser.WWW.getappchaintxcount(appchain); // change this to call getappchainrawtxcount
-                this.actxcount = txCount;
-                let type = $("#ChainTxType").val();
-                this.transpageUtil = new WebBrowser.PageUtil(txCount, 15);
+                //let txCount = await WWW.getappchaintxcount(appchain); // change this to call getappchainrawtxcount
+                this.actxcount = (yield WebBrowser.WWW.getappchaintxcount(appchain));
+                //let type = <string>$("#ChainTxType").val();
+                this.transpageUtil = new WebBrowser.PageUtil(this.actxcount, 15);
                 this.updateTransactions(appchain, this.transpageUtil);
                 this.div.hidden = false;
                 this.footer.hidden = false;
@@ -1267,9 +1270,9 @@ var WebBrowser;
                 $("#name").text(appchain.name);
                 $("#type").text(time);
                 $("#id").text(appchain.hash);
-                $("#available").text(appchainblockcount.toString); //this.acblockcount
-                $("#precision").text(appchaintrxcount.toString); //this.actxcount
-                $("#admin").text(appchaintrxcount.toString);
+                $("#available").text(this.acblockcount.toString()); //this.acblockcount
+                $("#precision").text(this.actxcount.toString()); //this.actxcount
+                $("#admin").text(appchaintrxcount.toString());
             });
         }
         updateBlocks(appchain, pageUtil) {
@@ -3983,8 +3986,8 @@ var WebBrowser;
                 asset_adm: "Addr Count",
                 asset_title2: "App Chain Blocks",
                 asset_rank: "Hash",
-                asset_addr: "Time",
-                asset_balance: "Balance",
+                asset_addr: "Size",
+                asset_balance: "Time",
                 asset_blockheight: "Height",
                 asset_tx: "Tx Count",
                 asset_title3: "App Chain Transactions",
