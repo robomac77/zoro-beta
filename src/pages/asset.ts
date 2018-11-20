@@ -1,54 +1,52 @@
-﻿namespace WebBrowser
-{
-    export class AssetInfo implements Page
-    {
-        app: App
-        langType: string;
-        constructor(app: App) {
-            this.app = app
-        }
+﻿namespace WebBrowser {
+	export class AssetInfo implements Page {
+		app: App
+		langType: string;
+		constructor(app: App) {
+			this.app = app
+		}
 
-        getLangs() {
-            if (this.langType != this.app.langmgr.type) {
-                let page_lang = [
-                    "asset_title",
-                    "asset_id",
-                    "asset_asset",
-                    "asset_type",
-                    "asset_ava",
-                    "asset_pre",
-                    "asset_adm",
-    
-                    "asset_title2",
-                    "asset_rank",
-                    "asset_addr",
-                    "asset_balance",
-    
-                    "asset_title3",
-                    "asset_txid",
-                    "asset_from",
-                    "asset_to",
-                    "asset_height",
-                ]
-                page_lang.forEach(
-                    lang => {
-                        document.getElementById(lang).textContent = this.app.langmgr.get(lang)
-                    }
-                )
+		getLangs() {
+			if (this.langType != this.app.langmgr.type) {
+				let page_lang = [
+					"asset_title",
+					"asset_id",
+					"asset_asset",
+					"asset_type",
+					"asset_ava",
+					"asset_pre",
+					"asset_adm",
 
-                this.langType = this.app.langmgr.type
-            }
-            
-        }
-        
-        div: HTMLDivElement = document.getElementById("asset-info") as HTMLDivElement;
-        footer: HTMLDivElement = document.getElementById('footer-box') as HTMLDivElement;
-        name: HTMLSpanElement;
-        type: HTMLSpanElement;
-        id: HTMLSpanElement;
-        available: HTMLSpanElement;
-        precision: HTMLSpanElement;
-        admin: HTMLSpanElement;
+					"asset_title2",
+					"asset_rank",
+					"asset_addr",
+					"asset_balance",
+
+					"asset_title3",
+					"asset_txid",
+					"asset_from",
+					"asset_to",
+					"asset_height",
+				]
+				page_lang.forEach(
+					lang => {
+						document.getElementById(lang).textContent = this.app.langmgr.get(lang)
+					}
+				)
+
+				this.langType = this.app.langmgr.type
+			}
+
+		}
+
+		div: HTMLDivElement = document.getElementById("asset-info") as HTMLDivElement;
+		footer: HTMLDivElement = document.getElementById('footer-box') as HTMLDivElement;
+		name: HTMLSpanElement;
+		type: HTMLSpanElement;
+		id: HTMLSpanElement;
+		available: HTMLSpanElement;
+		precision: HTMLSpanElement;
+		admin: HTMLSpanElement;
 		//rankPageUtil: PageUtil;
 		pageUtil: PageUtil;
 		transpageUtil: PageUtil;
@@ -57,45 +55,42 @@
 
 		public actxcount: number = 0;
 		public acblockcount: number = 0;
-        async start()
-        {
-            this.getLangs()
-            
+		public acaddcount: number = 0;
+		public txx: Tx[];
+		async start() {
+			this.getLangs()
+
 			var appchain = locationtool.getParam();
 			appchain = appchain.replace('0x', '');
-            let href = locationtool.getUrl() + "/assets";
+			let href = locationtool.getUrl() + "/assets";
 			let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get('asset_goallasset') + '</a>';
 
-			//this.txlist = $("#txlist-page");
 
-            $("#goallasset").empty();
+			$("#goallasset").empty();
 			$("#goallasset").append(html);
 
-			
-            this.loadAssetInfoView(appchain);
-			
-			//var addcount = await WWW.api_getAppchainBlockcount(appchain); 
-			//var count = await WWW.api_getAppchainBlockcount(appchain);
+
+			this.loadAssetInfoView(appchain);
+
+			this.acaddcount = await WWW.api_getAppchainAddrcount(appchain) as number;
 			this.acblockcount = await WWW.api_getAppchainBlockcount(appchain) as number;
-			this.pageUtil = new PageUtil(this.acblockcount, 15); 
+			this.pageUtil = new PageUtil(this.acblockcount, 15);
 			await this.updateBlocks(appchain, this.pageUtil);
 
-			//let txCount = await WWW.getappchaintxcount(appchain); // change this to call getappchainrawtxcount
 			this.actxcount = await WWW.getappchaintxcount(appchain) as number;
-			//let type = <string>$("#ChainTxType").val();
 			this.transpageUtil = new PageUtil(this.actxcount, 15);
-			this.updateTransactions(appchain,this.transpageUtil);
-			
+			this.updateTransactions(appchain, this.transpageUtil);
+
 
 			this.div.hidden = false;
 			this.footer.hidden = false;
-			
+
 			$("#assets-balance-next").off("click").click(() => {
 				if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
 					this.pageUtil.currentPage = this.pageUtil.totalPage;
 				} else {
 					this.pageUtil.currentPage += 1;
-					this.updateBlocks(appchain,this.pageUtil);
+					this.updateBlocks(appchain, this.pageUtil);
 				}
 			});
 			$("#assets-balance-previous").off("click").click(() => {
@@ -103,7 +98,7 @@
 					this.pageUtil.currentPage = 1;
 				} else {
 					this.pageUtil.currentPage -= 1;
-					this.updateBlocks(appchain ,this.pageUtil);
+					this.updateBlocks(appchain, this.pageUtil);
 				}
 			});
 
@@ -111,7 +106,7 @@
 			//监听交易列表选择框
 			$("#TxType").change(() => {
 				this.pageUtil.currentPage = 1;
-				this.updateTransactions(appchain ,this.pageUtil);
+				this.updateTransactions(appchain, this.pageUtil);
 			});
 
 			$("#assets-tran-next").off("click").click(() => {
@@ -119,7 +114,7 @@
 					this.pageUtil.currentPage = this.pageUtil.totalPage;
 				} else {
 					this.pageUtil.currentPage += 1;
-					this.updateTransactions(appchain,this.pageUtil);
+					this.updateTransactions(appchain, this.pageUtil);
 				}
 			});
 			$("#assets-tran-previous").off("click").click(() => {
@@ -127,46 +122,38 @@
 					this.pageUtil.currentPage = 1;
 				} else {
 					this.pageUtil.currentPage -= 1;
-					this.updateTransactions(appchain,this.pageUtil);
+					this.updateTransactions(appchain, this.pageUtil);
 				}
 			});
 
-            this.div.hidden = false;
-            this.footer.hidden = false;
-        }
-        close(): void
-        {
-            this.div.hidden = true;
-            this.footer.hidden = true;
-        }
-        loadAssetInfoView(appchain: string)
-        {            
-            //this.div.innerHTML = pages.asset;
-               WWW.api_getAppchain(appchain).then((data) =>
-            {
+			this.div.hidden = false;
+			this.footer.hidden = false;
+		}
+		close(): void {
+			this.div.hidden = true;
+			this.footer.hidden = true;
+		}
+		loadAssetInfoView(appchain: string) {
+			//this.div.innerHTML = pages.asset;
+			WWW.api_getAppchain(appchain).then((data) => {
 				var appchain = data[0];
 
-				
-				var appchainblockcount = WWW.api_getAppchainBlockcount((appchain.hash).toString());
-          
 
-				var appchaintrxcount =  WWW.getappchaintxcount((appchain.hash).toString());
-				var appchainaddrcount = WWW.api_getAppchainBlockcount((appchain.hash).toString());
 
 				let time = DateTool.getTime(appchain.timestamp);
-                   $("#name").text(appchain.name);
-                   $("#type").text(time);
-				   $("#id").text(appchain.hash);
-				   $("#available").text(this.acblockcount.toString()); //this.acblockcount
-				   $("#precision").text(this.actxcount.toString()); //this.actxcount
-				   $("#admin").text(appchaintrxcount.toString());                
+				$("#name").text(appchain.name);
+				$("#type").text(time);
+				$("#id").text(appchain.hash);
+				$("#available").text(this.acblockcount.toString());
+				$("#precision").text(this.actxcount.toString());
+				$("#admin").text(this.acaddcount.toString());
 			})
 
-			
-        }
+
+		}
 		public async updateBlocks(appchain: string, pageUtil: PageUtil) {
 
-			let blocks: Block[] = await WWW.getappchainblocks(appchain ,pageUtil.pageSize, pageUtil.currentPage); 
+			let blocks: Block[] = await WWW.getappchainblocks(appchain, pageUtil.pageSize, pageUtil.currentPage);
 			$("#assets-balance-list").children("table").children("tbody").empty();
 			if (pageUtil.totalPage - pageUtil.currentPage) {
 				$("#assets-balance-next").removeClass('disabled');
@@ -188,7 +175,7 @@
 			let pageMsg = "Blocks " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
 			$("#assets-balance-msg").html(pageMsg);
 
-		
+
 			//let newDate = new Date();
 			blocks.forEach((item, index, input) => {
 				//newDate.setTime(item.time * 1000);
@@ -208,13 +195,13 @@
 			});
 		}
 
-		
-		 public async updateTransactions(appchain:string ,pageUtil: PageUtil) {
+
+		public async updateTransactions(appchain: string, pageUtil: PageUtil) {
 			$("#assets-tran-list").empty();
 			//分页查询交易记录
 
-			let txs: Tx[] = await WWW.getappchainrawtransactions(appchain,pageUtil.pageSize, pageUtil.currentPage);
-
+			let txs: Tx[] = await WWW.getappchainrawtransactions(appchain, pageUtil.pageSize, pageUtil.currentPage);
+		
 			let txCount = await WWW.getappchaintxcount(appchain);
 			pageUtil.totalCount = txCount;
 
@@ -232,7 +219,7 @@
 				$("#assets-tran-list").append(html);
 			}
 
-			let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize; //
+			let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
 			let maxNum = pageUtil.totalCount;
 			let diffNum = maxNum - minNum;
 			if (diffNum > 15) {
@@ -251,11 +238,10 @@
 				$("#assets-tran-previous").addClass('disabled');
 			}
 		}
-		 
 
-		
-		 async getTxLine(txid: string, type: string, size: string, index: string, vins,	vouts) 
-		{
+
+
+		async getTxLine(txid: string, type: string, size: string, index: string, vins, vouts) {
 			console.log(vins)
 			console.log(JSON.stringify(vins));
 			console.log("--------------")
@@ -274,8 +260,7 @@
                             <a class="end" id="genbtn" style="border-left:none;"></a>
                         </div>`;
 			}
-			return `
-            <div class="line">
+			return ` <div class="line">
                 <div class="line-general">
                     <div class="content-nel"><span><a href="`+ Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
                     <div class="content-nel"><span>`+ type.replace("Transaction", "") + `</span></div>
@@ -287,6 +272,8 @@
                 </div>
             </div>
             `;
+		  }
+
+
 		}
-    }
-}
+	}

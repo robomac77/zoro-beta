@@ -427,6 +427,15 @@ var WebBrowser;
                 return r[0]["blockcount"];
             });
         }
+        static api_getAppchainAddrcount(hash) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainaddrcount", hash);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r[0]["addrcount"];
+            });
+        }
         static api_getUTXOCount(address) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getutxo", address);
@@ -1158,6 +1167,7 @@ var WebBrowser;
             this.footer = document.getElementById('footer-box');
             this.actxcount = 0;
             this.acblockcount = 0;
+            this.acaddcount = 0;
             this.app = app;
         }
         getLangs() {
@@ -1193,18 +1203,14 @@ var WebBrowser;
                 appchain = appchain.replace('0x', '');
                 let href = WebBrowser.locationtool.getUrl() + "/assets";
                 let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get('asset_goallasset') + '</a>';
-                //this.txlist = $("#txlist-page");
                 $("#goallasset").empty();
                 $("#goallasset").append(html);
                 this.loadAssetInfoView(appchain);
-                //var addcount = await WWW.api_getAppchainBlockcount(appchain); 
-                //var count = await WWW.api_getAppchainBlockcount(appchain);
+                this.acaddcount = (yield WebBrowser.WWW.api_getAppchainAddrcount(appchain));
                 this.acblockcount = (yield WebBrowser.WWW.api_getAppchainBlockcount(appchain));
                 this.pageUtil = new WebBrowser.PageUtil(this.acblockcount, 15);
                 yield this.updateBlocks(appchain, this.pageUtil);
-                //let txCount = await WWW.getappchaintxcount(appchain); // change this to call getappchainrawtxcount
                 this.actxcount = (yield WebBrowser.WWW.getappchaintxcount(appchain));
-                //let type = <string>$("#ChainTxType").val();
                 this.transpageUtil = new WebBrowser.PageUtil(this.actxcount, 15);
                 this.updateTransactions(appchain, this.transpageUtil);
                 this.div.hidden = false;
@@ -1263,16 +1269,13 @@ var WebBrowser;
             //this.div.innerHTML = pages.asset;
             WebBrowser.WWW.api_getAppchain(appchain).then((data) => {
                 var appchain = data[0];
-                var appchainblockcount = WebBrowser.WWW.api_getAppchainBlockcount((appchain.hash).toString());
-                var appchaintrxcount = WebBrowser.WWW.getappchaintxcount((appchain.hash).toString());
-                var appchainaddrcount = WebBrowser.WWW.api_getAppchainBlockcount((appchain.hash).toString());
                 let time = WebBrowser.DateTool.getTime(appchain.timestamp);
                 $("#name").text(appchain.name);
                 $("#type").text(time);
                 $("#id").text(appchain.hash);
-                $("#available").text(this.acblockcount.toString()); //this.acblockcount
-                $("#precision").text(this.actxcount.toString()); //this.actxcount
-                $("#admin").text(appchaintrxcount.toString());
+                $("#available").text(this.acblockcount.toString());
+                $("#precision").text(this.actxcount.toString());
+                $("#admin").text(this.acaddcount.toString());
             });
         }
         updateBlocks(appchain, pageUtil) {
@@ -1338,7 +1341,7 @@ var WebBrowser;
                     let html = yield this.getTxLine(txid, txs[n].type, txs[n].size.toString(), txs[n].blockindex.toString(), txs[n].vin, txs[n].vout);
                     $("#assets-tran-list").append(html);
                 }
-                let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize; //
+                let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
                 let maxNum = pageUtil.totalCount;
                 let diffNum = maxNum - minNum;
                 if (diffNum > 15) {
@@ -1380,8 +1383,7 @@ var WebBrowser;
                             <a class="end" id="genbtn" style="border-left:none;"></a>
                         </div>`;
                 }
-                return `
-            <div class="line">
+                return ` <div class="line">
                 <div class="line-general">
                     <div class="content-nel"><span><a href="` + WebBrowser.Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
                     <div class="content-nel"><span>` + type.replace("Transaction", "") + `</span></div>
@@ -2306,15 +2308,15 @@ var WebBrowser;
                 $("#goallasset").empty();
                 $("#goallasset").append(html);
                 this.loadNep5InfoView(nep5id);
-                var rankcount = yield WebBrowser.WWW.api_getrankbyassetcount(nep5id);
-                this.rankPageUtil = new WebBrowser.PageUtil(rankcount[0].count, 10);
-                this.updateAssetBalanceView(nep5id, this.rankPageUtil);
+                var result = yield WebBrowser.WWW.api_getAppchainBlockcount(nep5id); //change to getappchainblockcount
+                this.rankPageUtil = new WebBrowser.PageUtil(result[0].blockcount, 10);
+                this.updateAssetBalanceView(nep5id, this.rankPageUtil); // update the blocks view
                 var assetType = WebBrowser.locationtool.getType();
                 if (assetType == 'nep5') {
                     //$(".asset-nep5-warp").show();
-                    let count = yield WebBrowser.WWW.api_getnep5count('asset', nep5id);
-                    this.pageUtil = new WebBrowser.PageUtil(count[0].nep5count, 10);
-                    this.updateNep5TransView(nep5id, this.pageUtil);
+                    let count = yield WebBrowser.WWW.getappchaintxcount(nep5id); // change to getappchaintransactioncount
+                    this.pageUtil = new WebBrowser.PageUtil(count[0].txcount, 10);
+                    this.updateNep5TransView(nep5id, this.pageUtil); // update the transactions view
                     $(".asset-tran-warp").show();
                 }
                 else {
@@ -2369,7 +2371,7 @@ var WebBrowser;
         }
         //nep5的详情
         loadNep5InfoView(nep5id) {
-            WebBrowser.WWW.api_getnep5(nep5id).then((data) => {
+            WebBrowser.WWW.api_getAppchain(nep5id).then((data) => {
                 var nep5 = data[0];
                 let time = WebBrowser.DateTool.getTime(nep5.timestamp);
                 $("#name").text(nep5.name);
@@ -2382,14 +2384,14 @@ var WebBrowser;
         }
         updateAssetBalanceView(nep5id, pageUtil) {
             return __awaiter(this, void 0, void 0, function* () {
-                let balanceList = yield WebBrowser.WWW.getrankbyasset(nep5id, pageUtil.pageSize, pageUtil.currentPage);
+                let balanceList = yield WebBrowser.WWW.getappchainblocks(nep5id, pageUtil.pageSize, pageUtil.currentPage); // change this getappchainblocks
                 $("#assets-balance-list").empty();
                 if (balanceList) {
-                    let rank = (pageUtil.currentPage - 1) * 10 + 1;
+                    // let rank = (pageUtil.currentPage-1)*10 +1;
                     balanceList.forEach((item) => {
-                        let href = WebBrowser.Url.href_address(item.addr);
-                        this.loadAssetBalanceView(rank, href, item.addr, item.balance);
-                        rank++;
+                        let href = WebBrowser.Url.href_address(item.hash);
+                        this.loadAssetBalanceView(item.hash, item.size, item.time, item.index, item.tx.length); // loads the blocks view
+                        //  rank++;
                     });
                 }
                 else {
@@ -2422,7 +2424,7 @@ var WebBrowser;
                     if (diffNum > 10) {
                         maxNum = pageUtil.currentPage * pageUtil.pageSize;
                     }
-                    let pageMsg = "Banlance Rank " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
+                    let pageMsg = "Balance Rank " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
                     $("#assets-balance-msg").html(pageMsg);
                     $(".asset-balance-page").show();
                 }
@@ -2433,17 +2435,17 @@ var WebBrowser;
         }
         updateNep5TransView(nep5id, pageUtil) {
             return __awaiter(this, void 0, void 0, function* () {
-                let tranList = yield WebBrowser.WWW.api_getnep5transfersbyasset(nep5id, pageUtil.pageSize, pageUtil.currentPage);
+                let tranList = yield WebBrowser.WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage); // change to getappchaintransactions
                 $("#assets-tran-list").empty();
                 if (tranList) {
                     tranList.forEach((item) => {
-                        if (!item.from) {
-                            item.from = '-';
+                        if (!item.vin) {
+                            item.type = '-';
                         }
-                        if (!item.to) {
-                            item.to = '-';
+                        if (!item.size) {
+                            item.type = '-';
                         }
-                        this.loadAssetTranView(item.txid, item.from, item.to, item.blockindex);
+                        this.loadAssetTranView(item.txid, item.type, item.size, item.blockindex);
                     });
                 }
                 else {
@@ -2497,14 +2499,17 @@ var WebBrowser;
                     </tr>`;
             $("#assets-tran-list").append(html);
         }
-        loadAssetBalanceView(rank, href, address, balance) {
+        loadAssetBalanceView(href, size, time, height, txcount) {
+            //let tm = DateTool.getTime(balancelist.timestamp);
             let html = `
                     <tr>
-                    <td>` + rank + `
-                    </td>
-                    <td><a target="_self" href="` + href + `">` + address + `
+                    <td><a target="_self" href="` + href + `">` + href + `
                     </a></td>
-                    <td>` + balance + `</td>
+                     <td>` + size + `</td> 
+                    <td>` + time + `
+                    </td>
+                    <td>` + height + `</td>
+                    <td>` + txcount + `</td>
                     </tr>`;
             $("#assets-balance-list").append(html);
         }
@@ -3992,8 +3997,8 @@ var WebBrowser;
                 asset_tx: "Tx Count",
                 asset_title3: "App Chain Transactions",
                 asset_txid: "TXID",
-                asset_from: "From",
-                asset_to: "To",
+                asset_from: "Type",
+                asset_to: "Size",
                 asset_height: "Height",
                 asset_goallasset: "Back to all app chains",
                 no_data: "There is no data",

@@ -67,16 +67,16 @@ namespace WebBrowser
             $("#goallasset").append(html);
             this.loadNep5InfoView(nep5id);
             
-            var rankcount = await WWW.api_getrankbyassetcount(nep5id);
-            this.rankPageUtil = new PageUtil(rankcount[0].count, 10);
-            this.updateAssetBalanceView(nep5id, this.rankPageUtil);
+            var result = await WWW.api_getAppchainBlockcount(nep5id); //change to getappchainblockcount
+            this.rankPageUtil = new PageUtil(result[0].blockcount, 10);
+            this.updateAssetBalanceView(nep5id, this.rankPageUtil); // update the blocks view
 
             var assetType = locationtool.getType();
             if (assetType == 'nep5') {
                 //$(".asset-nep5-warp").show();
-                let count = await WWW.api_getnep5count('asset', nep5id);
-                this.pageUtil = new PageUtil(count[0].nep5count, 10);
-                this.updateNep5TransView(nep5id, this.pageUtil);
+                let count = await WWW.getappchaintxcount(nep5id);  // change to getappchaintransactioncount
+                this.pageUtil = new PageUtil(count[0].txcount, 10);
+                this.updateNep5TransView(nep5id, this.pageUtil);         // update the transactions view
                 $(".asset-tran-warp").show();
             } else {
                 //$(".asset-nep5-warp").hide();
@@ -84,7 +84,7 @@ namespace WebBrowser
             }
 
             //排行翻页
-            $("#assets-balance-next").off("click").click(() => {
+            $("#assets-balance-next").off("click").click(() => {      
                 if (this.rankPageUtil.currentPage == this.rankPageUtil.totalPage) {
                     this.rankPageUtil.currentPage = this.rankPageUtil.totalPage;
                 } else {
@@ -127,9 +127,9 @@ namespace WebBrowser
             this.footer.hidden = true;
         }
         //nep5的详情
-        loadNep5InfoView(nep5id: string)
+        loadNep5InfoView(nep5id: string)   // loads the appchain view
         {           
-            WWW.api_getnep5(nep5id).then((data) =>
+            WWW.api_getAppchain(nep5id).then((data) =>
             {
 				var nep5 = data[0];
 				let time = DateTool.getTime(nep5.timestamp);
@@ -144,16 +144,16 @@ namespace WebBrowser
         }
 
         async updateAssetBalanceView(nep5id: string, pageUtil: PageUtil) {
-            let balanceList = await WWW.getrankbyasset(nep5id, pageUtil.pageSize, pageUtil.currentPage);
+            let balanceList = await WWW.getappchainblocks(nep5id, pageUtil.pageSize, pageUtil.currentPage); // change this getappchainblocks
             $("#assets-balance-list").empty();
 
             if (balanceList)
             {
-                let rank = (pageUtil.currentPage-1)*10 +1;
+               // let rank = (pageUtil.currentPage-1)*10 +1;
                 balanceList.forEach((item) => {
-                    let href = Url.href_address(item.addr);
-                    this.loadAssetBalanceView(rank, href, item.addr, item.balance);
-                    rank++;
+					let href = Url.href_address(item.hash);
+					this.loadAssetBalanceView(item.hash,item.size, item.time, item.index, item.tx.length);     // loads the blocks view
+                  //  rank++;
                 });
             }
             else
@@ -186,7 +186,7 @@ namespace WebBrowser
                 if (diffNum > 10) {
                     maxNum = pageUtil.currentPage * pageUtil.pageSize;
                 }
-                let pageMsg = "Banlance Rank " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
+                let pageMsg = "Balance Rank " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
                 $("#assets-balance-msg").html(pageMsg);
                 $(".asset-balance-page").show();
             }
@@ -197,17 +197,17 @@ namespace WebBrowser
         }
 
         async updateNep5TransView(nep5id: string, pageUtil: PageUtil) {
-            let tranList: TransOfAsset[] = await WWW.api_getnep5transfersbyasset(nep5id, pageUtil.pageSize, pageUtil.currentPage);
+            let tranList: Tx[] = await WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage); // change to getappchaintransactions
             $("#assets-tran-list").empty();
             if (tranList) {
                 tranList.forEach((item) => {
-                    if (!item.from) {
-                        item.from = '-'
+                    if (!item.vin) {
+                        item.type = '-'
                     }
-                    if (!item.to) {
-                        item.to = '-'
+                    if (!item.size) {
+                        item.type = '-'
                     }
-                    this.loadAssetTranView(item.txid, item.from, item.to, item.blockindex);
+                    this.loadAssetTranView(item.txid, item.type, item.size, item.blockindex);
                 })
             } else {
                 let html = '<tr><td colspan="4" >'+this.app.langmgr.get('no_data')+'</td></tr>';
@@ -246,7 +246,7 @@ namespace WebBrowser
             
         }
 
-        loadAssetTranView(txid:string,from:string,to:string,blockindex:number)
+        loadAssetTranView(txid:string,from:string,to:number,blockindex:number)
         {
             let html = `
                     <tr>
@@ -262,14 +262,17 @@ namespace WebBrowser
         }
 
 
-        loadAssetBalanceView(rank:number,href:string,address:string,balance:number) {
+		loadAssetBalanceView(href: string, size: number, time: number, height: number, txcount: number) {
+			//let tm = DateTool.getTime(balancelist.timestamp);
             let html = `
                     <tr>
-                    <td>` + rank + `
-                    </td>
-                    <td><a target="_self" href="`+ href + `">` + address + `
+                    <td><a target="_self" href="`+ href + `">` + href + `
                     </a></td>
-                    <td>` + balance + `</td>
+                     <td>` + size + `</td> 
+                    <td>` + time + `
+                    </td>
+                    <td>` + height + `</td>
+                    <td>` + txcount + `</td>
                     </tr>`
             $("#assets-balance-list").append(html);
         }

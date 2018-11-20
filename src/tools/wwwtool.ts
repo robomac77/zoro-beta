@@ -176,6 +176,15 @@ namespace WebBrowser {
 			return r[0]["blockcount"] as number;
 			
 		}
+
+		static async api_getAppchainAddrcount(hash: string) {
+			var str = WWW.makeRpcUrl("getappchainaddrcount", hash);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r[0]["addrcount"] as number;
+
+		}
 		static async api_getUTXOCount(address: string) {
 			var str = WWW.makeRpcUrl("getutxo", address);
 			var result = await fetch(str, { "method": "get" });
