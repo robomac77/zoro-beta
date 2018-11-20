@@ -95,7 +95,7 @@ namespace WebBrowser
 
                 let html = `
                 <tr>
-                <td><a href="`+ Url.href_appchain(id) + `" target="_self">` + id + `</a></td>
+                <td><a href="`+ Url.href_asset(id) + `" target="_self">` + id + `</a></td>
                 <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + Url.href_block(item.index) + `" target="_self">` + item.index + `</a></td>
                 <td>` + txcounts + `</td>
                 </tr>`;

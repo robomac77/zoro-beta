@@ -172,6 +172,7 @@
 
 			this.div.hidden = false;
 			this.footer.hidden = false;
+			
 		}
 
         /**

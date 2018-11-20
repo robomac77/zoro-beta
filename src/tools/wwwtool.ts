@@ -50,6 +50,14 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r[0]['txcount'] as number;
 		}
+		static async getappchaintxcount(appchain: string) // covered ; gets the total number of txs in address_tx
+		{
+			var str = WWW.makeRpcUrl("getappchaintxcount", appchain);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r[0]['txcount'] as number;
+		}
 		//地址总数
 		static async getaddrcount()     // covered ; gets the total number of address in address
 		{
@@ -95,6 +103,15 @@ namespace WebBrowser {
 		static async getrawtransactions(size: number, page: number, txtype: string) {
 
 			var str = WWW.makeRpcUrl("getrawtransactions", size, page, txtype);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r as Tx[]; // needs most recent 10 txs returned, needs a sorting by txtype
+		}
+
+		static async getappchainrawtransactions(appchain:string , size: number, page: number) {
+
+			var str = WWW.makeRpcUrl("getappchainrawtransactions", appchain,size, page);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
@@ -156,7 +173,7 @@ namespace WebBrowser {
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
-			return r[0]['blockcount'] as number;
+			return r[0]["blockcount"] as number;
 			
 		}
 		static async api_getUTXOCount(address: string) {

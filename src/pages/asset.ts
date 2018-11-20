@@ -51,57 +51,46 @@
         admin: HTMLSpanElement;
 		//rankPageUtil: PageUtil;
 		pageUtil: PageUtil;
+		transpageUtil: PageUtil;
+
+		private chaintxlist: JQuery<HTMLElement>;
+
+		public actxcount: number;
+		public acblockcount: number;
         async start()
         {
             this.getLangs()
             
-            var appchain = locationtool.getParam();
+			var appchain = locationtool.getParam();
+			appchain = appchain.replace('0x', '');
             let href = locationtool.getUrl() + "/assets";
-            let html = '<a href="' + href + '" target="_self">&lt&lt&lt'+this.app.langmgr.get('asset_goallasset')+'</a>';
+			let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get('asset_goallasset') + '</a>';
+
+			//this.txlist = $("#txlist-page");
 
             $("#goallasset").empty();
-            $("#goallasset").append(html);
+			$("#goallasset").append(html);
 
+			
             this.loadAssetInfoView(appchain);
+			
 
-           // var assetType = locationtool.getType();
-          //  if (assetType == 'nep5') {
-                //$(".asset-nep5-warp").show();
-          //      $(".asset-tran-warp").show();
-         //   } else {
-                //$(".asset-nep5-warp").hide();
-         //       $(".asset-tran-warp").hide();
-         //   }
-            //资产排行
-            //var rankcount = await WWW.api_getrankbyassetcount(assetid);
-         //   this.rankPageUtil = new PageUtil(rankcount[0].count, 10);
-          //  this.updateAssetBalanceView(assetid, this.rankPageUtil);
-            //排行翻页
-          //  $("#assets-balance-next").off("click").click(() => {
-           //     if (this.rankPageUtil.currentPage == this.rankPageUtil.totalPage) {
-          //          this.rankPageUtil.currentPage = this.rankPageUtil.totalPage;
-          //      } else {
-          //          this.rankPageUtil.currentPage += 1;
-          //          this.updateAssetBalanceView(assetid, this.rankPageUtil);
-         //       }
-         //   });
-        //    $("#assets-balance-previous").off("click").click(() => {
-         //       if (this.rankPageUtil.currentPage <= 1) {
-        //            this.rankPageUtil.currentPage = 1;
-        //        } else {
-        //            this.rankPageUtil.currentPage -= 1;
-         //           this.updateAssetBalanceView(assetid, this.rankPageUtil);
-        //        }
-       //     });
+			var count = await WWW.api_getAppchainBlockcount(appchain);
+			this.acblockcount = count;
+			this.pageUtil = new PageUtil(count, 15); 
+			await this.updateBlocks(appchain, this.pageUtil);
 
-		
+			let txCount = await WWW.getappchaintxcount(appchain); // change this to call getappchainrawtxcount
+			this.actxcount = txCount;
+			let type = <string>$("#ChainTxType").val();
+			this.transpageUtil = new PageUtil(txCount, 15);
+			this.updateTransactions(appchain,this.transpageUtil);
+			
 
-			var count = await WWW.api_getHeight();
-			this.pageUtil = new PageUtil(count, 15);
-			await this.updateBlocks(appchain , this.pageUtil);
 			this.div.hidden = false;
 			this.footer.hidden = false;
-			$("#blocks-page-next").off("click").click(() => {
+			
+			$("#assets-balance-next").off("click").click(() => {
 				if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
 					this.pageUtil.currentPage = this.pageUtil.totalPage;
 				} else {
@@ -109,12 +98,36 @@
 					this.updateBlocks(appchain,this.pageUtil);
 				}
 			});
-			$("#blocks-page-previous").off("click").click(() => {
+			$("#assets-balance-previous").off("click").click(() => {
 				if (this.pageUtil.currentPage <= 1) {
 					this.pageUtil.currentPage = 1;
 				} else {
 					this.pageUtil.currentPage -= 1;
 					this.updateBlocks(appchain ,this.pageUtil);
+				}
+			});
+
+			this.chaintxlist = $("#assets-tran-list");
+			//监听交易列表选择框
+			$("#TxType").change(() => {
+				this.pageUtil.currentPage = 1;
+				this.updateTransactions(appchain ,this.pageUtil);
+			});
+
+			$("#assets-tran-next").off("click").click(() => {
+				if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
+					this.pageUtil.currentPage = this.pageUtil.totalPage;
+				} else {
+					this.pageUtil.currentPage += 1;
+					this.updateTransactions(appchain,this.pageUtil);
+				}
+			});
+			$("#assets-tran-previous").off("click").click(() => {
+				if (this.pageUtil.currentPage <= 1) {
+					this.pageUtil.currentPage = 1;
+				} else {
+					this.pageUtil.currentPage -= 1;
+					this.updateTransactions(appchain,this.pageUtil);
 				}
 			});
 
@@ -129,24 +142,31 @@
         loadAssetInfoView(appchain: string)
         {            
             //this.div.innerHTML = pages.asset;
-            WWW.api_getAppchain(appchain).then((data) =>
+               WWW.api_getAppchain(appchain).then((data) =>
             {
 				var appchain = data[0];
-				var appchainblockcount = WWW.api_getAppchainBlockcount(appchain);
-				var appchaintrxcount = WWW.api_getAppchainBlockcount(appchain);
-				var appchainaddrcount = WWW.api_getAppchainBlockcount(appchain);
-                //asset.names = CoinTool.assetID2name[asset.id];
+
+				
+				var appchainblockcount = WWW.api_getAppchainBlockcount((appchain.hash).toString());
+          
+
+				var appchaintrxcount =  WWW.getappchaintxcount((appchain.hash).toString());
+				var appchainaddrcount = WWW.api_getAppchainBlockcount((appchain.hash).toString());
+
 				let time = DateTool.getTime(appchain.timestamp);
-                $("#name").text(appchain.name);
-                $("#asset-info-type").text(time);
-                $("#id").text(appchain.hash);
-                $("#available").text(appchainblockcount.toString());
-                $("#precision").text(appchaintrxcount.toString());
-                $("#admin").text(appchainaddrcount.toString());                
-            })
+                   $("#name").text(appchain.name);
+                   $("#type").text(time);
+				   $("#id").text(appchain.hash);
+				   $("#available").text(appchainblockcount.toString); //this.acblockcount
+				   $("#precision").text(appchaintrxcount.toString); //this.actxcount
+				   $("#admin").text(appchaintrxcount.toString);                
+			})
+
+			
         }
-		public async updateBlocks(appchain :string , pageUtil: PageUtil) {
-			let blocks: Block[] = await WWW.getappchainblocks(appchain ,pageUtil.pageSize, pageUtil.currentPage); // the limit for data display here is 15 after each 15
+		public async updateBlocks(appchain: string, pageUtil: PageUtil) {
+
+			let blocks: Block[] = await WWW.getappchainblocks(appchain ,pageUtil.pageSize, pageUtil.currentPage); 
 			$("#assets-balance-list").children("table").children("tbody").empty();
 			if (pageUtil.totalPage - pageUtil.currentPage) {
 				$("#assets-balance-next").removeClass('disabled');
@@ -168,7 +188,7 @@
 			let pageMsg = "Blocks " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
 			$("#assets-balance-msg").html(pageMsg);
 
-			$("#assets-balance-list").find("tbody").append(`<tr><td>1</td></tr>`);
+		
 			//let newDate = new Date();
 			blocks.forEach((item, index, input) => {
 				//newDate.setTime(item.time * 1000);
@@ -176,7 +196,7 @@
 				let txcounts = item.tx.length
 				var id = item.hash
 				id = id.replace('0x', '');
-				id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
+				//id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
 
 				let html = `
                 <tr>
@@ -188,28 +208,28 @@
 			});
 		}
 
-		/*
-		 *public async updateTransactions(pageUtil: PageUtil, txType: string) {
-			this.txlist.find("#assets-tran-list").empty();
+		
+		 public async updateTransactions(appchain:string ,pageUtil: PageUtil, ) {
+			$("#assets-tran-list").empty();
 			//分页查询交易记录
 
-			let txs: Tx[] = await WWW.getrawtransactions(pageUtil.pageSize, pageUtil.currentPage, txType);
-			let txCount = await WWW.gettxcount(txType);
+			let txs: Tx[] = await WWW.getappchainrawtransactions(appchain,pageUtil.pageSize, pageUtil.currentPage);
+
+			let txCount = await WWW.getappchaintxcount(appchain);
 			pageUtil.totalCount = txCount;
 
 			let listLength = 0;
 			if (txs.length < 15) {
-				this.txlist.find(".page").hide();
+				this.chaintxlist.find(".page").hide();
 				listLength = txs.length;
 			} else {
-				this.txlist.find(".page").show();
+				this.chaintxlist.find(".page").show();
 				listLength = pageUtil.pageSize;
 			}
 			for (var n = 0; n < listLength; n++) {
-				//alert(txs[0].txid + " " + txs[n].txid);
 				let txid = txs[n].txid;
 				let html: string = await this.getTxLine(txid, txs[n].type, txs[n].size.toString(), txs[n].blockindex.toString(), txs[n].vin, txs[n].vout);
-				this.txlist.find("#assets-tran-list").append(html);
+				$("#assets-tran-list").append(html);
 			}
 
 			let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize; //
@@ -219,7 +239,7 @@
 				maxNum = pageUtil.currentPage * pageUtil.pageSize;
 			}
 			let pageMsg = "Chain Transactions " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
-			$("#assets-trans-list").find("#assets-trans-msg").html(pageMsg);
+			$("#assets-trans-msg").html(pageMsg);
 			if (pageUtil.totalPage - pageUtil.currentPage) {
 				$("#assets-tran-next").removeClass('disabled');
 			} else {
@@ -231,6 +251,42 @@
 				$("#assets-tran-previous").addClass('disabled');
 			}
 		}
-		 */
+		 
+
+		
+		 async getTxLine(txid: string, type: string, size: string, index: string, vins,	vouts) 
+		{
+			console.log(vins)
+			console.log(JSON.stringify(vins));
+			console.log("--------------")
+			console.log(vouts)
+			console.log(JSON.stringify(vouts));
+			var id = txid.replace('0x', '');
+			id = id.substring(0, 6) + '...' + id.substring(id.length - 6);
+			if (vins.length == 0 && vouts.length == 0) {
+				return `<div class="line">
+                            <div class="line-general">
+                                <div class="content-nel"><span><a href="`+ Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
+                                <div class="content-nel"><span>`+ type.replace("Transaction", "") + `</span></div>
+                                <div class="content-nel"><span>`+ size + ` bytes</span></div>
+                                <div class="content-nel"><span><a href="`+ Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
+                            </div>
+                            <a class="end" id="genbtn" style="border-left:none;"></a>
+                        </div>`;
+			}
+			return `
+            <div class="line">
+                <div class="line-general">
+                    <div class="content-nel"><span><a href="`+ Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
+                    <div class="content-nel"><span>`+ type.replace("Transaction", "") + `</span></div>
+                    <div class="content-nel"><span>`+ size + ` bytes</span></div>
+                    <div class="content-nel"><span><a href="`+ Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
+                </div>
+                <a onclick="txgeneral(this)" class="end" id="genbtn"><img src="./img/open.svg" /></a>
+                <div class="transaction" style="width:100%;display: none;" vins='`+ JSON.stringify(vins) + `' vouts='` + JSON.stringify(vouts) + `'>
+                </div>
+            </div>
+            `;
+		}
     }
 }
