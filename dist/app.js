@@ -1212,7 +1212,7 @@ var WebBrowser;
                 yield this.updateBlocks(appchain, this.pageUtil);
                 this.actxcount = (yield WebBrowser.WWW.getappchaintxcount(appchain));
                 this.transpageUtil = new WebBrowser.PageUtil(this.actxcount, 15);
-                this.updateTransactions(appchain, this.transpageUtil);
+                this.updateNep5TransView(appchain, this.transpageUtil);
                 this.div.hidden = false;
                 this.footer.hidden = false;
                 $("#assets-balance-next").off("click").click(() => {
@@ -1237,7 +1237,7 @@ var WebBrowser;
                 //监听交易列表选择框
                 $("#TxType").change(() => {
                     this.pageUtil.currentPage = 1;
-                    this.updateTransactions(appchain, this.pageUtil);
+                    this.updateNep5TransView(appchain, this.pageUtil);
                 });
                 $("#assets-tran-next").off("click").click(() => {
                     if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
@@ -1245,7 +1245,7 @@ var WebBrowser;
                     }
                     else {
                         this.pageUtil.currentPage += 1;
-                        this.updateTransactions(appchain, this.pageUtil);
+                        this.updateNep5TransView(appchain, this.pageUtil);
                     }
                 });
                 $("#assets-tran-previous").off("click").click(() => {
@@ -1254,7 +1254,7 @@ var WebBrowser;
                     }
                     else {
                         this.pageUtil.currentPage -= 1;
-                        this.updateTransactions(appchain, this.pageUtil);
+                        this.updateNep5TransView(appchain, this.pageUtil);
                     }
                 });
                 this.div.hidden = false;
@@ -1320,82 +1320,71 @@ var WebBrowser;
                 });
             });
         }
-        updateTransactions(appchain, pageUtil) {
+        updateNep5TransView(nep5id, pageUtil) {
             return __awaiter(this, void 0, void 0, function* () {
+                let tranList = yield WebBrowser.WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage);
                 $("#assets-tran-list").empty();
-                //分页查询交易记录
-                let txs = yield WebBrowser.WWW.getappchainrawtransactions(appchain, pageUtil.pageSize, pageUtil.currentPage);
-                let txCount = yield WebBrowser.WWW.getappchaintxcount(appchain);
-                pageUtil.totalCount = txCount;
-                let listLength = 0;
-                if (txs.length < 15) {
-                    this.chaintxlist.find(".page").hide();
-                    listLength = txs.length;
+                if (tranList) {
+                    tranList.forEach((item) => {
+                        if (!item.vin) {
+                            item.type = '-';
+                        }
+                        if (!item.size) {
+                            item.type = '-';
+                        }
+                        this.loadAssetTranView(item.txid, item.type, item.size, item.blockindex);
+                    });
                 }
                 else {
-                    this.chaintxlist.find(".page").show();
-                    listLength = pageUtil.pageSize;
-                }
-                for (var n = 0; n < listLength; n++) {
-                    let txid = txs[n].txid;
-                    let html = yield this.getTxLine(txid, txs[n].type, txs[n].size.toString(), txs[n].blockindex.toString(), txs[n].vin, txs[n].vout);
+                    let html = '<tr><td colspan="4" >' + this.app.langmgr.get('no_data') + '</td></tr>';
                     $("#assets-tran-list").append(html);
+                    if (pageUtil.currentPage == 1) {
+                        $(".asset-tran-page").hide();
+                    }
+                    else {
+                        $(".asset-tran-page").show();
+                    }
                 }
-                let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
-                let maxNum = pageUtil.totalCount;
-                let diffNum = maxNum - minNum;
-                if (diffNum > 15) {
-                    maxNum = pageUtil.currentPage * pageUtil.pageSize;
-                }
-                let pageMsg = "Chain Transactions " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
-                $("#assets-trans-msg").html(pageMsg);
-                if (pageUtil.totalPage - pageUtil.currentPage) {
-                    $("#assets-tran-next").removeClass('disabled');
+                if (pageUtil.totalCount > 10) {
+                    if (pageUtil.totalPage - pageUtil.currentPage) {
+                        $("#assets-tran-next").removeClass('disabled');
+                    }
+                    else {
+                        $("#assets-tran-next").addClass('disabled');
+                    }
+                    if (pageUtil.currentPage - 1) {
+                        $("#assets-tran-previous").removeClass('disabled');
+                    }
+                    else {
+                        $("#assets-tran-previous").addClass('disabled');
+                    }
+                    let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
+                    let maxNum = pageUtil.totalCount;
+                    let diffNum = maxNum - minNum;
+                    if (diffNum > 10) {
+                        maxNum = pageUtil.currentPage * pageUtil.pageSize;
+                    }
+                    let pageMsg = "Transactions " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
+                    $("#assets-tran-msg").html(pageMsg);
+                    $(".asset-tran-page").show();
                 }
                 else {
-                    $("#assets-tran-next").addClass('disabled');
-                }
-                if (pageUtil.currentPage - 1) {
-                    $("#assets-tran-previous").removeClass('disabled');
-                }
-                else {
-                    $("#assets-tran-previous").addClass('disabled');
+                    $(".asset-tran-page").hide();
                 }
             });
         }
-        getTxLine(txid, type, size, index, vins, vouts) {
-            return __awaiter(this, void 0, void 0, function* () {
-                console.log(vins);
-                console.log(JSON.stringify(vins));
-                console.log("--------------");
-                console.log(vouts);
-                console.log(JSON.stringify(vouts));
-                var id = txid.replace('0x', '');
-                id = id.substring(0, 6) + '...' + id.substring(id.length - 6);
-                if (vins.length == 0 && vouts.length == 0) {
-                    return `<div class="line">
-                            <div class="line-general">
-                                <div class="content-nel"><span><a href="` + WebBrowser.Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
-                                <div class="content-nel"><span>` + type.replace("Transaction", "") + `</span></div>
-                                <div class="content-nel"><span>` + size + ` bytes</span></div>
-                                <div class="content-nel"><span><a href="` + WebBrowser.Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
-                            </div>
-                            <a class="end" id="genbtn" style="border-left:none;"></a>
-                        </div>`;
-                }
-                return ` <div class="line">
-                <div class="line-general">
-                    <div class="content-nel"><span><a href="` + WebBrowser.Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
-                    <div class="content-nel"><span>` + type.replace("Transaction", "") + `</span></div>
-                    <div class="content-nel"><span>` + size + ` bytes</span></div>
-                    <div class="content-nel"><span><a href="` + WebBrowser.Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
-                </div>
-                <a onclick="txgeneral(this)" class="end" id="genbtn"><img src="./img/open.svg" /></a>
-                <div class="transaction" style="width:100%;display: none;" vins='` + JSON.stringify(vins) + `' vouts='` + JSON.stringify(vouts) + `'>
-                </div>
-            </div>
-            `;
-            });
+        loadAssetTranView(txid, from, to, blockindex) {
+            let html = `
+                    <tr>
+                    <td><a class="code omit" href="` + WebBrowser.Url.href_transaction(txid) + `" target="_self">` + txid.replace('0x', '') + `
+                    </a></td>
+                    <td>` + from + `
+                    </td>
+                    <td>` + to + `
+                    </td>
+                    <td>` + blockindex + `</td>
+                    </tr>`;
+            $("#assets-tran-list").append(html);
         }
     }
     WebBrowser.AssetInfo = AssetInfo;

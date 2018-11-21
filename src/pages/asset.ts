@@ -79,7 +79,7 @@
 
 			this.actxcount = await WWW.getappchaintxcount(appchain) as number;
 			this.transpageUtil = new PageUtil(this.actxcount, 15);
-			this.updateTransactions(appchain, this.transpageUtil);
+			this.updateNep5TransView(appchain, this.transpageUtil);
 
 
 			this.div.hidden = false;
@@ -106,7 +106,7 @@
 			//监听交易列表选择框
 			$("#TxType").change(() => {
 				this.pageUtil.currentPage = 1;
-				this.updateTransactions(appchain, this.pageUtil);
+				this.updateNep5TransView(appchain, this.pageUtil);
 			});
 
 			$("#assets-tran-next").off("click").click(() => {
@@ -114,7 +114,7 @@
 					this.pageUtil.currentPage = this.pageUtil.totalPage;
 				} else {
 					this.pageUtil.currentPage += 1;
-					this.updateTransactions(appchain, this.pageUtil);
+					this.updateNep5TransView(appchain, this.pageUtil);
 				}
 			});
 			$("#assets-tran-previous").off("click").click(() => {
@@ -122,7 +122,7 @@
 					this.pageUtil.currentPage = 1;
 				} else {
 					this.pageUtil.currentPage -= 1;
-					this.updateTransactions(appchain, this.pageUtil);
+					this.updateNep5TransView(appchain, this.pageUtil);
 				}
 			});
 
@@ -195,7 +195,77 @@
 			});
 		}
 
+		
+		   async updateNep5TransView(nep5id: string, pageUtil: PageUtil) {
+            let tranList: Tx[] = await WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage);
+            $("#assets-tran-list").empty();
+            if (tranList) {
+                tranList.forEach((item) => {
+                    if (!item.vin) {
+                        item.type = '-'
+                    }
+                    if (!item.size) {
+                        item.type = '-'
+                    }
+                    this.loadAssetTranView(item.txid, item.type, item.size, item.blockindex);
+                })
+            } else {
+                let html = '<tr><td colspan="4" >'+this.app.langmgr.get('no_data')+'</td></tr>';
+                $("#assets-tran-list").append(html);
+                if (pageUtil.currentPage == 1) {
+                    $(".asset-tran-page").hide();
+                } else {
+                    $(".asset-tran-page").show();
+                }
+            }
 
+            if (pageUtil.totalCount > 10) {
+                if (pageUtil.totalPage - pageUtil.currentPage) {
+                    $("#assets-tran-next").removeClass('disabled');
+                } else {
+                    $("#assets-tran-next").addClass('disabled');
+                }
+                if (pageUtil.currentPage - 1) {
+                    $("#assets-tran-previous").removeClass('disabled');
+                } else {
+                    $("#assets-tran-previous").addClass('disabled');
+                }
+                let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
+                let maxNum = pageUtil.totalCount;
+                let diffNum = maxNum - minNum;
+                if (diffNum > 10) {
+                    maxNum = pageUtil.currentPage * pageUtil.pageSize;
+                }
+                let pageMsg = "Transactions " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
+                $("#assets-tran-msg").html(pageMsg);
+                $(".asset-tran-page").show();
+            } else {
+                $(".asset-tran-page").hide();
+            }
+
+
+        }
+
+        loadAssetTranView(txid:string,from:string,to:number,blockindex:number)
+        {
+            let html = `
+                    <tr>
+                    <td><a class="code omit" href="`+ Url.href_transaction(txid) + `" target="_self">` + txid.replace('0x', '') + `
+                    </a></td>
+                    <td>` + from + `
+                    </td>
+                    <td>` + to + `
+                    </td>
+                    <td>` + blockindex + `</td>
+                    </tr>`
+            $("#assets-tran-list").append(html);
+        }
+
+		
+		 
+
+
+		/*
 		public async updateTransactions(appchain: string, pageUtil: PageUtil) {
 			$("#assets-tran-list").empty();
 			//分页查询交易记录
@@ -272,8 +342,8 @@
                 </div>
             </div>
             `;
-		  }
+		} */
 
 
-		}
 	}
+}
