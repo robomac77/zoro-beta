@@ -153,7 +153,7 @@
 		public async updateBlocks(appchain: string, pageUtil: PageUtil) {
 
 			let blocks: Block[] = await WWW.getappchainblocks(appchain, pageUtil.pageSize, pageUtil.currentPage);
-			$("#assets-balance-list").children("table").children("tbody").empty();
+			$("#assets-balance-list").empty();
 			if (pageUtil.totalPage - pageUtil.currentPage) {
 				$("#assets-balance-next").removeClass('disabled');
 			} else {

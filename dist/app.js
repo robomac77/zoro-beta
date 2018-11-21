@@ -1281,7 +1281,7 @@ var WebBrowser;
         updateBlocks(appchain, pageUtil) {
             return __awaiter(this, void 0, void 0, function* () {
                 let blocks = yield WebBrowser.WWW.getappchainblocks(appchain, pageUtil.pageSize, pageUtil.currentPage);
-                $("#assets-balance-list").children("table").children("tbody").empty();
+                $("#assets-balance-list").empty();
                 if (pageUtil.totalPage - pageUtil.currentPage) {
                     $("#assets-balance-next").removeClass('disabled');
                 }
@@ -3827,14 +3827,14 @@ var WebBrowser;
                 addr_utxo_number: "交易数量",
                 addr_utxo_txid: "交易ID",
                 addr_goalladress: "返回",
-                // assets
+                // appchains
                 assets_title: "应用连",
                 assets_asset: "应用连名",
                 assets_id: "应用连哈希",
                 assets_type: "主人",
                 assets_ava: "生成时间",
                 assets_pre: "版本",
-                // asset
+                // appchain
                 asset_title: "应用连信息",
                 asset_id: "应用连",
                 asset_asset: "应用连名",
@@ -3842,14 +3842,16 @@ var WebBrowser;
                 asset_ava: "高度",
                 asset_pre: "连上交易数",
                 asset_adm: "连上地址数",
-                asset_title2: "资产排名",
-                asset_rank: "排名",
-                asset_addr: "地址",
-                asset_balance: "资产",
-                asset_title3: "交易",
+                asset_title2: "应用连区块",
+                asset_rank: "哈希",
+                asset_addr: "大小",
+                asset_balance: "时间",
+                asset_blockheight: "高度",
+                asset_tx: "交易数",
+                asset_title3: "应用连交易",
                 asset_txid: "交易ID",
-                asset_from: "转出",
-                asset_to: "转到",
+                asset_from: "类型",
+                asset_to: "大小",
                 asset_height: "区块高度",
                 asset_goallasset: "返回",
                 no_data: "没有数据",
@@ -3892,7 +3894,7 @@ var WebBrowser;
                 i_appchain: "App Chain",
                 i_last10_height: "Height",
                 i_last10_size: "Size",
-                i_last10_ctm: "Created at",
+                i_last10_ctm: "Time Created",
                 i_last10_txcount: "Tx count",
                 i_viewblocks: "View all >>>>",
                 i_last10t: "Last 10 Transactions",

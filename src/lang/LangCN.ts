@@ -128,14 +128,14 @@ namespace WebBrowser
             addr_goalladress: "返回",
 
 
-            // assets
+            // appchains
             assets_title: "应用连",
             assets_asset: "应用连名",
             assets_id: "应用连哈希",
             assets_type: "主人",
             assets_ava: "生成时间",
             assets_pre: "版本",
-            // asset
+            // appchain
 			asset_title: "应用连信息",
 			asset_id: "应用连",
 			asset_asset: "应用连名",
@@ -143,14 +143,16 @@ namespace WebBrowser
             asset_ava: "高度",
             asset_pre: "连上交易数",
             asset_adm: "连上地址数",
-            asset_title2: "资产排名",
-            asset_rank: "排名",
-            asset_addr: "地址",
-            asset_balance: "资产",
-            asset_title3: "交易",
+            asset_title2: "应用连区块",
+            asset_rank: "哈希",
+            asset_addr: "大小",
+			asset_balance: "时间",
+			asset_blockheight: "高度",
+			asset_tx: "交易数",
+            asset_title3: "应用连交易",
             asset_txid: "交易ID",
-            asset_from: "转出",
-            asset_to: "转到",
+            asset_from: "类型",
+            asset_to: "大小",
             asset_height: "区块高度",
             asset_goallasset: "返回",
             no_data: "没有数据",

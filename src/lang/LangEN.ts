@@ -39,7 +39,7 @@ namespace WebBrowser
             i_appchain: "App Chain",
             i_last10_height: "Height",
             i_last10_size: "Size",
-            i_last10_ctm: "Created at",
+            i_last10_ctm: "Time Created",
             i_last10_txcount: "Tx count",
             i_viewblocks: "View all >>>>",
             i_last10t: "Last 10 Transactions",
