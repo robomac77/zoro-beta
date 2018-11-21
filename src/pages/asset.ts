@@ -139,7 +139,6 @@
 				var appchain = data[0];
 
 
-
 				let time = DateTool.getTime(appchain.timestamp);
 				$("#name").text(appchain.name);
 				$("#type").text(time);

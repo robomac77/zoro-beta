@@ -1689,7 +1689,7 @@ var WebBrowser;
                     id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
                     html_blocks += `
                 <tr><td>
-                <a class="code" target="_self" href ='` + WebBrowser.Url.href_appchain(id) + `' > 
+                <a class="code" target="_self" href ='` + WebBrowser.Url.href_nep5(id) + `' > 
                 ` + id + `</a></td>
                 <td>` + item.size + ` bytes</td>
                 <td>` + time + `</td>
