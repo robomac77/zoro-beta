@@ -1213,6 +1213,9 @@ var WebBrowser;
                 this.actxcount = (yield WebBrowser.WWW.getappchaintxcount(appchain));
                 this.transpageUtil = new WebBrowser.PageUtil(this.actxcount, 15);
                 this.updateNep5TransView(appchain, this.transpageUtil);
+                $("#acblockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount));
+                $("#actxcount").text(this.actxcount); //$("#txcount").text(NumberTool.toThousands(this.actxcount));
+                $("#acaddrCount").text(this.acaddcount); //$("#addrCount").text(NumberTool.toThousands(this.acaddcount));
                 this.div.hidden = false;
                 this.footer.hidden = false;
                 $("#assets-balance-next").off("click").click(() => {
