@@ -114,7 +114,7 @@ namespace WebBrowser
                 //var newDate = new Date();
                 //newDate.setTime(item.time * 1000);
 				let time = DateTool.getTime(item.time);
-				var id = item.chainhash
+				var id = item.hash
 				id.replace('0x', '');
 				id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
 
@@ -122,7 +122,7 @@ namespace WebBrowser
 
                 html_blocks += `
                 <tr><td>
-                <a class="code" target="_self" href ='`+ Url.href_nep5(id) + `' > 
+                <a class="code" target="_self" href ='`+ Url.href_blockh(id) + `' > 
                 `+ id + `</a></td>
                 <td>` + item.size + ` bytes</td>
                 <td>` + time + `</td>

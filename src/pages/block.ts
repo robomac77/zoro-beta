@@ -14,7 +14,7 @@
                 let page_lang = [
                     "block_info_title",
                     "block_info_block",
-                    "block_info_chainhash",
+                   // "block_info_chainhash",
                     "block_info_hash",
                     "block_info_time",
                     "block_info_size",
@@ -81,13 +81,13 @@
             let block: Block = blocks[0];
 			let time = DateTool.getTime(block.time);
 
-			var id = block.chainhash
+			var id = block.hash
 			id = id.replace('0x', '');
 			//id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
 
-			$("#hash").text(block.hash);
+	
 			//$("#chainhash").text(block.chainhash);
-			$("#chainhash").html(`<a href="` + Url.href_asset(id) + `" target="_self">` + (id) + `</a>`);
+			$("#hash").text(id);
             $("#size" ).text( block.size + ' bytes' );
             $("#time").text(time);
             $("#version" ).text( block.version );

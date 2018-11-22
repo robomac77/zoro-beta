@@ -19,7 +19,7 @@ var WebBrowser;
                 let page_lang = [
                     "block_info_title",
                     "block_info_block",
-                    "block_info_chainhash",
+                    // "block_info_chainhash",
                     "block_info_hash",
                     "block_info_time",
                     "block_info_size",
@@ -72,12 +72,11 @@ var WebBrowser;
                 let blocks = yield WebBrowser.WWW.getblock(index);
                 let block = blocks[0];
                 let time = WebBrowser.DateTool.getTime(block.time);
-                var id = block.chainhash;
+                var id = block.hash;
                 id = id.replace('0x', '');
                 //id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
-                $("#hash").text(block.hash);
                 //$("#chainhash").text(block.chainhash);
-                $("#chainhash").html(`<a href="` + WebBrowser.Url.href_asset(id) + `" target="_self">` + (id) + `</a>`);
+                $("#hash").text(id);
                 $("#size").text(block.size + ' bytes');
                 $("#time").text(time);
                 $("#version").text(block.version);
@@ -227,7 +226,7 @@ var WebBrowser;
                     //newDate.setTime(item.time * 1000);
                     let time = WebBrowser.DateTool.getTime(item.time);
                     let txcounts = item.tx.length;
-                    var id = item.chainhash;
+                    var id = item.hash;
                     id = id.replace('0x', '');
                     id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
                     let html = `
@@ -1687,12 +1686,12 @@ var WebBrowser;
                     //var newDate = new Date();
                     //newDate.setTime(item.time * 1000);
                     let time = WebBrowser.DateTool.getTime(item.time);
-                    var id = item.chainhash;
+                    var id = item.hash;
                     id.replace('0x', '');
                     id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
                     html_blocks += `
                 <tr><td>
-                <a class="code" target="_self" href ='` + WebBrowser.Url.href_nep5(id) + `' > 
+                <a class="code" target="_self" href ='` + WebBrowser.Url.href_blockh(id) + `' > 
                 ` + id + `</a></td>
                 <td>` + item.size + ` bytes</td>
                 <td>` + time + `</td>
@@ -1806,6 +1805,9 @@ var WebBrowser;
         static href_appchains() {
             return WebBrowser.locationtool.getUrl() + '/appchains';
         }
+        static href_appchain(appchain) {
+            return WebBrowser.locationtool.getUrl() + '/asset' + appchain;
+        }
         static href_transactions() {
             return WebBrowser.locationtool.getUrl() + '/transactions';
         }
@@ -1821,7 +1823,7 @@ var WebBrowser;
         static href_block(block) {
             return WebBrowser.locationtool.getUrl() + "/block/" + block;
         }
-        static href_appchain(block) {
+        static href_blockh(block) {
             return WebBrowser.locationtool.getUrl() + '/block/' + block;
         }
         static href_transaction(tx) {
@@ -2154,7 +2156,7 @@ var WebBrowser;
                 $("#sysfee").text(txInfo["sys_fee"] + " gas");
                 $("#netfee").text(txInfo["net_fee"] + " gas");
                 let ajax = new WebBrowser.Ajax();
-                let blocks = yield ajax.post('getblock', [txInfo.blockindex]);
+                let blocks = yield WebBrowser.WWW.getblock(txInfo.blockindex); //let blocks: Block[] = await ajax.post('getblock', [txInfo.blockindex]);
                 let block = blocks[0];
                 let time = WebBrowser.DateTool.getTime(block.time);
                 $("#transaction-time").text(time);
@@ -3894,7 +3896,7 @@ var WebBrowser;
                 i_walletcreate: "Wallet address created",
                 i_alladdress: "View all addresses",
                 i_last10: "Last 10 Blocks",
-                i_appchain: "App Chain",
+                i_appchain: "Hash",
                 i_last10_height: "Height",
                 i_last10_size: "Size",
                 i_last10_ctm: "Time Created",
@@ -3917,7 +3919,7 @@ var WebBrowser;
                 block_info_title: "Block Information",
                 block_info_block: "Block",
                 block_info_hash: "Hash",
-                block_info_chainhash: "App Chain Hash",
+                //block_info_chainhash: "App Chain Hash",
                 block_info_time: "Time",
                 block_info_size: "Size",
                 block_info_pre: "Previous Block",

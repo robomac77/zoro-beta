@@ -107,6 +107,9 @@ namespace WebBrowser
 		static href_appchains() {
 			return locationtool.getUrl() + '/appchains';
 		}
+		static href_appchain(appchain: string) {
+			return locationtool.getUrl() + '/asset' + appchain;
+		}
         static href_transactions()
         {
             return locationtool.getUrl() + '/transactions';
@@ -126,7 +129,7 @@ namespace WebBrowser
         {
             return locationtool.getUrl() +  "/block/" + block;
 		}
-		static href_appchain(block: string) {
+		static href_blockh(block: string) {
 			return locationtool.getUrl() + '/block/' + block;
 		}
         static href_transaction( tx: string )

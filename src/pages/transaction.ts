@@ -72,7 +72,8 @@ namespace WebBrowser {
 			$("#sysfee").text(txInfo["sys_fee"] + " gas");
 			$("#netfee").text(txInfo["net_fee"] + " gas");
 			let ajax: Ajax = new Ajax();
-			let blocks: Block[] = await ajax.post('getblock', [txInfo.blockindex]);
+			
+			let blocks: Block[] = await WWW.getblock(txInfo.blockindex); //let blocks: Block[] = await ajax.post('getblock', [txInfo.blockindex]);
 			let block: Block = blocks[0];
 			let time = DateTool.getTime(block.time);
 
