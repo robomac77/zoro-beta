@@ -1273,9 +1273,9 @@ var WebBrowser;
                 $("#name").text(appchain.name);
                 $("#type").text(time);
                 $("#id").text(appchain.hash);
-                $("#available").text(this.acblockcount.toString());
-                $("#precision").text(this.actxcount.toString());
-                $("#admin").text(this.acaddcount.toString());
+                $("#available").text(appchain.seedlist);
+                $("#precision").text(appchain.validators);
+                $("#admin").text(appchain.owner);
             });
         }
         updateBlocks(appchain, pageUtil) {
@@ -3981,9 +3981,9 @@ var WebBrowser;
                 asset_id: "App Chain Hash",
                 asset_asset: "App Chain Name",
                 asset_type: "Time Created",
-                asset_ava: "Block Height",
-                asset_pre: "Trx Count",
-                asset_adm: "Addr Count",
+                asset_ava: "Seedlist",
+                asset_pre: "Validators",
+                asset_adm: "Owner",
                 asset_title2: "App Chain Blocks",
                 asset_rank: "Hash",
                 asset_addr: "Size",

@@ -143,9 +143,9 @@
 				$("#name").text(appchain.name);
 				$("#type").text(time);
 				$("#id").text(appchain.hash);
-				$("#available").text(this.acblockcount.toString());
-				$("#precision").text(this.actxcount.toString());
-				$("#admin").text(this.acaddcount.toString());
+				$("#available").text(appchain.seedlist);
+				$("#precision").text(appchain.validators);
+				$("#admin").text(appchain.owner);
 			})
 
 
