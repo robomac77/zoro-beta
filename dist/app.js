@@ -572,7 +572,7 @@ var WebBrowser;
         }
     }
     WWW.api = "http://localhost:59908/api/testnet/";
-    WWW.apiaggr = "http://localhost:86/api/testnet/";
+    WWW.apiaggr = "http://localhost:59999/api/testnet/";
     WebBrowser.WWW = WWW;
 })(WebBrowser || (WebBrowser = {}));
 var WebBrowser;
