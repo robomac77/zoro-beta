@@ -15,6 +15,9 @@
 					"asset_type",
 					"asset_ava",
 					"asset_pre",
+					"asset_pre2",
+					"asset_pre3",
+					"asset_pre4",
 					"asset_adm",
 
 					"asset_title2",
@@ -145,15 +148,17 @@
 			//this.div.innerHTML = pages.asset;
 			WWW.api_getAppchain(appchain).then((data) => {
 				var appchain = data[0];
-				//var valsplit = appchain.validators;
-				//valsplit = valsplit.split(",").join("<br />");
+				var valsplit = appchain.validators;
 
 				let time = DateTool.getTime(appchain.timestamp);
 				$("#name").text(appchain.name);
 				$("#type").text(time);
 				$("#id").text(appchain.hash);
 				$("#available").text(appchain.seedlist);
-				$("#precision").text(appchain.validators);
+				$("#precision").text(valsplit[0]);
+				$("#precision2").text(valsplit[1]);
+				$("#precision3").text(valsplit[2]);
+				$("#precision4").text(valsplit[3]);
 				$("#admin").text(appchain.owner);
 			})
 

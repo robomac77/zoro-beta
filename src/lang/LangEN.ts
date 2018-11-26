@@ -172,6 +172,7 @@ namespace WebBrowser
             assets_type: "Owner",
             assets_ava: "Time Created",
 			assets_pre: "Version",
+			
 
 			//nep5assets
 
@@ -186,7 +187,10 @@ namespace WebBrowser
             asset_asset: "App Chain Name",
             asset_type: "Time Created",
             asset_ava: "Seedlist",
-            asset_pre: "Validators",
+			asset_pre: "Validator1",
+			asset_pre2: "Validator2",
+			asset_pre3: "Validator3",
+			asset_pre4: "Validator4",
             asset_adm: "Owner",
             asset_title2: "App Chain Blocks",
             asset_rank: "Hash",

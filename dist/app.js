@@ -1338,6 +1338,9 @@ var WebBrowser;
                     "asset_type",
                     "asset_ava",
                     "asset_pre",
+                    "asset_pre2",
+                    "asset_pre3",
+                    "asset_pre4",
                     "asset_adm",
                     "asset_title2",
                     "asset_rank",
@@ -1432,14 +1435,16 @@ var WebBrowser;
             //this.div.innerHTML = pages.asset;
             WebBrowser.WWW.api_getAppchain(appchain).then((data) => {
                 var appchain = data[0];
-                //var valsplit = appchain.validators;
-                //valsplit = valsplit.split(",").join("<br />");
+                var valsplit = appchain.validators;
                 let time = WebBrowser.DateTool.getTime(appchain.timestamp);
                 $("#name").text(appchain.name);
                 $("#type").text(time);
                 $("#id").text(appchain.hash);
                 $("#available").text(appchain.seedlist);
-                $("#precision").text(appchain.validators);
+                $("#precision").text(valsplit[0]);
+                $("#precision2").text(valsplit[1]);
+                $("#precision3").text(valsplit[2]);
+                $("#precision4").text(valsplit[3]);
                 $("#admin").text(appchain.owner);
             });
         }
@@ -4233,7 +4238,6 @@ var WebBrowser;
                 assets_id: "应用连哈希",
                 assets_type: "主人",
                 assets_ava: "生成时间",
-                assets_pre: "版本",
                 //nep5assets
                 nep5assets_asset: "资产ID",
                 nep5assets_ava: "名",
@@ -4247,6 +4251,9 @@ var WebBrowser;
                 asset_type: "生成时间",
                 asset_ava: "高度",
                 asset_pre: "连上交易数",
+                asset_pre2: "版本",
+                asset_pre3: "版本",
+                asset_pre4: "版本",
                 asset_adm: "连上地址数",
                 asset_title2: "应用连区块",
                 asset_rank: "哈希",
@@ -4428,6 +4435,9 @@ var WebBrowser;
                 asset_type: "Time Created",
                 asset_ava: "Seedlist",
                 asset_pre: "Validators",
+                asset_pre2: "Validator2",
+                asset_pre3: "Validator3",
+                asset_pre4: "Validator4",
                 asset_adm: "Owner",
                 asset_title2: "App Chain Blocks",
                 asset_rank: "Hash",
