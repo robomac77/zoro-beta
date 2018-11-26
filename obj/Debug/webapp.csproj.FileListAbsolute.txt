@@ -5,3 +5,17 @@ D:\Software Development\Projects\zoro-beta\BlackCat-Explorer\obj\Debug\webapp.cs
 D:\Software Development\Projects\zoro-beta\BlackCat-Explorer\obj\Debug\webapp.dll
 D:\Software Development\Projects\zoro-beta\BlackCat-Explorer\obj\Debug\webapp.pdb
 D:\Software Development\Projects\zoro-beta\BlackCat-Explorer\obj\Debug\webapp.csprojAssemblyReference.cache
+D:\Software Development\Projects\zoro\BlackCat-Explorer\bin\webapp.dll.config
+D:\Software Development\Projects\zoro\BlackCat-Explorer\bin\webapp.dll
+D:\Software Development\Projects\zoro\BlackCat-Explorer\bin\webapp.pdb
+D:\Software Development\Projects\zoro\BlackCat-Explorer\obj\Debug\webapp.csproj.CoreCompileInputs.cache
+D:\Software Development\Projects\zoro\BlackCat-Explorer\obj\Debug\webapp.dll
+D:\Software Development\Projects\zoro\BlackCat-Explorer\obj\Debug\webapp.pdb
+D:\Software Development\Projects\zoro\BlackCat-Explorer\obj\Debug\webapp.csprojAssemblyReference.cache
+D:\Software Development\Projects\nep5\BlackCat-Explorer\bin\webapp.dll.config
+D:\Software Development\Projects\nep5\BlackCat-Explorer\bin\webapp.dll
+D:\Software Development\Projects\nep5\BlackCat-Explorer\bin\webapp.pdb
+D:\Software Development\Projects\nep5\BlackCat-Explorer\obj\Debug\webapp.csprojAssemblyReference.cache
+D:\Software Development\Projects\nep5\BlackCat-Explorer\obj\Debug\webapp.csproj.CoreCompileInputs.cache
+D:\Software Development\Projects\nep5\BlackCat-Explorer\obj\Debug\webapp.dll
+D:\Software Development\Projects\nep5\BlackCat-Explorer\obj\Debug\webapp.pdb

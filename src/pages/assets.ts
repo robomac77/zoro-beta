@@ -26,6 +26,11 @@
 					"assets_ava",
 					"assets_pre",
 					"assets_val",
+					"nep5assets_asset",
+					"nep5assets_ava",
+					"nep5assets_pre",
+					"nep5assets_val",
+					"nep5assets_id", 
 				]
 				page_lang.forEach(
 					lang => {
@@ -170,6 +175,17 @@
 
 			this.nep5s = await WWW.getallnep5asset();
 
+			this.pageUtil = new PageUtil(this.nep5s.length, 15);
+			if (this.nep5s.length > 15) {
+				this.updateNep5s(this.pageUtil);
+				this.assetlist.find(".page").show();
+			} else {
+				this.loadNep5View(this.nep5s);
+				let pageMsg = "App Chains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+				$("#asset-page").find("#asset-page-msg").html(pageMsg);
+				this.assetlist.find(".page").hide();
+			}
+
 			this.div.hidden = false;
 			this.footer.hidden = false;
 			
@@ -207,19 +223,19 @@
 		}
 
 		public loadNep5View(nep5s: nep5Asset[]) {
-			$("#assets").empty();
+			$("#nep5s").empty();
 			nep5s.forEach((nep5s: nep5Asset) => {
 				let href = Url.href_nep5(nep5s.assetid);
 				let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
-				let html = `
+				let htmlnep5 = `
                     <tr>
+                    <td> <a href="`+ href + `" target="_self">` +  assetId + `</a></td>
                     <td> <a href="`+ href + `" target="_self">` + nep5s.name + `</a></td>
-                    <td> <a href="`+ href + `" target="_self">` + assetId + `</a></td>
-                    <td> Nep5 </td>
                     <td>` + nep5s.totalsupply + `</td>
+                    <td>` + nep5s.symbol + `</td>
                     <td>` + nep5s.decimals + `</td>
                     </tr>`;
-				$("#assets").append(html);
+				$("#nep5s").append(htmlnep5);
 			});
 		}
 	}

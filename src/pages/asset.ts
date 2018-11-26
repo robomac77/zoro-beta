@@ -143,7 +143,8 @@
 			//this.div.innerHTML = pages.asset;
 			WWW.api_getAppchain(appchain).then((data) => {
 				var appchain = data[0];
-
+				//var valsplit = appchain.validators;
+				//valsplit = valsplit.split(",").join("<br />");
 
 				let time = DateTool.getTime(appchain.timestamp);
 				$("#name").text(appchain.name);
@@ -170,7 +171,7 @@
 			} else {
 				$("#assets-balance-previous").addClass('disabled');
 			}
-
+			
 			let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
 			let maxNum = pageUtil.totalCount;
 			let diffNum = maxNum - minNum;
@@ -188,12 +189,16 @@
 				let txcounts = item.tx.length
 				var id = item.hash
 				id = id.replace('0x', '');
-				//id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
+				//id = id.substring(0, 4) + '...' + ap.substring(id.length - 4);
+
+				var ap = appchain;
+				ap = ap.replace('0x', '');
+				//ap = ap.substring(0, 4) + '...' + ap.substring(id.length - 4);
 
 				let html = `
                 <tr>
-                <td><a href="`+ Url.href_appchain(id) + `" target="_self">` + id + `</a></td>
-                <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + Url.href_block(item.index) + `" target="_self">` + item.index + `</a></td>
+                <td><a href="`+ Url.href_appchainblock( ap ,item.index) + `" target="_self">`+ id + `</a></td>
+                <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + Url.href_appchainblock(ap,item.index) + `" target="_self">` + item.index + `</a></td>
                 <td>` + txcounts + `</td>
                 </tr>`
 				$("#assets-balance-list").append(html);
@@ -255,7 +260,7 @@
         {
             let html = `
                     <tr>
-                    <td><a class="code omit" href="`+ Url.href_transaction(txid) + `" target="_self">` + txid.replace('0x', '') + `
+                    <td><a class="code omit" href="`+ Url.href_appchaintransaction(txid) + `" target="_self">` + txid.replace('0x', '') + `
                     </a></td>
                     <td>` + from + `
                     </td>

@@ -21,7 +21,9 @@ namespace WebBrowser
             this.pagelist.push( this.app.addresses );
             this.pagelist.push( this.app.address );
             this.pagelist.push( this.app.assets );
-            this.pagelist.push(this.app.assetinfo);
+			this.pagelist.push(this.app.assetinfo);
+			this.pagelist.push(this.app.appchainblock);
+			this.pagelist.push(this.app.appchaintransaction);
 
             this.closePages();
 
@@ -87,7 +89,13 @@ namespace WebBrowser
                     return this.app.address;
                 case "assets":
                     this.app.navbar.assetBtn.classList.add( "active" );
-                    return this.app.assets;
+					return this.app.assets;
+				case "appchainblock":
+					this.app.navbar.assetBtn.classList.add("active");
+					return this.app.appchainblock;
+				case "appchaintransaction":
+					this.app.navbar.assetBtn.classList.add("active");
+					return this.app.appchaintransaction;
                 // case "nnsevent":
                 //     this.app.navbar.nnsBtn.classList.add("active");
                 //     return this.app.nnses;

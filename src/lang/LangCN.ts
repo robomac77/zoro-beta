@@ -134,7 +134,15 @@ namespace WebBrowser
             assets_id: "应用连哈希",
             assets_type: "主人",
             assets_ava: "生成时间",
-            assets_pre: "版本",
+			assets_pre: "版本",
+
+			//nep5assets
+
+			nep5assets_asset : "Asset ID",
+	        nep5assets_ava: "Name",
+			nep5assets_pre: "Total Supply",
+		    nep5assets_val: "Symbol", 
+			nep5assets_id :"Decimals", 
             // appchain
 			asset_title: "应用连信息",
 			asset_id: "应用连",

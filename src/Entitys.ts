@@ -107,9 +107,15 @@ namespace WebBrowser
 		static href_appchains() {
 			return locationtool.getUrl() + '/appchains';
 		}
-		static href_appchain(appchain: string) {
-			return locationtool.getUrl() + '/asset' + appchain;
+		static href_appchaintransaction(appchaintransaction: string) {
+			return locationtool.getUrl() + '/asset/' + appchaintransaction;
 		}
+
+		static href_appchainblock( appchain : string ,index: number) {         //appchain : string 
+			return locationtool.getUrl() + '/asset/' + appchain + '/' + index;
+			//return window.open(locationtool.getUrl());
+		}
+		
         static href_transactions()
         {
             return locationtool.getUrl() + '/transactions';
@@ -120,7 +126,7 @@ namespace WebBrowser
         }
         static href_assets()
         {
-            return locationtool.getUrl() +  '/assets'
+            return locationtool.getUrl() +  '/appchains'
         }
         static href_nnsevent() {
             return locationtool.getUrl() + '/nnsevent'
@@ -135,14 +141,20 @@ namespace WebBrowser
         static href_transaction( tx: string )
         {
             return locationtool.getUrl() +  "/transaction/" + tx;
-        }
+		}
+		static href_actransaction(tx: string) {
+			return locationtool.getUrl() + "/asset/"+ tx;
+		}
         static href_address( addr: string )
         {
             return locationtool.getUrl() +  "/address/" + addr;
-        }
+		}
+		static href_acblock(block: number) {
+			return locationtool.getUrl() + "/appchain/" + block;
+		}
         static href_asset(asset)
         {
-            return locationtool.getUrl() + '/asset/'+asset
+			return locationtool.getUrl() + '/asset/' + asset;
         }
         static href_nep5(nep5) {
             return locationtool.getUrl() + '/nep5/' + nep5

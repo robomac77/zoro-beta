@@ -2,6 +2,7 @@
 /// <reference types="jquery" />
 /// <reference types="bootstrap" />
 /// <reference path="./pages/block.ts" />
+/// <reference path="./pages/appchainblock.ts" />
 /// <reference path="./pages/blocks.ts" />
 /// <reference path="./pages/address.ts" />
 /// <reference path="./pages/addresses.ts" />
@@ -11,6 +12,7 @@
 /// <reference path="./pages/index.ts"/>
 /// <reference path="./pages/transactions.ts"/>
 /// <reference path="./pages/transaction.ts"/>
+/// <reference path="./pages/appchaintransaction.ts"/>
 /// <reference path="./pages/nep5.ts"/>
 
 /// <reference path="./pages/404.ts"/>
@@ -36,10 +38,12 @@ namespace WebBrowser
         navbar: Navbar
         netWork: NetWork
         block: Block
+        appchainblock: ACBlock
 		blocks: Blocks
         address: Address
         addresses: Addresses
         transaction: Transaction
+        appchaintransaction: ACTransaction
         transactions: Transactions
         assets: Appchains
         indexpage: Index
@@ -73,14 +77,17 @@ namespace WebBrowser
             this.navbar = new Navbar(this);
             this.netWork = new NetWork(this);
             this.block = new Block(this);
-			this.blocks = new Blocks(this);
+            this.blocks = new Blocks(this);
             this.address = new Address(this);
             this.addresses = new Addresses(this);
             this.transaction = new Transaction(this);
+            
             this.transactions = new Transactions(this);
             this.assets = new Appchains(this);
             this.indexpage = new Index( this );
             this.assetinfo = new AssetInfo(this);
+			this.appchainblock = new ACBlock(this);
+			this.appchaintransaction = new ACTransaction(this);
 
             this.notfound = new Notfound(this);
             this.nep5 = new Nep5page(this);

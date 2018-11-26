@@ -29,13 +29,43 @@ namespace WebBrowser
             else
                 page = arr[1];
             return page;
-        }
+		}
+
+		static getacPage(): string {
+			var page = location.hash;
+			var arr = page.split('/');
+			if (arr.length == 1 && (arr[0] == "#mainnet" || arr[0] == "#testnet"))
+				page = 'appchainblock';
+			else
+				page = arr[1];
+			return page;
+		}
+		static getactxPage(): string {
+			var page = location.hash;
+			var arr = page.split('/');
+			if (arr.length == 1 && (arr[0] == "#mainnet" || arr[0] == "#testnet"))
+				page = 'appchaintransaction';
+			else
+				page = arr[1];
+			return page;
+		}
         static getParam(): any
         {
             var page = location.hash;
             var arr = page.split( '/' );
             return arr[2];
         }
+        static getParam2(): any
+        {
+            var page = location.hash;
+            var arr = page.split( '/' );
+            return arr[3];
+		}
+		static getParam3(): any {
+			var page = location.hash;
+			var arr = page.split('/');
+			return arr[4];
+		}
         static getType(): any {
             var page = location.hash;
             var arr = page.split('/');

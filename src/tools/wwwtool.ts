@@ -98,6 +98,14 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r as Block[];
 		}
+		static async getacblock(ac :string ,index: number)      
+		{
+			var str = WWW.makeRpcUrl("getacblock", ac ,index);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r as Block[];
+		}
 
 		//查询交易列表
 		static async getrawtransactions(size: number, page: number, txtype: string) {
@@ -129,6 +137,14 @@ namespace WebBrowser {
 		static async getrawtransaction(txid: string) 
 		{
 			var str = WWW.makeRpcUrl("getrawtransaction", txid);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r[0] as Tx;
+		}
+		static async getrawactransaction(ac: string ,txid: string) 
+		{
+			var str = WWW.makeRpcUrl("getrawactransaction", ac,txid);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];

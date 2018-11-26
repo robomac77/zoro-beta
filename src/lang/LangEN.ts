@@ -72,6 +72,22 @@ namespace WebBrowser
             block_info_ver: "Version",
             block_goallblock: "Back to all blocks",
 
+            // app chain block
+            acblock_info_title: "App Chain Block Information",
+            acblock_info_block: "Block",
+			acblock_info_hash: "Hash",
+			//block_info_chainhash: "App Chain Hash",
+            acblock_info_time: "Time",
+            acblock_info_size: "Size",
+           acblock_info_pre: "Previous Block",
+            acblock_info_next: "Next Block",
+            acblock_info_tran: "Transactions",
+            acblock_info_txid: "TXID",
+            acblock_info_type: "Type",
+            acblock_info_txsize: "Size",
+            acblock_info_ver: "Version",
+            acblock_goallblock: "Back to all blocks",
+
             // transactions
             trans_title: "Transactions",
             trans_txid: "TXID",
@@ -99,6 +115,27 @@ namespace WebBrowser
             tran_nep5_value: "Value",
 
             tran_goalltran: "Back to all transactions",
+
+            // appchain transaction
+            actran_title: "App Chain Transaction Information",
+            actran_title_1: "Transaction",
+            actran_txid: "TXID",
+            actran_type: "Type",
+            actran_netfee: "Network Fee",
+            actran_sysfee: "System Fee",
+            actran_size: "Size",
+            actran_height: "Height",
+            actran_time: "Time",
+            actran_input: "Input",
+            actran_output: "Output",
+
+            actran_nep5: "Nep5",
+            actran_nep5_asset: "Asset",
+            actran_nep5_from: "From",
+            actran_nep5_to: "To",
+            actran_nep5_value: "Value",
+
+            actran_goalltran: "Back to all app chain transactions",
 
 
             // addresses
@@ -134,7 +171,15 @@ namespace WebBrowser
             assets_id: "App Chain Hash",
             assets_type: "Owner",
             assets_ava: "Time Created",
-            assets_pre: "Version",
+			assets_pre: "Version",
+
+			//nep5assets
+
+			nep5assets_asset: "Asset ID",
+			nep5assets_ava: "Name",
+			nep5assets_pre: "Total Supply",
+			nep5assets_val: "Symbol",
+			nep5assets_id: "Decimals", 
             // asset
             asset_title: "App Chain Information",
             asset_id: "App Chain Hash",
