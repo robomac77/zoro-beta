@@ -1730,7 +1730,7 @@ var WebBrowser;
                 }
                 else {
                     this.loadNep5View(this.nep5s);
-                    let pageMsg = "App Chains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+                    let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
                     $("#asset-page").find("#asset-page-msg").html(pageMsg);
                     this.assetlist.find(".page").hide();
                 }
@@ -1770,7 +1770,7 @@ var WebBrowser;
                 let htmlnep5 = `
                     <tr>
                     <td> <a href="` + href + `" target="_self">` + assetId + `</a></td>
-                    <td> <a href="` + href + `" target="_self">` + nep5s.name + `</a></td>
+                    <td>` + nep5s.name + `</td>
                     <td>` + nep5s.totalsupply + `</td>
                     <td>` + nep5s.symbol + `</td>
                     <td>` + nep5s.decimals + `</td>
@@ -1989,7 +1989,7 @@ var WebBrowser;
             return WebBrowser.locationtool.getUrl() + '/asset/' + appchaintransaction;
         }
         static href_appchainblock(appchain, index) {
-            return WebBrowser.locationtool.getUrl() + '/asset/' + appchain + '/' + index;
+            return WebBrowser.locationtool.getUrl() + '/appchainblock/' + appchain + '/' + index;
             //return window.open(locationtool.getUrl());
         }
         static href_transactions() {
@@ -2947,12 +2947,12 @@ var WebBrowser;
         static getParam2() {
             var page = location.hash;
             var arr = page.split('/');
-            return arr[3];
+            return arr[2];
         }
         static getParam3() {
             var page = location.hash;
             var arr = page.split('/');
-            return arr[4];
+            return arr[3];
         }
         static getType() {
             var page = location.hash;
@@ -3057,9 +3057,9 @@ var WebBrowser;
                 case "appchainblock":
                     this.app.navbar.assetBtn.classList.add("active");
                     return this.app.appchainblock;
-                case "appchaintransaction":
-                    this.app.navbar.assetBtn.classList.add("active");
-                    return this.app.appchaintransaction;
+                //	case "appchaintransaction":
+                //	this.app.navbar.assetBtn.classList.add("active");
+                //return this.app.appchaintransaction;
                 // case "nnsevent":
                 //     this.app.navbar.nnsBtn.classList.add("active");
                 //     return this.app.nnses;
@@ -4231,11 +4231,11 @@ var WebBrowser;
                 assets_ava: "生成时间",
                 assets_pre: "版本",
                 //nep5assets
-                nep5assets_asset: "Asset ID",
-                nep5assets_ava: "Name",
-                nep5assets_pre: "Total Supply",
+                nep5assets_asset: "资产ID",
+                nep5assets_ava: "名",
+                nep5assets_pre: "总量",
                 nep5assets_val: "Symbol",
-                nep5assets_id: "Decimals",
+                nep5assets_id: "小数点后位数",
                 // appchain
                 asset_title: "应用连信息",
                 asset_id: "应用连",
