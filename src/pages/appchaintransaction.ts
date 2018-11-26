@@ -49,13 +49,13 @@ namespace WebBrowser {
 		div: HTMLDivElement = document.getElementById("actransaction-info") as HTMLDivElement;
 		footer: HTMLDivElement = document.getElementById('footer-box') as HTMLDivElement;
 
-		public ac:string = locationtool.getParam();
+		public ac:string = locationtool.getParam2();
 
 		start() {
 			this.getLangs()
 
 			//this.div.innerHTML = pages.transaction;
-			this.updateTxInfo(locationtool.getParam2(),locationtool.getParam3());
+			this.updateTxInfo(this.ac,locationtool.getParam3());
 			
 			let href = locationtool.getUrl() + "/asset";
 			let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("actran_goalltran") + '</a>';

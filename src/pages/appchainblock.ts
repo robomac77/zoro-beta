@@ -60,7 +60,7 @@
                     this.pageUtil.currentPage = this.pageUtil.totalPage;
                 } else {
                     this.pageUtil.currentPage += 1;
-                    this.updateBlockTrans(this.pageUtil);                    
+                    this.updateBlockTrans(this.ac,this.pageUtil);                    
                 }
             });
             $("#acblock-tran-previous").off("click").click(() => {
@@ -68,7 +68,7 @@
                     this.pageUtil.currentPage = 1;
                 } else {
                     this.pageUtil.currentPage -= 1;
-                    this.updateBlockTrans(this.pageUtil);  
+                    this.updateBlockTrans(this.ac ,this.pageUtil);  
                 }
             });
             this.div.hidden = false;
@@ -108,9 +108,9 @@
             } else {
                 $(".acblock-tran-page").hide();
             }
-            this.updateBlockTrans(this.pageUtil);
+            this.updateBlockTrans(this.ac ,this.pageUtil);
         }
-        updateBlockTrans(pageUtil: PageUtil) {
+        updateBlockTrans(appchain:string ,pageUtil: PageUtil) {
             $("#actxs").empty();
             let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
             let maxNum = pageUtil.totalCount;
@@ -146,7 +146,7 @@
         loadBlockTransView(txid: string, id: string, type: string, size: number, version: number) {
             let html = `
                     <tr>
-                        <td><a href="` + Url.href_transaction(txid) + `" target="_self">` + id + `</a></td>
+                        <td><a href="` + Url.href_appchaintransaction(this.ac,txid) + `" target="_self">` + id + `</a></td>
                         <td>` + type.replace("Transaction", "") + `</td>
                         <td>` + size + ` bytes</td>
                         <td>` + version + `</td>

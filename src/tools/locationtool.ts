@@ -59,12 +59,12 @@ namespace WebBrowser
         {
             var page = location.hash;
             var arr = page.split( '/' );
-            return arr[3];
+            return arr[2];
 		}
 		static getParam3(): any {
 			var page = location.hash;
 			var arr = page.split('/');
-			return arr[4];
+			return arr[3];
 		}
         static getType(): any {
             var page = location.hash;
