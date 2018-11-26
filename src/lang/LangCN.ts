@@ -138,11 +138,11 @@ namespace WebBrowser
 
 			//nep5assets
 
-			nep5assets_asset : "Asset ID",
-	        nep5assets_ava: "Name",
-			nep5assets_pre: "Total Supply",
+			nep5assets_asset : "资产ID",
+	        nep5assets_ava: "名",
+			nep5assets_pre: "总量",
 		    nep5assets_val: "Symbol", 
-			nep5assets_id :"Decimals", 
+			nep5assets_id:"小数点后位数", 
             // appchain
 			asset_title: "应用连信息",
 			asset_id: "应用连",

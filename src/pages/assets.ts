@@ -181,7 +181,7 @@
 				this.assetlist.find(".page").show();
 			} else {
 				this.loadNep5View(this.nep5s);
-				let pageMsg = "App Chains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+				let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
 				$("#asset-page").find("#asset-page-msg").html(pageMsg);
 				this.assetlist.find(".page").hide();
 			}
@@ -230,7 +230,7 @@
 				let htmlnep5 = `
                     <tr>
                     <td> <a href="`+ href + `" target="_self">` +  assetId + `</a></td>
-                    <td> <a href="`+ href + `" target="_self">` + nep5s.name + `</a></td>
+                    <td>` + nep5s.name + `</td>
                     <td>` + nep5s.totalsupply + `</td>
                     <td>` + nep5s.symbol + `</td>
                     <td>` + nep5s.decimals + `</td>

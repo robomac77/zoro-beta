@@ -190,7 +190,7 @@ var WebBrowser;
                 }
                 else {
                     this.pageUtil.currentPage += 1;
-                    this.updateBlockTrans(this.pageUtil);
+                    this.updateBlockTrans(this.ac, this.pageUtil);
                 }
             });
             $("#acblock-tran-previous").off("click").click(() => {
@@ -199,7 +199,7 @@ var WebBrowser;
                 }
                 else {
                     this.pageUtil.currentPage -= 1;
-                    this.updateBlockTrans(this.pageUtil);
+                    this.updateBlockTrans(this.ac, this.pageUtil);
                 }
             });
             this.div.hidden = false;
@@ -234,10 +234,10 @@ var WebBrowser;
                 else {
                     $(".acblock-tran-page").hide();
                 }
-                this.updateBlockTrans(this.pageUtil);
+                this.updateBlockTrans(this.ac, this.pageUtil);
             });
         }
-        updateBlockTrans(pageUtil) {
+        updateBlockTrans(appchain, pageUtil) {
             $("#actxs").empty();
             let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
             let maxNum = pageUtil.totalCount;
@@ -275,7 +275,7 @@ var WebBrowser;
         loadBlockTransView(txid, id, type, size, version) {
             let html = `
                     <tr>
-                        <td><a href="` + WebBrowser.Url.href_transaction(txid) + `" target="_self">` + id + `</a></td>
+                        <td><a href="` + WebBrowser.Url.href_appchaintransaction(this.ac, txid) + `" target="_self">` + id + `</a></td>
                         <td>` + type.replace("Transaction", "") + `</td>
                         <td>` + size + ` bytes</td>
                         <td>` + version + `</td>
@@ -1326,6 +1326,7 @@ var WebBrowser;
             this.actxcount = 0;
             this.acblockcount = 0;
             this.acaddcount = 0;
+            this.ac = WebBrowser.locationtool.getParam();
             this.app = app;
         }
         getLangs() {
@@ -1357,20 +1358,21 @@ var WebBrowser;
         start() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.getLangs();
-                var appchain = WebBrowser.locationtool.getParam();
-                appchain = appchain.replace('0x', '');
+                var ap = this.ac;
+                ap = WebBrowser.locationtool.getParam();
+                ap = ap.replace('0x', '');
                 let href = WebBrowser.locationtool.getUrl() + "/assets";
                 let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get('asset_goallasset') + '</a>';
                 $("#goallasset").empty();
                 $("#goallasset").append(html);
-                this.loadAssetInfoView(appchain);
-                this.acaddcount = (yield WebBrowser.WWW.api_getAppchainAddrcount(appchain));
-                this.acblockcount = (yield WebBrowser.WWW.api_getAppchainBlockcount(appchain));
+                this.loadAssetInfoView(ap);
+                this.acaddcount = (yield WebBrowser.WWW.api_getAppchainAddrcount(ap));
+                this.acblockcount = (yield WebBrowser.WWW.api_getAppchainBlockcount(ap));
                 this.pageUtil = new WebBrowser.PageUtil(this.acblockcount, 15);
-                yield this.updateBlocks(appchain, this.pageUtil);
-                this.actxcount = (yield WebBrowser.WWW.getappchaintxcount(appchain));
+                yield this.updateBlocks(ap, this.pageUtil);
+                this.actxcount = (yield WebBrowser.WWW.getappchaintxcount(ap));
                 this.transpageUtil = new WebBrowser.PageUtil(this.actxcount, 15);
-                this.updateNep5TransView(appchain, this.transpageUtil);
+                this.updateNep5TransView(ap, this.transpageUtil);
                 $("#acblockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount));
                 $("#actxcount").text(this.actxcount); //$("#txcount").text(NumberTool.toThousands(this.actxcount));
                 $("#acaddrCount").text(this.acaddcount); //$("#addrCount").text(NumberTool.toThousands(this.acaddcount));
@@ -1382,7 +1384,7 @@ var WebBrowser;
                     }
                     else {
                         this.pageUtil.currentPage += 1;
-                        this.updateBlocks(appchain, this.pageUtil);
+                        this.updateBlocks(ap, this.pageUtil);
                     }
                 });
                 $("#assets-balance-previous").off("click").click(() => {
@@ -1391,14 +1393,14 @@ var WebBrowser;
                     }
                     else {
                         this.pageUtil.currentPage -= 1;
-                        this.updateBlocks(appchain, this.pageUtil);
+                        this.updateBlocks(ap, this.pageUtil);
                     }
                 });
                 this.chaintxlist = $("#assets-tran-list");
                 //监听交易列表选择框
                 $("#TxType").change(() => {
                     this.pageUtil.currentPage = 1;
-                    this.updateNep5TransView(appchain, this.pageUtil);
+                    this.updateNep5TransView(ap, this.pageUtil);
                 });
                 $("#assets-tran-next").off("click").click(() => {
                     if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
@@ -1406,7 +1408,7 @@ var WebBrowser;
                     }
                     else {
                         this.pageUtil.currentPage += 1;
-                        this.updateNep5TransView(appchain, this.pageUtil);
+                        this.updateNep5TransView(ap, this.pageUtil);
                     }
                 });
                 $("#assets-tran-previous").off("click").click(() => {
@@ -1415,7 +1417,7 @@ var WebBrowser;
                     }
                     else {
                         this.pageUtil.currentPage -= 1;
-                        this.updateNep5TransView(appchain, this.pageUtil);
+                        this.updateNep5TransView(ap, this.pageUtil);
                     }
                 });
                 this.div.hidden = false;
@@ -1488,7 +1490,9 @@ var WebBrowser;
         }
         updateNep5TransView(nep5id, pageUtil) {
             return __awaiter(this, void 0, void 0, function* () {
-                let tranList = yield WebBrowser.WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage);
+                var ap = this.ac;
+                ap = ap.replace('0x', '');
+                let tranList = yield WebBrowser.WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage); //
                 $("#assets-tran-list").empty();
                 if (tranList) {
                     tranList.forEach((item) => {
@@ -1542,7 +1546,7 @@ var WebBrowser;
         loadAssetTranView(txid, from, to, blockindex) {
             let html = `
                     <tr>
-                    <td><a class="code omit" href="` + WebBrowser.Url.href_appchaintransaction(txid) + `" target="_self">` + txid.replace('0x', '') + `
+                    <td><a class="code omit" href="` + WebBrowser.Url.href_appchaintransaction(this.ac, txid) + `" target="_self">` + txid.replace('0x', '') + `
                     </a></td>
                     <td>` + from + `
                     </td>
@@ -1730,7 +1734,7 @@ var WebBrowser;
                 }
                 else {
                     this.loadNep5View(this.nep5s);
-                    let pageMsg = "App Chains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+                    let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
                     $("#asset-page").find("#asset-page-msg").html(pageMsg);
                     this.assetlist.find(".page").hide();
                 }
@@ -1770,7 +1774,7 @@ var WebBrowser;
                 let htmlnep5 = `
                     <tr>
                     <td> <a href="` + href + `" target="_self">` + assetId + `</a></td>
-                    <td> <a href="` + href + `" target="_self">` + nep5s.name + `</a></td>
+                    <td>` + nep5s.name + `</td>
                     <td>` + nep5s.totalsupply + `</td>
                     <td>` + nep5s.symbol + `</td>
                     <td>` + nep5s.decimals + `</td>
@@ -1985,11 +1989,11 @@ var WebBrowser;
         static href_appchains() {
             return WebBrowser.locationtool.getUrl() + '/appchains';
         }
-        static href_appchaintransaction(appchaintransaction) {
-            return WebBrowser.locationtool.getUrl() + '/asset/' + appchaintransaction;
+        static href_appchaintransaction(appchain, appchaintransaction) {
+            return WebBrowser.locationtool.getUrl() + '/appchaintransaction/' + appchain + '/' + appchaintransaction;
         }
         static href_appchainblock(appchain, index) {
-            return WebBrowser.locationtool.getUrl() + '/asset/' + appchain + '/' + index;
+            return WebBrowser.locationtool.getUrl() + '/appchainblock/' + appchain + '/' + index;
             //return window.open(locationtool.getUrl());
         }
         static href_transactions() {
@@ -2456,7 +2460,7 @@ var WebBrowser;
         constructor(app) {
             this.div = document.getElementById("actransaction-info");
             this.footer = document.getElementById('footer-box');
-            this.ac = WebBrowser.locationtool.getParam();
+            this.ac = WebBrowser.locationtool.getParam2();
             this.app = app;
         }
         getLangs() {
@@ -2492,7 +2496,7 @@ var WebBrowser;
         start() {
             this.getLangs();
             //this.div.innerHTML = pages.transaction;
-            this.updateTxInfo(WebBrowser.locationtool.getParam2(), WebBrowser.locationtool.getParam3());
+            this.updateTxInfo(this.ac, WebBrowser.locationtool.getParam3());
             let href = WebBrowser.locationtool.getUrl() + "/asset";
             let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("actran_goalltran") + '</a>';
             $("#acgoalltrans").empty();
@@ -2947,12 +2951,12 @@ var WebBrowser;
         static getParam2() {
             var page = location.hash;
             var arr = page.split('/');
-            return arr[3];
+            return arr[2];
         }
         static getParam3() {
             var page = location.hash;
             var arr = page.split('/');
-            return arr[4];
+            return arr[3];
         }
         static getType() {
             var page = location.hash;
@@ -4231,11 +4235,11 @@ var WebBrowser;
                 assets_ava: "生成时间",
                 assets_pre: "版本",
                 //nep5assets
-                nep5assets_asset: "Asset ID",
-                nep5assets_ava: "Name",
-                nep5assets_pre: "Total Supply",
+                nep5assets_asset: "资产ID",
+                nep5assets_ava: "名",
+                nep5assets_pre: "总量",
                 nep5assets_val: "Symbol",
-                nep5assets_id: "Decimals",
+                nep5assets_id: "小数点后位数",
                 // appchain
                 asset_title: "应用连信息",
                 asset_id: "应用连",

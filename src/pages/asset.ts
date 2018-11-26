@@ -57,11 +57,13 @@
 		public acblockcount: number = 0;
 		public acaddcount: number = 0;
 		public txx: Tx[];
+
+		public ac :string  = locationtool.getParam()
 		async start() {
 			this.getLangs()
-
-			var appchain = locationtool.getParam();
-			appchain = appchain.replace('0x', '');
+			var ap = this.ac
+			ap = locationtool.getParam();
+			ap = ap.replace('0x', '');
 			let href = locationtool.getUrl() + "/assets";
 			let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get('asset_goallasset') + '</a>';
 
@@ -70,16 +72,16 @@
 			$("#goallasset").append(html);
 
 
-			this.loadAssetInfoView(appchain);
+			this.loadAssetInfoView(ap);
 
-			this.acaddcount = await WWW.api_getAppchainAddrcount(appchain) as number;
-			this.acblockcount = await WWW.api_getAppchainBlockcount(appchain) as number;
+			this.acaddcount = await WWW.api_getAppchainAddrcount(ap) as number;
+			this.acblockcount = await WWW.api_getAppchainBlockcount(ap) as number;
 			this.pageUtil = new PageUtil(this.acblockcount, 15);
-			await this.updateBlocks(appchain, this.pageUtil);
+			await this.updateBlocks(ap, this.pageUtil);
 
-			this.actxcount = await WWW.getappchaintxcount(appchain) as number;
+			this.actxcount = await WWW.getappchaintxcount(ap) as number;
 			this.transpageUtil = new PageUtil(this.actxcount, 15);
-			this.updateNep5TransView(appchain, this.transpageUtil);
+			this.updateNep5TransView(ap,this.transpageUtil);
 
 			$("#acblockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount));
 			
@@ -96,7 +98,7 @@
 					this.pageUtil.currentPage = this.pageUtil.totalPage;
 				} else {
 					this.pageUtil.currentPage += 1;
-					this.updateBlocks(appchain, this.pageUtil);
+					this.updateBlocks(ap, this.pageUtil);
 				}
 			});
 			$("#assets-balance-previous").off("click").click(() => {
@@ -104,7 +106,7 @@
 					this.pageUtil.currentPage = 1;
 				} else {
 					this.pageUtil.currentPage -= 1;
-					this.updateBlocks(appchain, this.pageUtil);
+					this.updateBlocks(ap, this.pageUtil);
 				}
 			});
 
@@ -112,7 +114,7 @@
 			//监听交易列表选择框
 			$("#TxType").change(() => {
 				this.pageUtil.currentPage = 1;
-				this.updateNep5TransView(appchain, this.pageUtil);
+				this.updateNep5TransView(ap, this.pageUtil);
 			});
 
 			$("#assets-tran-next").off("click").click(() => {
@@ -120,7 +122,7 @@
 					this.pageUtil.currentPage = this.pageUtil.totalPage;
 				} else {
 					this.pageUtil.currentPage += 1;
-					this.updateNep5TransView(appchain, this.pageUtil);
+					this.updateNep5TransView(ap, this.pageUtil);
 				}
 			});
 			$("#assets-tran-previous").off("click").click(() => {
@@ -128,7 +130,7 @@
 					this.pageUtil.currentPage = 1;
 				} else {
 					this.pageUtil.currentPage -= 1;
-					this.updateNep5TransView(appchain, this.pageUtil);
+					this.updateNep5TransView(ap, this.pageUtil);
 				}
 			});
 
@@ -206,8 +208,11 @@
 		}
 
 		
-		   async updateNep5TransView(nep5id: string, pageUtil: PageUtil) {
-            let tranList: Tx[] = await WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage);
+		async updateNep5TransView(nep5id: string, pageUtil: PageUtil) {
+
+			var ap = this.ac;
+			ap = ap.replace('0x', '');
+			let tranList: Tx[] = await WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage);//
             $("#assets-tran-list").empty();
             if (tranList) {
                 tranList.forEach((item) => {
@@ -216,7 +221,8 @@
                     }
                     if (!item.size) {
                         item.type = '-'
-                    }
+					}
+
                     this.loadAssetTranView(item.txid, item.type, item.size, item.blockindex);
                 })
             } else {
@@ -260,7 +266,7 @@
         {
             let html = `
                     <tr>
-                    <td><a class="code omit" href="`+ Url.href_appchaintransaction(txid) + `" target="_self">` + txid.replace('0x', '') + `
+                    <td><a class="code omit" href="`+ Url.href_appchaintransaction(this.ac ,txid) + `" target="_self">` + txid.replace('0x', '') + `
                     </a></td>
                     <td>` + from + `
                     </td>

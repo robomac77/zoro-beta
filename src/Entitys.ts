@@ -107,12 +107,12 @@ namespace WebBrowser
 		static href_appchains() {
 			return locationtool.getUrl() + '/appchains';
 		}
-		static href_appchaintransaction(appchaintransaction: string) {
-			return locationtool.getUrl() + '/asset/' + appchaintransaction;
+		static href_appchaintransaction(appchain : string , appchaintransaction: string) {
+			return locationtool.getUrl() + '/appchaintransaction/' + appchain + '/' + appchaintransaction;
 		}
 
 		static href_appchainblock( appchain : string ,index: number) {         //appchain : string 
-			return locationtool.getUrl() + '/asset/' + appchain + '/' + index;
+			return locationtool.getUrl() + '/appchainblock/' + appchain + '/' + index;
 			//return window.open(locationtool.getUrl());
 		}
 		
