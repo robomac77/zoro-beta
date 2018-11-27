@@ -51,7 +51,7 @@ namespace WebBrowser
 
             // blocks
 			blocks_title: "Blocks",
-			blocks_appchain: "App Chain Hash",
+			blocks_appchain: "Hash",
             blocks_height: "Height",
             blocks_size: "Size",
             blocks_time: "Time",

@@ -3291,9 +3291,9 @@ var WebBrowser;
                 case "appchainblock":
                     this.app.navbar.assetBtn.classList.add("active");
                     return this.app.appchainblock;
-                //	case "appchaintransaction":
-                //	this.app.navbar.assetBtn.classList.add("active");
-                //return this.app.appchaintransaction;
+                case "appchaintransaction":
+                    this.app.navbar.assetBtn.classList.add("active");
+                    return this.app.appchaintransaction;
                 // case "nnsevent":
                 //     this.app.navbar.nnsBtn.classList.add("active");
                 //     return this.app.nnses;
@@ -4549,7 +4549,7 @@ var WebBrowser;
                 i_viewtxlist: "View all >>>>",
                 // blocks
                 blocks_title: "Blocks",
-                blocks_appchain: "App Chain Hash",
+                blocks_appchain: "Hash",
                 blocks_height: "Height",
                 blocks_size: "Size",
                 blocks_time: "Time",
