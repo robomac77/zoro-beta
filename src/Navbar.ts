@@ -22,6 +22,8 @@ namespace WebBrowser
         addrsa: HTMLAnchorElement = document.getElementById("addrsa") as HTMLAnchorElement;
         assetBtn: HTMLLIElement = document.getElementById("asset-btn") as HTMLLIElement;
         asseta: HTMLAnchorElement = document.getElementById("assetsa") as HTMLAnchorElement;
+        guiBtn: HTMLLIElement = document.getElementById("gui-btn") as HTMLLIElement;
+        guia: HTMLAnchorElement = document.getElementById("guia") as HTMLAnchorElement;
         // walletBtn: HTMLLIElement = document.getElementById("wallet-btn") as HTMLLIElement;
         // walleta: HTMLAnchorElement = document.getElementById("walleta") as HTMLAnchorElement;
         // nnsBtn: HTMLLIElement = document.getElementById("nns-btn") as HTMLLIElement;
@@ -33,7 +35,7 @@ namespace WebBrowser
         currentLine: number = 0;
 
         getLangs() {
-            let page_lang = ["indexa", "browsea", "blocka", "txlista", "addrsa", "asseta"]
+            let page_lang = ["indexa", "browsea", "blocka", "txlista", "addrsa", "asseta", "guia"]
             page_lang.forEach(
                 lang => {
                     this[lang].textContent = this.app.langmgr.get("nav_" + lang)
@@ -65,6 +67,10 @@ namespace WebBrowser
             this.asseta.onclick = () =>
             {
                 this.skip("/assets");  
+            }
+            this.guia.onclick = () =>
+            {
+                this.skip("/gui");  
             }
             // this.nnsa.onclick = () => {
             //     this.skip("/nnsevent");

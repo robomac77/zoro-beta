@@ -137,7 +137,11 @@ namespace WebBrowser
         static href_block( block: number )
         {
             return locationtool.getUrl() +  "/block/" + block;
-		}
+        }
+        static href_gui()
+        {
+            return locationtool.getUrl() +  '/gui'
+        }
 		static href_blockh(block: string) {
 			return locationtool.getUrl() + '/block/' + block;
 		}

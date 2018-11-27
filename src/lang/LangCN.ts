@@ -15,7 +15,7 @@ namespace WebBrowser
             nav_blocka: "区块",
             nav_txlista: "交易",
             nav_addrsa: "地址",
-
+            nav_guia:"钱包",
             nav_asseta: "应用连",
 
             nav_errContent: "请输入正确的地址",

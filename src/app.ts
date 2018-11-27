@@ -9,6 +9,8 @@
 /// <reference path="./pages/asset.ts" />
 /// <reference path="./pages/assets.ts" />
 
+/// <reference path="./pages/gui.ts" />
+
 /// <reference path="./pages/index.ts"/>
 /// <reference path="./pages/transactions.ts"/>
 /// <reference path="./pages/transaction.ts"/>
@@ -50,6 +52,7 @@ namespace WebBrowser
 		nep5info: Nep5Info
         indexpage: Index
         assetinfo: AssetInfo
+        guiinfo: GUI
 
         notfound: Notfound
         nep5: Nep5page
@@ -83,6 +86,7 @@ namespace WebBrowser
             this.address = new Address(this);
             this.addresses = new Addresses(this);
             this.transaction = new Transaction(this);
+            this.guiinfo = new GUI(this);
             
             this.transactions = new Transactions(this);
             this.assets = new Appchains(this);
