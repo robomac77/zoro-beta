@@ -36,7 +36,7 @@ namespace WebBrowser
             i_walletcreate: "已创建的钱包地址数",
             i_alladdress: "查看所有地址",
             i_last10: "最新的10个区块",
-            i_appchain:"应用链",
+            i_appchain:"哈希",
             i_last10_height: "高度",
             i_last10_size: "大小",
             i_last10_ctm: "创建时间",

@@ -3906,7 +3906,6 @@ var WebBrowser;
             upBackGround.appendChild(normalcharge);
             normalcharge.style.cssFloat = "left";
             normalcharge.style.width = "50%";
-            normalcharge.style.color = "#eeeeee";
             normalcharge.textContent = "普通转账";
             normalcharge.onclick = () => {
                 this.normalCharge(downBackGround);
@@ -3916,7 +3915,6 @@ var WebBrowser;
             upBackGround.appendChild(chainCharge);
             chainCharge.style.cssFloat = "left";
             chainCharge.style.width = "50%";
-            chainCharge.style.color = "#eeeeee";
             chainCharge.textContent = "跨链转账";
             chainCharge.onclick = () => {
                 this.chainCharge(downBackGround);
@@ -4011,6 +4009,7 @@ var WebBrowser;
             contractBackGround.appendChild(storageName);
             var need_storage = document.createElement('input');
             need_storage.type = "checkbox";
+            need_storage.checked = true;
             contractBackGround.appendChild(need_storage);
             var canChargeName = document.createElement('span');
             canChargeName.style.color = "#eeeeee";
@@ -4018,36 +4017,42 @@ var WebBrowser;
             contractBackGround.appendChild(canChargeName);
             var need_canCharge = document.createElement('input');
             need_canCharge.type = "checkbox";
+            need_canCharge.checked = true;
             contractBackGround.appendChild(need_canCharge);
             var nameText = document.createElement('span');
             nameText.style.color = "#eeeeee";
             nameText.textContent = "NAME";
             contractBackGround.appendChild(nameText);
             var name = document.createElement('input');
+            name.value = "name";
             contractBackGround.appendChild(name);
             var versionText = document.createElement('span');
             versionText.style.color = "#eeeeee";
             versionText.textContent = "VERSION";
             contractBackGround.appendChild(versionText);
             var version = document.createElement('input');
+            version.value = "1.0";
             contractBackGround.appendChild(version);
             var autherText = document.createElement('span');
             autherText.style.color = "#eeeeee";
             autherText.textContent = "AUTHOR";
             contractBackGround.appendChild(autherText);
             var auther = document.createElement('input');
+            auther.value = "auther";
             contractBackGround.appendChild(auther);
             var emailText = document.createElement('span');
             emailText.style.color = "#eeeeee";
             emailText.textContent = "EMAIL";
             contractBackGround.appendChild(emailText);
             var email = document.createElement('input');
+            email.value = "email";
             contractBackGround.appendChild(email);
             var descriptionText = document.createElement('span');
             descriptionText.style.color = "#eeeeee";
             descriptionText.textContent = "DESCRIPTION";
             contractBackGround.appendChild(descriptionText);
             var description = document.createElement('input');
+            description.value = "description";
             contractBackGround.appendChild(description);
             var fileText = document.createElement('span');
             fileText.style.color = "#eeeeee";
@@ -5738,7 +5743,7 @@ var WebBrowser;
                 i_walletcreate: "已创建的钱包地址数",
                 i_alladdress: "查看所有地址",
                 i_last10: "最新的10个区块",
-                i_appchain: "应用链",
+                i_appchain: "哈希",
                 i_last10_height: "高度",
                 i_last10_size: "大小",
                 i_last10_ctm: "创建时间",

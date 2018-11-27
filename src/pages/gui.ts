@@ -430,7 +430,6 @@ namespace WebBrowser
             upBackGround.appendChild(normalcharge)
             normalcharge.style.cssFloat = "left";
             normalcharge.style.width = "50%";
-            normalcharge.style.color = "#eeeeee";
             normalcharge.textContent = "普通转账";
             normalcharge.onclick = () => {
                 this.normalCharge(downBackGround);
@@ -441,7 +440,6 @@ namespace WebBrowser
             upBackGround.appendChild(chainCharge)
             chainCharge.style.cssFloat = "left";
             chainCharge.style.width = "50%";
-            chainCharge.style.color = "#eeeeee";
             chainCharge.textContent = "跨链转账";
             chainCharge.onclick = () => {
                 this.chainCharge(downBackGround);
@@ -564,6 +562,7 @@ namespace WebBrowser
 
             var need_storage = document.createElement('input') as HTMLInputElement;
             need_storage.type = "checkbox";
+            need_storage.checked = true;
             contractBackGround.appendChild(need_storage);
 
             var canChargeName = document.createElement('span') as HTMLSpanElement;
@@ -573,6 +572,7 @@ namespace WebBrowser
 
             var need_canCharge = document.createElement('input') as HTMLInputElement;
             need_canCharge.type = "checkbox";
+            need_canCharge.checked = true;
             contractBackGround.appendChild(need_canCharge);
 
             var nameText = document.createElement('span') as HTMLSpanElement;
@@ -581,6 +581,7 @@ namespace WebBrowser
             contractBackGround.appendChild(nameText);
 
             var name = document.createElement('input') as HTMLInputElement;
+            name.value = "name";
             contractBackGround.appendChild(name);
 
             var versionText = document.createElement('span') as HTMLSpanElement;
@@ -589,6 +590,7 @@ namespace WebBrowser
             contractBackGround.appendChild(versionText);
 
             var version = document.createElement('input') as HTMLInputElement;
+            version.value = "1.0";
             contractBackGround.appendChild(version);
 
             var autherText = document.createElement('span') as HTMLSpanElement;
@@ -597,6 +599,7 @@ namespace WebBrowser
             contractBackGround.appendChild(autherText);
 
             var auther = document.createElement('input') as HTMLInputElement;
+            auther.value = "auther";
             contractBackGround.appendChild(auther);
 
             var emailText = document.createElement('span') as HTMLSpanElement;
@@ -605,6 +608,7 @@ namespace WebBrowser
             contractBackGround.appendChild(emailText);
 
             var email = document.createElement('input') as HTMLInputElement;
+            email.value = "email";
             contractBackGround.appendChild(email);
 
             var descriptionText = document.createElement('span') as HTMLSpanElement;
@@ -613,6 +617,7 @@ namespace WebBrowser
             contractBackGround.appendChild(descriptionText);
 
             var description = document.createElement('input') as HTMLInputElement;
+            description.value = "description";
             contractBackGround.appendChild(description);
 
             var fileText = document.createElement('span') as HTMLSpanElement;
