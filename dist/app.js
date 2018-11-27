@@ -3274,7 +3274,6 @@ var WebBrowser;
             var chainHash = new Neo.Uint160(Neo.Cryptography.RIPEMD160.computeHash(Neo.Cryptography.Sha256.computeHash(sb.ToArray())));
             sb.EmitPushBytes(chainHash.toArray());
             sb.EmitSysCall("Zoro.AppChain.Create");
-            out["ChainHash"] = chainHash;
             var extdata = new ThinNeo.InvokeTransData();
             extdata.script = sb.ToArray();
             extdata.gas = Neo.Fixed8.Zero;
@@ -3381,6 +3380,7 @@ var WebBrowser;
                 postRawArray.push(rawdata);
                 var postResult = yield WebBrowser.WWW.rpc_sendrawtransaction(postRawArray);
                 alert(tran.GetHash().toHexString());
+                AppChainTool.port++;
             });
         }
         static MakeZoroTransaction(address, targetaddress, sendCount, assetid, contractHash, prikey, pubkey, chainHash) {
@@ -3451,6 +3451,7 @@ var WebBrowser;
     AppChainTool.id_NEO = "0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b";
     AppChainTool.GAS = 0;
     AppChainTool.NEO = 0;
+    AppChainTool.port = 15000;
     AppChainTool.chainName2Hash = {};
     AppChainTool.appChainLength = 1;
     AppChainTool.pubKey_List = {};
@@ -3527,6 +3528,7 @@ var WebBrowser;
             this.footer = document.getElementById('footer-box');
             this.app = app;
             Neo.Cryptography.RandomNumberGenerator.startCollectors();
+            WebBrowser.AppChainTool.initAppChainSelectList();
         }
         getLangs() {
             if (this.langType != this.app.langmgr.type) {
@@ -3727,6 +3729,7 @@ var WebBrowser;
             contract.style.width = "10%";
             contract.textContent = "发布合约";
             contract.onclick = () => {
+                this.mainContract(mainValueBackGround);
             };
             var transaction = document.createElement("button");
             title.appendChild(transaction);
@@ -3887,35 +3890,35 @@ var WebBrowser;
             var pkey1 = document.createElement('span');
             pkey1.textContent = "选择公钥1";
             appChainBackGround.appendChild(pkey1);
-            var pubkey1 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 1);
+            var pubkey1 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 6);
             var pkey2 = document.createElement('span');
             pkey2.textContent = "选择公钥2";
             appChainBackGround.appendChild(pkey2);
-            var pubkey2 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 2);
+            var pubkey2 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 7);
             var pkey3 = document.createElement('span');
             pkey3.textContent = "选择公钥3";
             appChainBackGround.appendChild(pkey3);
-            var pubkey3 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 3);
+            var pubkey3 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 8);
             var pkey4 = document.createElement('span');
             pkey4.textContent = "选择公钥4";
             appChainBackGround.appendChild(pkey4);
-            var pubkey4 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 4);
+            var pubkey4 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 9);
             var seed1 = document.createElement('span');
             seed1.textContent = "选择种子地址1";
             appChainBackGround.appendChild(seed1);
-            var ip1 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 1);
+            var ip1 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 6);
             var seed2 = document.createElement('span');
             seed2.textContent = "选择种子地址2";
             appChainBackGround.appendChild(seed2);
-            var ip2 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 2);
+            var ip2 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 7);
             var seed3 = document.createElement('span');
             seed3.textContent = "选择种子地址3";
             appChainBackGround.appendChild(seed3);
-            var ip3 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 3);
+            var ip3 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 8);
             var seed4 = document.createElement('span');
             seed4.textContent = "选择种子地址4";
             appChainBackGround.appendChild(seed4);
-            var ip4 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 4);
+            var ip4 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 9);
             var btnCreate = document.createElement('button');
             btnCreate.textContent = "创建";
             btnCreate.onclick = () => {
@@ -3923,12 +3926,13 @@ var WebBrowser;
                     pubkey2.childNodes[pubkey2.selectedIndex].value,
                     pubkey3.childNodes[pubkey3.selectedIndex].value,
                     pubkey4.childNodes[pubkey4.selectedIndex].value];
-                var ip = [ip1.childNodes[ip1.selectedIndex].value,
-                    ip2.childNodes[ip2.selectedIndex].value,
-                    ip3.childNodes[ip3.selectedIndex].value,
-                    ip4.childNodes[ip4.selectedIndex].value];
+                var ip = [ip1.childNodes[ip1.selectedIndex].value + ":" + WebBrowser.AppChainTool.port,
+                    ip2.childNodes[ip2.selectedIndex].value + ":" + WebBrowser.AppChainTool.port,
+                    ip3.childNodes[ip3.selectedIndex].value + ":" + WebBrowser.AppChainTool.port,
+                    ip4.childNodes[ip4.selectedIndex].value + ":" + WebBrowser.AppChainTool.port];
                 WebBrowser.AppChainTool.SendCreateAppChain(name.value, this.pubkey, pubkey, ip, this.prikey, "0000000000000000000000000000000000000000");
             };
+            appChainBackGround.appendChild(btnCreate);
         }
         mainContract(div) {
             if (div.firstChild)

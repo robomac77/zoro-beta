@@ -27,6 +27,7 @@ namespace WebBrowser
         constructor(app: App) {
             this.app = app
             Neo.Cryptography.RandomNumberGenerator.startCollectors();
+            AppChainTool.initAppChainSelectList();
         }
 
         login():void{
@@ -268,7 +269,7 @@ namespace WebBrowser
             contract.style.width = "10%";
             contract.textContent = "发布合约";
             contract.onclick = () => {
-                
+                this.mainContract(mainValueBackGround);
             }
 
             var transaction = document.createElement("button") as HTMLButtonElement;
@@ -459,49 +460,49 @@ namespace WebBrowser
             pkey1.textContent = "选择公钥1";
             appChainBackGround.appendChild(pkey1);
 
-            var pubkey1 = AppChainTool.createSelect(appChainBackGround, "pubkey", 1);
+            var pubkey1 = AppChainTool.createSelect(appChainBackGround, "pubkey", 6);
 
             var pkey2= document.createElement('span') as HTMLSpanElement;
             pkey2.textContent = "选择公钥2";
             appChainBackGround.appendChild(pkey2);
 
-            var pubkey2 = AppChainTool.createSelect(appChainBackGround, "pubkey", 2);
+            var pubkey2 = AppChainTool.createSelect(appChainBackGround, "pubkey", 7);
 
             var pkey3 = document.createElement('span') as HTMLSpanElement;
             pkey3.textContent = "选择公钥3";
             appChainBackGround.appendChild(pkey3);
 
-            var pubkey3 = AppChainTool.createSelect(appChainBackGround, "pubkey", 3);
+            var pubkey3 = AppChainTool.createSelect(appChainBackGround, "pubkey", 8);
 
             var pkey4 = document.createElement('span') as HTMLSpanElement;
             pkey4.textContent = "选择公钥4";
             appChainBackGround.appendChild(pkey4);
 
-            var pubkey4 = AppChainTool.createSelect(appChainBackGround, "pubkey", 4);
+            var pubkey4 = AppChainTool.createSelect(appChainBackGround, "pubkey", 9);
 
             var seed1= document.createElement('span') as HTMLSpanElement;
             seed1.textContent = "选择种子地址1";
             appChainBackGround.appendChild(seed1);
 
-            var ip1 = AppChainTool.createSelect(appChainBackGround, "ip", 1);
+            var ip1 = AppChainTool.createSelect(appChainBackGround, "ip", 6);
 
             var seed2= document.createElement('span') as HTMLSpanElement;
             seed2.textContent = "选择种子地址2";
             appChainBackGround.appendChild(seed2);
 
-            var ip2 = AppChainTool.createSelect(appChainBackGround, "ip", 2);
+            var ip2 = AppChainTool.createSelect(appChainBackGround, "ip", 7);
 
             var seed3 = document.createElement('span') as HTMLSpanElement;
             seed3.textContent = "选择种子地址3";
             appChainBackGround.appendChild(seed3);
 
-            var ip3 = AppChainTool.createSelect(appChainBackGround, "ip", 3);
+            var ip3 = AppChainTool.createSelect(appChainBackGround, "ip", 8);
 
             var seed4= document.createElement('span') as HTMLSpanElement;
             seed4.textContent = "选择种子地址4";
             appChainBackGround.appendChild(seed4);
 
-            var ip4 = AppChainTool.createSelect(appChainBackGround, "ip", 4);
+            var ip4 = AppChainTool.createSelect(appChainBackGround, "ip", 9);
 
             var btnCreate = document.createElement('button') as HTMLButtonElement;
             btnCreate.textContent = "创建";
@@ -510,13 +511,14 @@ namespace WebBrowser
                 (pubkey2.childNodes[pubkey2.selectedIndex] as HTMLOptionElement).value,
                 (pubkey3.childNodes[pubkey3.selectedIndex] as HTMLOptionElement).value,
                 (pubkey4.childNodes[pubkey4.selectedIndex] as HTMLOptionElement).value];
-                var ip = [(ip1.childNodes[ip1.selectedIndex] as HTMLOptionElement).value,
-                (ip2.childNodes[ip2.selectedIndex] as HTMLOptionElement).value,
-                (ip3.childNodes[ip3.selectedIndex] as HTMLOptionElement).value,
-                (ip4.childNodes[ip4.selectedIndex] as HTMLOptionElement).value];
+                var ip = [(ip1.childNodes[ip1.selectedIndex] as HTMLOptionElement).value + ":" + AppChainTool.port,
+                (ip2.childNodes[ip2.selectedIndex] as HTMLOptionElement).value + ":" + AppChainTool.port,
+                (ip3.childNodes[ip3.selectedIndex] as HTMLOptionElement).value + ":" + AppChainTool.port,
+                (ip4.childNodes[ip4.selectedIndex] as HTMLOptionElement).value + ":" + AppChainTool.port];
 
                 AppChainTool.SendCreateAppChain(name.value, this.pubkey, pubkey, ip, this.prikey, "0000000000000000000000000000000000000000");
             }
+            appChainBackGround.appendChild(btnCreate);
         }
 
         mainContract(div:HTMLDivElement):void{

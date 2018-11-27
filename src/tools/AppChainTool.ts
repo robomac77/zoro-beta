@@ -16,7 +16,9 @@ namespace WebBrowser
         static readonly id_NEO: string = "0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b";
 
         static GAS = 0;
-		    static NEO = 0;
+        static NEO = 0;
+        
+        static port:number = 15000;
 
         static chainName2Hash: { [id: string]: string } = {};
         static appChainLength:number = 1;
@@ -66,9 +68,7 @@ namespace WebBrowser
             
             var chainHash = new Neo.Uint160(Neo.Cryptography.RIPEMD160.computeHash(Neo.Cryptography.Sha256.computeHash(sb.ToArray()))); 
             sb.EmitPushBytes(chainHash.toArray());
-            sb.EmitSysCall("Zoro.AppChain.Create");  
-            
-            out["ChainHash"] = chainHash;
+            sb.EmitSysCall("Zoro.AppChain.Create");           
 
             var extdata = new ThinNeo.InvokeTransData();
             extdata.script = sb.ToArray();
@@ -196,6 +196,7 @@ namespace WebBrowser
             postRawArray.push(rawdata);
             var postResult = await WWW.rpc_sendrawtransaction(postRawArray);
             alert(tran.GetHash().toHexString());
+            AppChainTool.port++;
         }
 
         static async MakeZoroTransaction(address:string, targetaddress:string, sendCount:any, assetid, contractHash, prikey, pubkey, chainHash){
