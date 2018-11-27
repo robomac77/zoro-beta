@@ -2511,20 +2511,22 @@ var WebBrowser;
         }
         updateTxInfo(ac, txid) {
             return __awaiter(this, void 0, void 0, function* () {
+                let t = yield WebBrowser.WWW.getrawactransaction(ac, txid);
                 let txInfo = yield WebBrowser.WWW.getrawactransaction(ac, txid);
-                $("#actype").text(txInfo.type.replace("Transaction", ""));
-                $("#actxid").text(txInfo.txid);
+                $("#actype").text(txInfo.type.replace("Transaction", "")); //txInfo.type.replace("Transaction", "")
+                $("#actxid").text(txInfo.txid); //txInfo.txid
                 $("#acblockindex").empty();
-                $("#acblockindex").append("<a href='" + WebBrowser.Url.href_acblock(txInfo.blockindex) + "'>" + txInfo.blockindex + "</a>");
-                $("#actxsize").text(txInfo.size + " bytes");
-                $("#acsysfee").text(txInfo["sys_fee"] + " gas");
-                $("#acnetfee").text(txInfo["net_fee"] + " gas");
+                $("#acblockindex").append("<a href='" + WebBrowser.Url.href_acblock(txInfo.blockindex) + "'>" + txInfo.blockindex + "</a>"); //txInfo.blockindex
+                $("#actxsize").text(txInfo.size + " bytes"); //txInfo.size 
+                $("#acsysfee").text(txInfo["sys_fee"] + " gas"); //txInfo["sys_fee"] + " gas"
+                $("#acnetfee").text(txInfo["net_fee"] + " gas"); //txInfo["net_fee"] + " gas"
                 //let ajax: Ajax = new Ajax();
                 let blocks = yield WebBrowser.WWW.getacblock(ac, txInfo.blockindex); //let blocks: Block[] = await ajax.post('getblock', [txInfo.blockindex]);
                 let block = blocks[0];
                 let time = WebBrowser.DateTool.getTime(block.time);
                 $("#actransaction-time").text(time);
                 //let allAsset: Asset[] = await WWW.api_getAllAssets();
+                txInfo.vin = JSON.parse(txInfo.vin.toString());
                 let arr = new Array();
                 for (let index = 0; index < txInfo.vin.length; index++) {
                     const vin = txInfo.vin[index];
@@ -2554,6 +2556,7 @@ var WebBrowser;
                     $("#acfrom").append(html);
                 }
                 $("#acto").empty();
+                txInfo.vout = JSON.parse(txInfo.vout.toString());
                 txInfo.vout.forEach(vout => {
                     let name = WebBrowser.CoinTool.assetID2name[vout.asset];
                     let sign = "";
@@ -4434,7 +4437,7 @@ var WebBrowser;
                 asset_asset: "App Chain Name",
                 asset_type: "Time Created",
                 asset_ava: "Seedlist",
-                asset_pre: "Validators",
+                asset_pre: "Validator1",
                 asset_pre2: "Validator2",
                 asset_pre3: "Validator3",
                 asset_pre4: "Validator4",

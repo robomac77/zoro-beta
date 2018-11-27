@@ -65,15 +65,16 @@ namespace WebBrowser {
 			this.div.hidden = false;
 			this.footer.hidden = false;
 		}
-		public async updateTxInfo(ac:string ,txid: string) {
+		public async updateTxInfo(ac: string, txid: string) {
+			let t = await WWW.getrawactransaction(ac, txid);
 			let txInfo: Tx = await WWW.getrawactransaction(ac ,txid);
-			$("#actype").text(txInfo.type.replace("Transaction", ""));
-			$("#actxid").text(txInfo.txid);
+			$("#actype").text(txInfo.type.replace("Transaction", "")); //txInfo.type.replace("Transaction", "")
+			$("#actxid").text(txInfo.txid); //txInfo.txid
 			$("#acblockindex").empty();
-			$("#acblockindex").append("<a href='" + Url.href_acblock(txInfo.blockindex) + "'>" + txInfo.blockindex + "</a>");
-			$("#actxsize").text(txInfo.size + " bytes");
-			$("#acsysfee").text(txInfo["sys_fee"] + " gas");
-			$("#acnetfee").text(txInfo["net_fee"] + " gas");
+			$("#acblockindex").append("<a href='" + Url.href_acblock(txInfo.blockindex) + "'>" + txInfo.blockindex + "</a>"); //txInfo.blockindex
+			$("#actxsize").text(txInfo.size  + " bytes"); //txInfo.size 
+			$("#acsysfee").text(txInfo["sys_fee"] + " gas"); //txInfo["sys_fee"] + " gas"
+			$("#acnetfee").text(txInfo["net_fee"] + " gas"); //txInfo["net_fee"] + " gas"
 			//let ajax: Ajax = new Ajax();
 			
 			let blocks: Block[] = await WWW.getacblock(ac,txInfo.blockindex); //let blocks: Block[] = await ajax.post('getblock', [txInfo.blockindex]);
@@ -82,7 +83,7 @@ namespace WebBrowser {
 
 			$("#actransaction-time").text(time);
 			//let allAsset: Asset[] = await WWW.api_getAllAssets();
-
+			txInfo.vin = JSON.parse(txInfo.vin.toString());
 			let arr = new Array<any>();
 			for (let index = 0; index < txInfo.vin.length; index++) {
 				const vin = txInfo.vin[index];
@@ -113,6 +114,7 @@ namespace WebBrowser {
 				$("#acfrom").append(html);
 			}
 			$("#acto").empty();
+			txInfo.vout = JSON.parse(txInfo.vout.toString());
 			txInfo.vout.forEach(vout => {
 				let name = CoinTool.assetID2name[vout.asset];
 				let sign: string = "";
