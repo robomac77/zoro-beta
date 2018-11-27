@@ -319,6 +319,7 @@ namespace WebBrowser
             var name = document.createElement('span') as HTMLSpanElement;
             name.style.width = "100%";
             name.style.cssFloat = "left";
+            name.style.color = "#eeeeee";
             name.textContent = 'ZORO CHAIN';
             zoroChain.appendChild(name);
 
@@ -326,6 +327,7 @@ namespace WebBrowser
             BCP.style.width = "100%";
             BCP.style.cssFloat = "left";
             var bcpnum = await WWW.rpc_getBalanceOf(AppChainTool.zoroBCP, this.address, "0000000000000000000000000000000000000000");
+            BCP.style.color = "#eeeeee";
             BCP.textContent = 'BCP = ' + bcpnum;
             zoroChain.appendChild(BCP);
             //neo
@@ -337,6 +339,7 @@ namespace WebBrowser
             var name = document.createElement('span') as HTMLSpanElement;
             name.style.width = "100%";
             name.style.cssFloat = "left";
+            name.style.color = "#eeeeee";
             name.textContent = 'NEO CHAIN';
             neoChain.appendChild(name);
 
@@ -344,25 +347,29 @@ namespace WebBrowser
             var GAS = document.createElement('span') as HTMLSpanElement;
             GAS.style.width = "100%";
             GAS.style.cssFloat = "left";
+            GAS.style.color = "#eeeeee";
             GAS.textContent = 'GAS = ' + AppChainTool.GAS;
             neoChain.appendChild(GAS);
 
             var CGAS = document.createElement('span') as HTMLSpanElement;
             CGAS.style.width = "100%";
             CGAS.style.cssFloat = "left";
+            CGAS.style.color = "#eeeeee";
             var CgasNum = await WWW.rpc_getBalanceOf(AppChainTool.CGAS, this.address);
             CGAS.textContent = 'CGAS = ' + CgasNum;
             neoChain.appendChild(CGAS);
 
             var NEO = document.createElement('span') as HTMLSpanElement;
             NEO.style.width = "100%";
-            NEO.style.cssFloat = "left";            
+            NEO.style.cssFloat = "left";
+            NEO.style.color = "#eeeeee";            
             NEO.textContent = 'NEO = ' + AppChainTool.NEO;
             neoChain.appendChild(NEO);
 
             var CNEO = document.createElement('span') as HTMLSpanElement;
             CNEO.style.width = "100%";
             CNEO.style.cssFloat = "left";
+            CNEO.style.color = "#eeeeee";
             var CneoNum = await WWW.rpc_getBalanceOf(AppChainTool.CNEO, this.address);
             CNEO.textContent = 'CNEO = ' + CneoNum;
             neoChain.appendChild(CNEO);
@@ -370,6 +377,7 @@ namespace WebBrowser
             var NBCP = document.createElement('span') as HTMLSpanElement;
             NBCP.style.width = "100%";
             NBCP.style.cssFloat = "left";
+            NBCP.style.color = "#eeeeee";
             var bcpnum = await WWW.rpc_getBalanceOf(AppChainTool.neoBCP, this.address);
             NBCP.textContent = 'BCP = ' + bcpnum;
             neoChain.appendChild(NBCP);
@@ -386,13 +394,15 @@ namespace WebBrowser
             var name = document.createElement('span') as HTMLSpanElement;
             name.style.width = "100%";
             name.style.cssFloat = "left";
+            name.style.color = "#eeeeee";
             name.textContent = 'APP CHAIN';
             appChain.appendChild(name);
 
             var BCP = document.createElement('span') as HTMLSpanElement;
             BCP.style.width = "100%";
             BCP.style.cssFloat = "left";
-            var bcpnum = await WWW.rpc_getBalanceOf(AppChainTool.zoroBCP, this.address, this.chainHash);
+            BCP.style.color = "#eeeeee";
+            var bcpnum = await WWW.rpc_getBalanceOf(AppChainTool.appChainBCP, this.address, this.chainHash);
             BCP.textContent = 'BCP = ' + bcpnum;
             appChain.appendChild(BCP);
         }
@@ -420,6 +430,7 @@ namespace WebBrowser
             upBackGround.appendChild(normalcharge)
             normalcharge.style.cssFloat = "left";
             normalcharge.style.width = "50%";
+            normalcharge.style.color = "#eeeeee";
             normalcharge.textContent = "普通转账";
             normalcharge.onclick = () => {
                 this.normalCharge(downBackGround);
@@ -430,6 +441,7 @@ namespace WebBrowser
             upBackGround.appendChild(chainCharge)
             chainCharge.style.cssFloat = "left";
             chainCharge.style.width = "50%";
+            chainCharge.style.color = "#eeeeee";
             chainCharge.textContent = "跨链转账";
             chainCharge.onclick = () => {
                 this.chainCharge(downBackGround);
@@ -446,10 +458,12 @@ namespace WebBrowser
             div.appendChild(appChainBackGround);
 
             var appChainText = document.createElement('span') as HTMLSpanElement;
+            appChainText.style.color = "#eeeeee";
             appChainText.textContent = "应用链";
             appChainBackGround.appendChild(appChainText);
 
             var appChainName = document.createElement('span') as HTMLSpanElement;
+            appChainName.style.color = "#eeeeee";
             appChainName.textContent = "应用链名称";
             appChainBackGround.appendChild(appChainName);
 
@@ -457,48 +471,56 @@ namespace WebBrowser
             appChainBackGround.appendChild(name);
 
             var pkey1 = document.createElement('span') as HTMLSpanElement;
+            pkey1.style.color = "#eeeeee";
             pkey1.textContent = "选择公钥1";
             appChainBackGround.appendChild(pkey1);
 
             var pubkey1 = AppChainTool.createSelect(appChainBackGround, "pubkey", 6);
 
             var pkey2= document.createElement('span') as HTMLSpanElement;
+            pkey2.style.color = "#eeeeee";
             pkey2.textContent = "选择公钥2";
             appChainBackGround.appendChild(pkey2);
 
             var pubkey2 = AppChainTool.createSelect(appChainBackGround, "pubkey", 7);
 
             var pkey3 = document.createElement('span') as HTMLSpanElement;
+            pkey3.style.color = "#eeeeee";
             pkey3.textContent = "选择公钥3";
             appChainBackGround.appendChild(pkey3);
 
             var pubkey3 = AppChainTool.createSelect(appChainBackGround, "pubkey", 8);
 
             var pkey4 = document.createElement('span') as HTMLSpanElement;
+            pkey4.style.color = "#eeeeee";
             pkey4.textContent = "选择公钥4";
             appChainBackGround.appendChild(pkey4);
 
             var pubkey4 = AppChainTool.createSelect(appChainBackGround, "pubkey", 9);
 
             var seed1= document.createElement('span') as HTMLSpanElement;
+            seed1.style.color = "#eeeeee";
             seed1.textContent = "选择种子地址1";
             appChainBackGround.appendChild(seed1);
 
             var ip1 = AppChainTool.createSelect(appChainBackGround, "ip", 6);
 
             var seed2= document.createElement('span') as HTMLSpanElement;
+            seed2.style.color = "#eeeeee";
             seed2.textContent = "选择种子地址2";
             appChainBackGround.appendChild(seed2);
 
             var ip2 = AppChainTool.createSelect(appChainBackGround, "ip", 7);
 
             var seed3 = document.createElement('span') as HTMLSpanElement;
+            seed3.style.color = "#eeeeee";
             seed3.textContent = "选择种子地址3";
             appChainBackGround.appendChild(seed3);
 
             var ip3 = AppChainTool.createSelect(appChainBackGround, "ip", 8);
 
             var seed4= document.createElement('span') as HTMLSpanElement;
+            seed4.style.color = "#eeeeee";
             seed4.textContent = "选择种子地址4";
             appChainBackGround.appendChild(seed4);
 
@@ -531,10 +553,12 @@ namespace WebBrowser
             div.appendChild(contractBackGround);
 
             var ContractText = document.createElement('span') as HTMLSpanElement;
+            ContractText.style.color = "#eeeeee";
             ContractText.textContent = "发布合约";
             contractBackGround.appendChild(ContractText);
 
             var storageName = document.createElement('span') as HTMLSpanElement;
+            storageName.style.color = "#eeeeee";
             storageName.textContent = "storage";
             contractBackGround.appendChild(storageName);
 
@@ -543,6 +567,7 @@ namespace WebBrowser
             contractBackGround.appendChild(need_storage);
 
             var canChargeName = document.createElement('span') as HTMLSpanElement;
+            canChargeName.style.color = "#eeeeee";
             canChargeName.textContent = "canCharge";
             contractBackGround.appendChild(canChargeName);
 
@@ -551,6 +576,7 @@ namespace WebBrowser
             contractBackGround.appendChild(need_canCharge);
 
             var nameText = document.createElement('span') as HTMLSpanElement;
+            nameText.style.color = "#eeeeee";
             nameText.textContent = "NAME";
             contractBackGround.appendChild(nameText);
 
@@ -558,6 +584,7 @@ namespace WebBrowser
             contractBackGround.appendChild(name);
 
             var versionText = document.createElement('span') as HTMLSpanElement;
+            versionText.style.color = "#eeeeee";
             versionText.textContent = "VERSION";
             contractBackGround.appendChild(versionText);
 
@@ -565,6 +592,7 @@ namespace WebBrowser
             contractBackGround.appendChild(version);
 
             var autherText = document.createElement('span') as HTMLSpanElement;
+            autherText.style.color = "#eeeeee";
             autherText.textContent = "AUTHOR";
             contractBackGround.appendChild(autherText);
 
@@ -572,6 +600,7 @@ namespace WebBrowser
             contractBackGround.appendChild(auther);
 
             var emailText = document.createElement('span') as HTMLSpanElement;
+            emailText.style.color = "#eeeeee";
             emailText.textContent = "EMAIL";
             contractBackGround.appendChild(emailText);
 
@@ -579,6 +608,7 @@ namespace WebBrowser
             contractBackGround.appendChild(email);
 
             var descriptionText = document.createElement('span') as HTMLSpanElement;
+            descriptionText.style.color = "#eeeeee";
             descriptionText.textContent = "DESCRIPTION";
             contractBackGround.appendChild(descriptionText);
 
@@ -586,6 +616,7 @@ namespace WebBrowser
             contractBackGround.appendChild(description);
 
             var fileText = document.createElement('span') as HTMLSpanElement;
+            fileText.style.color = "#eeeeee";
             fileText.textContent = "FILE";
             contractBackGround.appendChild(fileText);
 
@@ -605,6 +636,10 @@ namespace WebBrowser
                 }
                 AppChainTool.SendContract(need_storage.checked,need_canCharge.checked,description.value,email.value,auther.value,version.value,
                     name.value, ContractAvm, this.chainHash, this.pubkey, this.prikey);
+
+                setTimeout(() => {
+                    AppChainTool.SendContractMethod(this.chainHash, this.pubkey, this.prikey);
+                }, 15000);
             }
 
             var reader = new FileReader();
@@ -631,14 +666,17 @@ namespace WebBrowser
             div.appendChild(transactionBackGround);
 
             var TransactionText = document.createElement('span') as HTMLSpanElement;
+            TransactionText.style.color = "#eeeeee";
             TransactionText.textContent = "交易记录";
             transactionBackGround.appendChild(TransactionText);
 
             var txidText = document.createElement('span') as HTMLSpanElement;
+            txidText.style.color = "#eeeeee";
             txidText.textContent = "TXID";
             transactionBackGround.appendChild(txidText);
 
             var timeText = document.createElement('span') as HTMLSpanElement;
+            timeText.style.color = "#eeeeee";
             timeText.textContent = "Date";
             transactionBackGround.appendChild(timeText);
         }
@@ -656,6 +694,7 @@ namespace WebBrowser
 
             var asset = document.createElement('span') as HTMLSpanElement;
             up.appendChild(asset);
+            asset.style.color = "#eeeeee";
             asset.textContent = "资产";
 
             var select = CoinTool.ZoroAsset();
@@ -663,10 +702,12 @@ namespace WebBrowser
 
             var coin = document.createElement('span') as HTMLSpanElement;
             up.appendChild(coin);
+            coin.style.color = "#eeeeee";
             coin.textContent = "余额";
 
             var coinNum = document.createElement('span') as HTMLSpanElement;
             up.appendChild(coinNum);
+            coinNum.style.color = "#eeeeee";
             if (this.height.textContent == "N/A"){
                 coinNum.textContent = await CoinTool.getGold((select.childNodes[select.selectedIndex] as HTMLOptionElement).value, this.address);
             }else
@@ -674,6 +715,7 @@ namespace WebBrowser
 
             var addrText = document.createElement('span') as HTMLSpanElement;
             normalbackground.appendChild(addrText);
+            addrText.style.color = "#eeeeee";
             addrText.textContent = "地址";
 
             var addr = document.createElement('input') as HTMLInputElement;
@@ -681,6 +723,7 @@ namespace WebBrowser
 
             var goldText = document.createElement('span') as HTMLSpanElement;
             normalbackground.appendChild(goldText);
+            goldText.style.color = "#eeeeee";
             goldText.textContent = "金额";
 
             var gold = document.createElement('input') as HTMLInputElement;
@@ -716,6 +759,7 @@ namespace WebBrowser
 
             var asset = document.createElement('span') as HTMLSpanElement;
             chainbackground.appendChild(asset);
+            asset.style.color = "#eeeeee";
             asset.textContent = "方法";
 
             var funcSelect = CoinTool.ZoroFunction();
@@ -723,6 +767,7 @@ namespace WebBrowser
 
             var asset = document.createElement('span') as HTMLSpanElement;
             chainbackground.appendChild(asset);
+            asset.style.color = "#eeeeee";
             asset.textContent = "资产";
 
             var coinSelect = document.createElement('select');
@@ -734,14 +779,17 @@ namespace WebBrowser
 
             var coin = document.createElement('span') as HTMLSpanElement;
             chainbackground.appendChild(coin);
+            coin.style.color = "#eeeeee";
             coin.textContent = "余额";
 
             var coinNum = document.createElement('span') as HTMLSpanElement;
             chainbackground.appendChild(coinNum);
+            coinNum.style.color = "#eeeeee";
             coinNum.textContent = await CoinTool.getGold((funcSelect.childNodes[funcSelect.selectedIndex] as HTMLOptionElement).value, this.address, this.chainHash);
 
             var goldText = document.createElement('span') as HTMLSpanElement;
             chainbackground.appendChild(goldText);
+            goldText.style.color = "#eeeeee";
             goldText.textContent = "金额";
 
             var gold = document.createElement('input') as HTMLInputElement;

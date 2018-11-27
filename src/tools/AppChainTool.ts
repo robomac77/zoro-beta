@@ -8,6 +8,7 @@ namespace WebBrowser
         static neoBCP = "04e31cee0443bb916534dad2adf508458920e66d";
         static CNEO = "c074a05e9dcf0141cbe6b4b3475dd67baf4dcb60";
         static CGAS = "74f2dc36a68fdc4682034178eb2220729231db76";
+        static appChainBCP = "054df92125ca222b979c8ae8c546c9d4d1c22dc2";
 
         static Neotransfer = "0x04e31cee0443bb916534dad2adf508458920e66d";
         static Zorotransfer = "0x67147557c0b6431e9b9297de26b46d9889434e49";
@@ -181,7 +182,47 @@ namespace WebBrowser
                 postRawArray.push(rawdata);
                 var postResult = await WWW.rpc_sendrawtransaction(postRawArray);
                 alert(tran.GetHash().toString());
-        }       
+        }    
+        
+        static async SendContractMethod(chainHash, pubkey, prikey){
+          var sb = new ThinNeo.ScriptBuilder();
+                var array = [];
+                array.push("(int)1");
+                sb.EmitParamJson(array);
+                sb.EmitPushString("deploy");
+                sb.EmitAppCall(this.appChainBCP.hexToBytes().reverse()); 
+                
+                var scriptPublish = sb.ToArray().toHexString();
+                var postArray = [];
+                postArray.push(chainHash);
+                postArray.push(scriptPublish);
+                var result = await WWW.rpc_invokeScript(postArray);
+
+                var consume = result["gas_consumed"];
+                var gas_consumed = parseInt(consume);
+
+                var extdata = new ThinNeo.InvokeTransData();
+                extdata.script = sb.ToArray();
+                extdata.gas = Neo.Fixed8.Zero;
+
+                var tran = WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                tran.extdata = extdata;
+
+                var msg = tran.GetMessage();
+                var signdata = ThinNeo.Helper.Sign(msg, prikey);
+                tran.AddWitness(signdata, pubkey, ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                var data = tran.GetRawData();
+                var rawdata = data.toHexString();
+
+                var postRawArray = [];
+                postRawArray.push(chainHash);
+                postRawArray.push(rawdata);
+                var postResult = await WWW.rpc_sendrawtransaction(postRawArray);
+                if (postResult["result"] as boolean == true)
+            {
+                alert("txid=" + tran.GetHash().toHexString());
+            }
+        }
 
         static async SendCreateAppChain(name:string, pubkey:Uint8Array, validators:string[], seedList:string[], prikey:any, chainHash:any){
             var tran = this.makeTran(name, pubkey, validators, seedList);
@@ -195,8 +236,11 @@ namespace WebBrowser
             postRawArray.push(chainHash);
             postRawArray.push(rawdata);
             var postResult = await WWW.rpc_sendrawtransaction(postRawArray);
-            alert(tran.GetHash().toHexString());
-            AppChainTool.port++;
+            if (postResult["result"] as boolean == true)
+            {
+                alert("txid=" + tran.GetHash().toHexString());
+                AppChainTool.port++;
+            }            
         }
 
         static async MakeZoroTransaction(address:string, targetaddress:string, sendCount:any, assetid, contractHash, prikey, pubkey, chainHash){
@@ -256,7 +300,8 @@ namespace WebBrowser
             var data = tran.GetRawData();
 
             var postResult = await WWW.rpc_postRawTransaction(data);
-            alert(tran.GetHash().toHexString());
+            if (postResult["result"])
+           alert(tran.GetHash().clone().reverse().toHexString());
         }
 
         static Node_List = {
