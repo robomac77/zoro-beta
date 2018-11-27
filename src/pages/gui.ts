@@ -737,7 +737,7 @@ namespace WebBrowser
                 switch((select.childNodes[select.selectedIndex] as HTMLOptionElement).value){
                     case "ZOROBCP":
                     return await AppChainTool.MakeZoroTransaction(this.address,addr.value, parseInt(gold.value), 
-                    AppChainTool.zoroBCP, AppChainTool.zoroBCP, this.prikey, this.pubkey, this.chainHash);
+                    this.chainHash == "0000000000000000000000000000000000000000"?AppChainTool.zoroBCP:AppChainTool.appChainBCP, AppChainTool.zoroBCP, this.prikey, this.pubkey, this.chainHash);
                     case "NEOBCP":
                     var utxo = await WWW.rpc_getUTXO(this.address);
                     return await AppChainTool.MakeInvokeTransaction(CoinTool.getassets(utxo),this.address, addr.value, AppChainTool.neoBCP, parseInt(gold.value), this.prikey, this.pubkey);

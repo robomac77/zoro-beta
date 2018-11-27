@@ -90,7 +90,7 @@ namespace WebBrowser
         static async getGold(type:string, address:string, chainHash = "gold"){
             switch(type){
                 case "ZOROBCP":
-                return await WWW.rpc_getBalanceOf(AppChainTool.zoroBCP, address, chainHash);
+                return await WWW.rpc_getBalanceOf(chainHash == "0000000000000000000000000000000000000000"?AppChainTool.zoroBCP:AppChainTool.appChainBCP, address, chainHash);
                 case "NEOBCP":
                 return await WWW.rpc_getBalanceOf(AppChainTool.neoBCP, address);
                 case "NEO":

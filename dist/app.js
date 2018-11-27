@@ -2051,9 +2051,9 @@ var WebBrowser;
             });
         }
     }
-    WWW.api = "http://localhost   :59908/api/testnet/";
-    WWW.apiaggr = "http://localhost   :59999/api/testnet/";
-    WWW.rpc = "http://115.159.53.39:20332/";
+    WWW.api = "http://115.159.53.39:59908/api/testnet/";
+    WWW.apiaggr = "http://115.159.53.39:59999/api/testnet/";
+    WWW.rpc = "http://115.159.53.39:10000/";
     WWW.neoRpc = "https://api.nel.group/api/testnet/";
     WWW.rpcName = "";
     WWW.blockHeight = 0;
@@ -2128,7 +2128,7 @@ var WebBrowser;
             return __awaiter(this, void 0, void 0, function* () {
                 switch (type) {
                     case "ZOROBCP":
-                        return yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.zoroBCP, address, chainHash);
+                        return yield WebBrowser.WWW.rpc_getBalanceOf(chainHash == "0000000000000000000000000000000000000000" ? WebBrowser.AppChainTool.zoroBCP : WebBrowser.AppChainTool.appChainBCP, address, chainHash);
                     case "NEOBCP":
                         return yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.neoBCP, address);
                     case "NEO":
@@ -3374,7 +3374,7 @@ var WebBrowser;
                 array.push("(int)1");
                 sb.EmitParamJson(array);
                 sb.EmitPushString("deploy");
-                sb.EmitAppCall("054df92125ca222b979c8ae8c546c9d4d1c22dc2".hexToBytes().reverse());
+                sb.EmitAppCall(this.appChainBCP.hexToBytes().reverse());
                 var scriptPublish = sb.ToArray().toHexString();
                 var postArray = [];
                 postArray.push(chainHash);
@@ -3482,6 +3482,7 @@ var WebBrowser;
     AppChainTool.neoBCP = "04e31cee0443bb916534dad2adf508458920e66d";
     AppChainTool.CNEO = "c074a05e9dcf0141cbe6b4b3475dd67baf4dcb60";
     AppChainTool.CGAS = "74f2dc36a68fdc4682034178eb2220729231db76";
+    AppChainTool.appChainBCP = "054df92125ca222b979c8ae8c546c9d4d1c22dc2";
     AppChainTool.Neotransfer = "0x04e31cee0443bb916534dad2adf508458920e66d";
     AppChainTool.Zorotransfer = "0x67147557c0b6431e9b9297de26b46d9889434e49";
     AppChainTool.id_GAS = "0x602c79718b16e442de58778e148d0b1084e3b2dffd5de6b7b16cee7969282de7";
@@ -3881,7 +3882,7 @@ var WebBrowser;
                 BCP.style.width = "100%";
                 BCP.style.cssFloat = "left";
                 BCP.style.color = "#eeeeee";
-                var bcpnum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.zoroBCP, this.address, this.chainHash);
+                var bcpnum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.appChainBCP, this.address, this.chainHash);
                 BCP.textContent = 'BCP = ' + bcpnum;
                 appChain.appendChild(BCP);
             });
@@ -4147,7 +4148,7 @@ var WebBrowser;
                         return;
                     switch (select.childNodes[select.selectedIndex].value) {
                         case "ZOROBCP":
-                            return yield WebBrowser.AppChainTool.MakeZoroTransaction(this.address, addr.value, parseInt(gold.value), WebBrowser.AppChainTool.zoroBCP, WebBrowser.AppChainTool.zoroBCP, this.prikey, this.pubkey, this.chainHash);
+                            return yield WebBrowser.AppChainTool.MakeZoroTransaction(this.address, addr.value, parseInt(gold.value), this.chainHash == "0000000000000000000000000000000000000000" ? WebBrowser.AppChainTool.zoroBCP : WebBrowser.AppChainTool.appChainBCP, WebBrowser.AppChainTool.zoroBCP, this.prikey, this.pubkey, this.chainHash);
                         case "NEOBCP":
                             var utxo = yield WebBrowser.WWW.rpc_getUTXO(this.address);
                             return yield WebBrowser.AppChainTool.MakeInvokeTransaction(WebBrowser.CoinTool.getassets(utxo), this.address, addr.value, WebBrowser.AppChainTool.neoBCP, parseInt(gold.value), this.prikey, this.pubkey);
@@ -5713,7 +5714,7 @@ var WebBrowser;
         constructor() {
             super(...arguments);
             this.lang = {
-                connect_nodes_error: "服务器通讯异常，请刷新重新连接！",
+                connect_nodes_error: "服务器通讯异常，请刷新重新链接！",
                 // navbar
                 nav_indexa: "浏览器",
                 nav_browsea: "浏览",
@@ -5721,7 +5722,7 @@ var WebBrowser;
                 nav_txlista: "交易",
                 nav_addrsa: "地址",
                 nav_guia: "钱包",
-                nav_asseta: "应用连",
+                nav_asseta: "应用链",
                 nav_errContent: "请输入正确的地址",
                 // network
                 net_testa: "测试网",
@@ -5737,7 +5738,7 @@ var WebBrowser;
                 i_walletcreate: "已创建的钱包地址数",
                 i_alladdress: "查看所有地址",
                 i_last10: "最新的10个区块",
-                i_appchain: "应用连",
+                i_appchain: "应用链",
                 i_last10_height: "高度",
                 i_last10_size: "大小",
                 i_last10_ctm: "创建时间",
@@ -5757,7 +5758,7 @@ var WebBrowser;
                 blocks_txcount: "交易数量",
                 // block
                 block_info_title: "区块信息",
-                blocks_appchain: "应用连",
+                blocks_appchain: "应用链",
                 block_info_block: "区块",
                 block_info_hash: "哈希",
                 block_info_time: "时间",
@@ -5815,41 +5816,41 @@ var WebBrowser;
                 addr_utxo_txid: "交易ID",
                 addr_goalladress: "返回",
                 // appchains
-                assets_title: "应用连",
-                assets_asset: "应用连名",
-                assets_id: "应用连哈希",
-                assets_type: "主人",
+                assets_title: "应用链",
+                assets_asset: "应用链名",
+                assets_id: "应用链哈希",
+                assets_type: "创建者",
                 assets_ava: "生成时间",
                 //nep5assets
                 nep5assets_asset: "资产ID",
-                nep5assets_ava: "名",
+                nep5assets_ava: "名称",
                 nep5assets_pre: "总量",
                 nep5assets_val: "标",
                 nep5assets_id: "小数点后位数",
                 //nep5assetinfo
                 nep5assetid: "资产ID",
-                nep5name: "名",
+                nep5name: "名称",
                 nep5assettotalsupply: "总量",
                 nep5symbol: "标",
                 nep5decimals: "小数点后位数",
                 // appchain
-                asset_title: "应用连信息",
-                asset_id: "应用连",
-                asset_asset: "应用连名",
+                asset_title: "应用链信息",
+                asset_id: "应用链",
+                asset_asset: "应用链名",
                 asset_type: "生成时间",
                 asset_ava: "高度",
-                asset_pre: "连上交易数",
+                asset_pre: "链上交易数",
                 asset_pre2: "版本",
                 asset_pre3: "版本",
                 asset_pre4: "版本",
-                asset_adm: "连上地址数",
-                asset_title2: "应用连区块",
+                asset_adm: "链上地址数",
+                asset_title2: "应用链区块",
                 asset_rank: "哈希",
                 asset_addr: "大小",
                 asset_balance: "时间",
                 asset_blockheight: "高度",
                 asset_tx: "交易数",
-                asset_title3: "应用连交易",
+                asset_title3: "应用链交易",
                 asset_txid: "交易ID",
                 asset_from: "类型",
                 asset_to: "大小",
