@@ -78,6 +78,7 @@ namespace WebBrowser {
 			let time = DateTool.getTime(block.time);
 
 			$("#transaction-time").text(time);
+			txInfo.vin = JSON.parse(txInfo.vin.toString());
 			//let allAsset: Asset[] = await WWW.api_getAllAssets();
 
 			let arr = new Array<any>();
@@ -110,6 +111,7 @@ namespace WebBrowser {
 				$("#from").append(html);
 			}
 			$("#to").empty();
+			txInfo.vout = JSON.parse(txInfo.vout.toString());
 			txInfo.vout.forEach(vout => {
 				let name = CoinTool.assetID2name[vout.asset];
 				let sign: string = "";
