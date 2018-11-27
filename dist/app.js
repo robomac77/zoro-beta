@@ -613,9 +613,9 @@ var WebBrowser;
         getUrlBase(netType) {
             switch (netType) {
                 case "testnet":
-                    return "http://localhost:59908/api/testnet/";
+                    return "http://115.159.53.39:59908/api/testnet/";
                 case "mainnet":
-                    return "http://localhost:59908/api/testnet/";
+                    return "http://115.159.53.39:59908/api/testnet/";
             }
         }
         /**
@@ -628,7 +628,7 @@ var WebBrowser;
                 let promise = new Promise((resolve, reject) => {
                     $.ajax({
                         type: 'POST',
-                        url: 'http://localhost:59908/api/testnet/' + arr[0],
+                        url: 'http://115.159.53.39:59908/api/testnet/' + arr[0],
                         data: JSON.stringify({
                             "jsonrpc": "2.0",
                             "method": method,
@@ -670,7 +670,7 @@ var WebBrowser;
                 let promise = new Promise((resolve, reject) => {
                     $.ajax({
                         type: 'GET',
-                        url: 'http://localhost:59908/api/testnet/' + arr[0] + '?jsonrpc=2.0&method=getblock&params=%5b1000%5d&id=1001',
+                        url: 'http://115.159.53.39:59908/api/testnet/' + arr[0] + '?jsonrpc=2.0&method=getblock&params=%5b1000%5d&id=1001',
                         success: (data, status) => {
                             resolve(data['result']);
                         },
@@ -700,21 +700,21 @@ var WebBrowser;
     //     }
     //     getRootPath_web()
     //     {
-    //         //获取当前网址，如： http://localhost   :8083/uimcardprj/share/meun.jsp
+    //         //获取当前网址，如： http://115.159.53.39   :8083/uimcardprj/share/meun.jsp
     //         var curWwwPath = window.document.location.href;
     //         console.log(curWwwPath);
     //         //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
     //         var pathName = window.document.location.pathname;
     //         console.log(pathName);
     //         var pos = curWwwPath.indexOf(pathName);
-    //         //获取主机地址，如： http://localhost   :8083
+    //         //获取主机地址，如： http://115.159.53.39   :8083
     //         console.log(pos);
-    //         var localhost   Paht = curWwwPath.substring(0, pos);
+    //         var 115.159.53.39   Paht = curWwwPath.substring(0, pos);
     //         //获取带"/"的项目名，如：/uimcardprj
-    //         console.log(localhost   Paht);
+    //         console.log(115.159.53.39   Paht);
     //         var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
     //         console.log(projectName);
-    //         return (localhost   Paht + projectName);
+    //         return (115.159.53.39   Paht + projectName);
     //     }
     //     getRootPath()
     //     {
@@ -3169,7 +3169,7 @@ var WebBrowser;
                 }
                 else {
                     this.loadNep5View(this.nep5s);
-                    let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+                    let pageMsg = "AppChains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
                     $("#asset-page").find("#asset-page-msg").html(pageMsg);
                     this.assetlist.find(".page").hide();
                 }
