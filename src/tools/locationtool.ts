@@ -49,6 +49,17 @@ namespace WebBrowser
 				page = arr[1];
 			return page;
 		}
+
+		static getnep5Page(): string {
+			var page = location.hash;
+			var arr = page.split('/');
+			if (arr.length == 1 && (arr[0] == "#mainnet" || arr[0] == "#testnet"))
+				page = 'nep5info';
+			else
+				page = arr[1];
+			return page;
+		}
+	
         static getParam(): any
         {
             var page = location.hash;

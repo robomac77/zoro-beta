@@ -45,7 +45,8 @@ namespace WebBrowser
         transaction: Transaction
         appchaintransaction: ACTransaction
         transactions: Transactions
-        assets: Appchains
+		assets: Appchains
+		nep5info: Nep5Info
         indexpage: Index
         assetinfo: AssetInfo
 
@@ -85,7 +86,8 @@ namespace WebBrowser
             this.transactions = new Transactions(this);
             this.assets = new Appchains(this);
             this.indexpage = new Index( this );
-            this.assetinfo = new AssetInfo(this);
+			this.assetinfo = new AssetInfo(this);
+			this.nep5info = new Nep5Info(this);
 			this.appchainblock = new ACBlock(this);
 			this.appchaintransaction = new ACTransaction(this);
 

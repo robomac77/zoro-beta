@@ -19,3 +19,10 @@ D:\Software Development\Projects\nep5\BlackCat-Explorer\obj\Debug\webapp.csprojA
 D:\Software Development\Projects\nep5\BlackCat-Explorer\obj\Debug\webapp.csproj.CoreCompileInputs.cache
 D:\Software Development\Projects\nep5\BlackCat-Explorer\obj\Debug\webapp.dll
 D:\Software Development\Projects\nep5\BlackCat-Explorer\obj\Debug\webapp.pdb
+D:\Software Development\Projects\BlackCat-Explorer\bin\webapp.dll.config
+D:\Software Development\Projects\BlackCat-Explorer\bin\webapp.dll
+D:\Software Development\Projects\BlackCat-Explorer\bin\webapp.pdb
+D:\Software Development\Projects\BlackCat-Explorer\obj\Debug\webapp.csprojAssemblyReference.cache
+D:\Software Development\Projects\BlackCat-Explorer\obj\Debug\webapp.csproj.CoreCompileInputs.cache
+D:\Software Development\Projects\BlackCat-Explorer\obj\Debug\webapp.dll
+D:\Software Development\Projects\BlackCat-Explorer\obj\Debug\webapp.pdb

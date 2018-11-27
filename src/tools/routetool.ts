@@ -22,6 +22,7 @@ namespace WebBrowser
             this.pagelist.push( this.app.address );
             this.pagelist.push( this.app.assets );
 			this.pagelist.push(this.app.assetinfo);
+			this.pagelist.push(this.app.nep5info);
 			this.pagelist.push(this.app.appchainblock);
 			this.pagelist.push(this.app.appchaintransaction);
 
@@ -90,6 +91,9 @@ namespace WebBrowser
                 case "assets":
                     this.app.navbar.assetBtn.classList.add( "active" );
 					return this.app.assets;
+				case "nep5info":
+					this.app.navbar.assetBtn.classList.add("active");
+					return this.app.nep5info;
 				case "appchainblock":
 					this.app.navbar.assetBtn.classList.add("active");
 					return this.app.appchainblock;

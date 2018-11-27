@@ -119,6 +119,7 @@
     <TypeScriptCompile Include="src\pages\address.ts" />
     <TypeScriptCompile Include="src\pages\appchainblock.ts" />
     <TypeScriptCompile Include="src\pages\appchaintransaction.ts" />
+    <TypeScriptCompile Include="src\pages\nep5info.ts" />
     <TypeScriptCompile Include="src\pages\nnsinfo.ts" />
     <TypeScriptCompile Include="src\pages\nnsrank.ts" />
     <TypeScriptCompile Include="src\pages\nnsbeing.ts" />
