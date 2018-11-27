@@ -219,9 +219,9 @@ var WebBrowser;
                 $("#acsize").text(block.size + ' bytes');
                 $("#actime").text(time);
                 $("#acversion").text(block.version);
-                //$("#acindex").text(block.index);
+                $("#acindex").text(block.index);
                 //$("#acindex").html(`<a href="` + Url.href_appchainblock(this.ac, block.index) + `" target="_self">` + (block.index) + `</a>`);
-                $("#acindex").html(`<a href="` + WebBrowser.Url.href_appchainblock(this.ac, block.index) + `" target="_self">` + (block.index) + `</a>`);
+                //	$("#acindex").html(`<a href="` + Url.href_appchainblock(this.ac, block.index) + `" target="_self">` + (block.index) + `</a>`);
                 //`<a href="`+ Url.href_block(item.index) + `" target="_self">`
                 $("#acprevios-block").html(`<a href="` + WebBrowser.Url.href_block(block.index - 1) + `" target="_self">` + (block.index - 1) + `</a>`);
                 $("#acnext-block").html(`<a href="` + WebBrowser.Url.href_block(block.index + 1) + `" target="_self">` + (Number(block.index) + 1) + `</a>`);
