@@ -97,9 +97,9 @@ namespace WebBrowser
 				case "appchainblock":
 					this.app.navbar.assetBtn.classList.add("active");
 					return this.app.appchainblock;
-				case "appchaintransaction":
-					this.app.navbar.assetBtn.classList.add("active");
-					return this.app.appchaintransaction;
+			//	case "appchaintransaction":
+				//	this.app.navbar.assetBtn.classList.add("active");
+					//return this.app.appchaintransaction;
                 // case "nnsevent":
                 //     this.app.navbar.nnsBtn.classList.add("active");
                 //     return this.app.nnses;
