@@ -502,6 +502,9 @@ namespace WebBrowser
             appChainBackGround.appendChild(seed1);
 
             var ip1 = AppChainTool.createSelect(appChainBackGround, "ip", 6);
+            var port1 = document.createElement('input') as HTMLInputElement;
+            port1.value = "15000";
+            appChainBackGround.appendChild(port1);
 
             var seed2= document.createElement('span') as HTMLSpanElement;
             seed2.style.color = "#eeeeee";
@@ -509,6 +512,9 @@ namespace WebBrowser
             appChainBackGround.appendChild(seed2);
 
             var ip2 = AppChainTool.createSelect(appChainBackGround, "ip", 7);
+            var port2 = document.createElement('input') as HTMLInputElement;
+            port2.value = "15000";
+            appChainBackGround.appendChild(port2);
 
             var seed3 = document.createElement('span') as HTMLSpanElement;
             seed3.style.color = "#eeeeee";
@@ -516,6 +522,9 @@ namespace WebBrowser
             appChainBackGround.appendChild(seed3);
 
             var ip3 = AppChainTool.createSelect(appChainBackGround, "ip", 8);
+            var port3 = document.createElement('input') as HTMLInputElement;
+            port3.value = "15000";
+            appChainBackGround.appendChild(port3);
 
             var seed4= document.createElement('span') as HTMLSpanElement;
             seed4.style.color = "#eeeeee";
@@ -523,6 +532,9 @@ namespace WebBrowser
             appChainBackGround.appendChild(seed4);
 
             var ip4 = AppChainTool.createSelect(appChainBackGround, "ip", 9);
+            var port4 = document.createElement('input') as HTMLInputElement;
+            port4.value = "15000";
+            appChainBackGround.appendChild(port4);
 
             var btnCreate = document.createElement('button') as HTMLButtonElement;
             btnCreate.textContent = "创建";
@@ -531,10 +543,10 @@ namespace WebBrowser
                 (pubkey2.childNodes[pubkey2.selectedIndex] as HTMLOptionElement).value,
                 (pubkey3.childNodes[pubkey3.selectedIndex] as HTMLOptionElement).value,
                 (pubkey4.childNodes[pubkey4.selectedIndex] as HTMLOptionElement).value];
-                var ip = [(ip1.childNodes[ip1.selectedIndex] as HTMLOptionElement).value + ":" + AppChainTool.port,
-                (ip2.childNodes[ip2.selectedIndex] as HTMLOptionElement).value + ":" + AppChainTool.port,
-                (ip3.childNodes[ip3.selectedIndex] as HTMLOptionElement).value + ":" + AppChainTool.port,
-                (ip4.childNodes[ip4.selectedIndex] as HTMLOptionElement).value + ":" + AppChainTool.port];
+                var ip = [(ip1.childNodes[ip1.selectedIndex] as HTMLOptionElement).value + ":" + port1.value,
+                (ip2.childNodes[ip2.selectedIndex] as HTMLOptionElement).value + ":" + port2.value,
+                (ip3.childNodes[ip3.selectedIndex] as HTMLOptionElement).value + ":" + port3.value,
+                (ip4.childNodes[ip4.selectedIndex] as HTMLOptionElement).value + ":" + port4.value];
 
                 AppChainTool.SendCreateAppChain(name.value, this.pubkey, pubkey, ip, this.prikey, "0000000000000000000000000000000000000000");
             }

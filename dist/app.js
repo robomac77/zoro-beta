@@ -3962,21 +3962,33 @@ var WebBrowser;
             seed1.textContent = "选择种子地址1";
             appChainBackGround.appendChild(seed1);
             var ip1 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 6);
+            var port1 = document.createElement('input');
+            port1.value = "15000";
+            appChainBackGround.appendChild(port1);
             var seed2 = document.createElement('span');
             seed2.style.color = "#eeeeee";
             seed2.textContent = "选择种子地址2";
             appChainBackGround.appendChild(seed2);
             var ip2 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 7);
+            var port2 = document.createElement('input');
+            port2.value = "15000";
+            appChainBackGround.appendChild(port2);
             var seed3 = document.createElement('span');
             seed3.style.color = "#eeeeee";
             seed3.textContent = "选择种子地址3";
             appChainBackGround.appendChild(seed3);
             var ip3 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 8);
+            var port3 = document.createElement('input');
+            port3.value = "15000";
+            appChainBackGround.appendChild(port3);
             var seed4 = document.createElement('span');
             seed4.style.color = "#eeeeee";
             seed4.textContent = "选择种子地址4";
             appChainBackGround.appendChild(seed4);
             var ip4 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 9);
+            var port4 = document.createElement('input');
+            port4.value = "15000";
+            appChainBackGround.appendChild(port4);
             var btnCreate = document.createElement('button');
             btnCreate.textContent = "创建";
             btnCreate.onclick = () => {
@@ -3984,10 +3996,10 @@ var WebBrowser;
                     pubkey2.childNodes[pubkey2.selectedIndex].value,
                     pubkey3.childNodes[pubkey3.selectedIndex].value,
                     pubkey4.childNodes[pubkey4.selectedIndex].value];
-                var ip = [ip1.childNodes[ip1.selectedIndex].value + ":" + WebBrowser.AppChainTool.port,
-                    ip2.childNodes[ip2.selectedIndex].value + ":" + WebBrowser.AppChainTool.port,
-                    ip3.childNodes[ip3.selectedIndex].value + ":" + WebBrowser.AppChainTool.port,
-                    ip4.childNodes[ip4.selectedIndex].value + ":" + WebBrowser.AppChainTool.port];
+                var ip = [ip1.childNodes[ip1.selectedIndex].value + ":" + port1.value,
+                    ip2.childNodes[ip2.selectedIndex].value + ":" + port2.value,
+                    ip3.childNodes[ip3.selectedIndex].value + ":" + port3.value,
+                    ip4.childNodes[ip4.selectedIndex].value + ":" + port4.value];
                 WebBrowser.AppChainTool.SendCreateAppChain(name.value, this.pubkey, pubkey, ip, this.prikey, "0000000000000000000000000000000000000000");
             };
             appChainBackGround.appendChild(btnCreate);
