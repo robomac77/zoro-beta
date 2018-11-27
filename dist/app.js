@@ -730,8 +730,8 @@ var WebBrowser;
             });
         }
     }
-    WWW.api = "http://localhost:59908/api/testnet/";
-    WWW.apiaggr = "http://localhost:59999/api/testnet/";
+    WWW.api = "http://localhost   :59908/api/testnet/";
+    WWW.apiaggr = "http://localhost   :59999/api/testnet/";
     WebBrowser.WWW = WWW;
 })(WebBrowser || (WebBrowser = {}));
 var WebBrowser;
@@ -1485,7 +1485,7 @@ var WebBrowser;
                     //ap = ap.substring(0, 4) + '...' + ap.substring(id.length - 4);
                     let html = `
                 <tr>
-                <td><a href="` + WebBrowser.Url.href_appchainblock(ap, item.index) + `" target="_self">` + id + `</a></td>
+                  <td>` + id + `</td>
                 <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + WebBrowser.Url.href_appchainblock(ap, item.index) + `" target="_self">` + item.index + `</a></td>
                 <td>` + txcounts + `</td>
                 </tr>`;
@@ -1861,7 +1861,7 @@ var WebBrowser;
                 //查询地址总数
                 let addrCount = yield WebBrowser.WWW.getaddrcount();
                 //分页查询区块数据
-                let blocks = yield WebBrowser.WWW.getblocks(10, 1);
+                let blocks = yield WebBrowser.WWW.getblocks(10, 0);
                 //分页查询交易记录
                 let txs = yield WebBrowser.WWW.getrawtransactions(10, 1, '');
                 $("#blockHeight").text(WebBrowser.NumberTool.toThousands(blockHeight)); //显示在页面
@@ -2361,6 +2361,7 @@ var WebBrowser;
                 let block = blocks[0];
                 let time = WebBrowser.DateTool.getTime(block.time);
                 $("#transaction-time").text(time);
+                txInfo.vin = JSON.parse(txInfo.vin.toString());
                 //let allAsset: Asset[] = await WWW.api_getAllAssets();
                 let arr = new Array();
                 for (let index = 0; index < txInfo.vin.length; index++) {
@@ -2391,6 +2392,7 @@ var WebBrowser;
                     $("#from").append(html);
                 }
                 $("#to").empty();
+                txInfo.vout = JSON.parse(txInfo.vout.toString());
                 txInfo.vout.forEach(vout => {
                     let name = WebBrowser.CoinTool.assetID2name[vout.asset];
                     let sign = "";
@@ -3341,9 +3343,9 @@ var WebBrowser;
         getUrlBase(netType) {
             switch (netType) {
                 case "testnet":
-                    return "http://localhost:59908/api/testnet/";
+                    return "http://localhost   :59908/api/testnet/";
                 case "mainnet":
-                    return "http://localhost:59908/api/testnet/";
+                    return "http://localhost   :59908/api/testnet/";
             }
         }
         /**
@@ -3356,7 +3358,7 @@ var WebBrowser;
                 let promise = new Promise((resolve, reject) => {
                     $.ajax({
                         type: 'POST',
-                        url: 'http://localhost:59908/api/testnet/' + arr[0],
+                        url: 'http://localhost   :59908/api/testnet/' + arr[0],
                         data: JSON.stringify({
                             "jsonrpc": "2.0",
                             "method": method,
@@ -3398,7 +3400,7 @@ var WebBrowser;
                 let promise = new Promise((resolve, reject) => {
                     $.ajax({
                         type: 'GET',
-                        url: 'http://localhost:59908/api/testnet/' + arr[0] + '?jsonrpc=2.0&method=getblock&params=%5b1000%5d&id=1001',
+                        url: 'http://localhost   :59908/api/testnet/' + arr[0] + '?jsonrpc=2.0&method=getblock&params=%5b1000%5d&id=1001',
                         success: (data, status) => {
                             resolve(data['result']);
                         },
@@ -3428,21 +3430,21 @@ var WebBrowser;
     //     }
     //     getRootPath_web()
     //     {
-    //         //获取当前网址，如： http://localhost:8083/uimcardprj/share/meun.jsp
+    //         //获取当前网址，如： http://localhost   :8083/uimcardprj/share/meun.jsp
     //         var curWwwPath = window.document.location.href;
     //         console.log(curWwwPath);
     //         //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
     //         var pathName = window.document.location.pathname;
     //         console.log(pathName);
     //         var pos = curWwwPath.indexOf(pathName);
-    //         //获取主机地址，如： http://localhost:8083
+    //         //获取主机地址，如： http://localhost   :8083
     //         console.log(pos);
-    //         var localhostPaht = curWwwPath.substring(0, pos);
+    //         var localhost   Paht = curWwwPath.substring(0, pos);
     //         //获取带"/"的项目名，如：/uimcardprj
-    //         console.log(localhostPaht);
+    //         console.log(localhost   Paht);
     //         var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
     //         console.log(projectName);
-    //         return (localhostPaht + projectName);
+    //         return (localhost   Paht + projectName);
     //     }
     //     getRootPath()
     //     {
@@ -4827,11 +4829,11 @@ var WebBrowser;
             this.nodes = {};
             this.nodes[1] = [
                 // 主网nelnode
-                ["CN", "http://localhost:59908/api/mainnet", "_1", "http://localhost:59908/api/mainnet"],
+                ["CN", "http://localhost   :59908/api/mainnet", "_1", "http://localhost   :59908/api/mainnet"],
             ];
             this.nodes[2] = [
                 // 测试网nelnode
-                ["CN", "http://localhost:59908/api/testnet", "_1", "http://localhost:59908/api/testnet"],
+                ["CN", "http://localhost   :59908/api/testnet", "_1", "http://localhost   :59908/api/testnet"],
             ];
             this.nodes_server = {};
             this.default_type = 1;

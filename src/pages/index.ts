@@ -93,7 +93,7 @@ namespace WebBrowser
             //查询地址总数
             let addrCount: number = await WWW.getaddrcount();
             //分页查询区块数据
-            let blocks: Block[] = await WWW.getblocks( 10, 1 );
+            let blocks: Block[] = await WWW.getblocks( 10, 0 );
             //分页查询交易记录
          
 			let txs: Tx[] = await WWW.getrawtransactions(10, 1, '');

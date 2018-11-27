@@ -1,8 +1,8 @@
 ﻿
 namespace WebBrowser {
 	export class WWW {
-		static api: string = "http://localhost:59908/api/testnet/";
-		static apiaggr: string = "http://localhost:59999/api/testnet/";
+		static api: string = "http://localhost   :59908/api/testnet/";
+		static apiaggr: string = "http://localhost   :59999/api/testnet/";
 
 		static makeRpcUrl(method: string, ..._params: any[]) {
 			var url = WWW.api;
