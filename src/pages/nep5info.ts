@@ -1,15 +1,62 @@
 ﻿namespace WebBrowser
 {
-    export class Nep5Info implements Page
-    {
-        div: HTMLDivElement = document.getElementById("asset-info") as HTMLDivElement;
+	export class Nep5Info implements Page {
+		app: App
+		langType: string;
+		constructor(app: App) {
+			this.app = app
+		}
+
+		getLangs() {
+			if (this.langType != this.app.langmgr.type) {
+				let page_lang = [
+					"asset_title",
+					"asset_id",
+					"asset_asset",
+					"asset_type",
+					"asset_ava",
+					"asset_pre",
+					"asset_pre2",
+					"asset_pre3",
+					"asset_pre4",
+					"asset_adm",
+
+					"asset_title2",
+					"asset_rank",
+					"asset_addr",
+					"asset_balance",
+
+					"asset_title3",
+					"asset_txid",
+					"asset_from",
+					"asset_to",
+					"asset_height",
+
+					"nep5assetid",
+					"nep5name",
+					"nep5assettotalsupply",
+					"nep5symbol",
+					"nep5decimals",
+				]
+				page_lang.forEach(
+					lang => {
+						document.getElementById(lang).textContent = this.app.langmgr.get(lang)
+					}
+				)
+
+				this.langType = this.app.langmgr.type
+			}
+
+		}
+
+        div: HTMLDivElement = document.getElementById("nep5asset-info") as HTMLDivElement;
         footer: HTMLDivElement = document.getElementById('footer-box') as HTMLDivElement;
-        name: HTMLSpanElement;
-        type: HTMLSpanElement;
-        id: HTMLSpanElement;
-        available: HTMLSpanElement;
-        precision: HTMLSpanElement;
-        admin: HTMLSpanElement;
+        nep5name: HTMLSpanElement;
+        nep5type: HTMLSpanElement;
+        nep5id: HTMLSpanElement;
+        nep5available: HTMLSpanElement;
+        nep5precision: HTMLSpanElement;
+        nep5admin: HTMLSpanElement;
         rankPageUtil: PageUtil;
         async start()
         {
@@ -23,7 +70,7 @@
             $("#nep5asset").empty();
             $("#nep5asset").append(html);
 
-            this.loadAssetInfoView(assetid);
+            this.loadAssetInfoView(nep5assetid);
 
             var assetType = locationtool.getType();
             if (assetType == 'nep5') {
@@ -94,7 +141,7 @@
         loadAssetInfoView(nep5assetid: string)
         {            
             //this.div.innerHTML = pages.asset;
-            WWW.api_getasset(nep5assetid).then((data) =>
+            WWW.api_getnep5(nep5assetid).then((data) =>
             {
                 var asset = data[0];
                 

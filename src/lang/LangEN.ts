@@ -181,6 +181,14 @@ namespace WebBrowser
 			nep5assets_pre: "Total Supply",
 			nep5assets_val: "Symbol",
 			nep5assets_id: "Decimals", 
+
+			//nep5assetinfo
+		    nep5assetid: "Asset ID",
+			nep5name: "Name",
+			nep5assettotalsupply: "Total Supply",
+			nep5symbol: "Symbol",
+			nep5decimals: "Decimals", 
+
             // asset
             asset_title: "App Chain Information",
             asset_id: "App Chain Hash",

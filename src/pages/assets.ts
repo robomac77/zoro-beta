@@ -225,7 +225,7 @@
 		public loadNep5View(nep5s: nep5Asset[]) {
 			$("#nep5s").empty();
 			nep5s.forEach((nep5s: nep5Asset) => {
-				let href = Url.href_nep5(nep5s.assetid);
+				let href = Url.href_nep5info(nep5s.assetid);
 				let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
 				let htmlnep5 = `
                     <tr>

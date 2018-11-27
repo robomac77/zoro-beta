@@ -113,7 +113,10 @@ namespace WebBrowser
 
 		static href_appchainblock( appchain : string ,index: number) {         //appchain : string 
 			return locationtool.getUrl() + '/appchainblock/' + appchain + '/' + index;
-			//return window.open(locationtool.getUrl());
+		}
+
+		static href_nep5info(nep5id: string) {         //appchain : string 
+			return locationtool.getUrl() + '/nep5info/' + nep5id;
 		}
 		
         static href_transactions()

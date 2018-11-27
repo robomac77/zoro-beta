@@ -14,6 +14,7 @@
 /// <reference path="./pages/transaction.ts"/>
 /// <reference path="./pages/appchaintransaction.ts"/>
 /// <reference path="./pages/nep5.ts"/>
+/// <reference path="./pages/nep5info.ts"/>
 
 /// <reference path="./pages/404.ts"/>
 /// <reference path="./tools/locationtool.ts" />
