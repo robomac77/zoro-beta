@@ -44,6 +44,11 @@
 
 		div: HTMLDivElement = document.getElementById("asset-info") as HTMLDivElement;
 		footer: HTMLDivElement = document.getElementById('footer-box') as HTMLDivElement;
+
+		allacaddress: HTMLAnchorElement = document.getElementById("i_acalladdress") as HTMLAnchorElement;
+		allacblock: HTMLAnchorElement = document.getElementById("i_acallblock") as HTMLAnchorElement;
+		allactxlist: HTMLAnchorElement = document.getElementById("i_acalltxlist") as HTMLAnchorElement;
+
 		name: HTMLSpanElement;
 		type: HTMLSpanElement;
 		id: HTMLSpanElement;
@@ -63,7 +68,14 @@
 
 		public ac :string  = locationtool.getParam()
 		async start() {
+
 			this.getLangs()
+
+			this.allacaddress.href = Url.href_asset(this.ac);//  document.getElementById("i_acalladdress") as HTMLAnchorElement;
+			this.allacblock.href = Url.href_asset(this.ac); //
+			this.allactxlist.href = Url.href_asset(this.ac); //
+
+
 			var ap = this.ac
 			ap = locationtool.getParam();
 			ap = ap.replace('0x', '');
@@ -84,10 +96,10 @@
 
 			this.actxcount = await WWW.getappchaintxcount(ap) as number;
 			this.transpageUtil = new PageUtil(this.actxcount, 15);
-			this.updateNep5TransView(ap,this.transpageUtil);
+			this.updateNep5TransView(ap, this.transpageUtil);
 
 			$("#acblockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount));
-			
+
 			$("#actxcount").text(this.actxcount);//$("#txcount").text(NumberTool.toThousands(this.actxcount));
 
 			$("#acaddrCount").text(this.acaddcount); //$("#addrCount").text(NumberTool.toThousands(this.acaddcount));
@@ -133,10 +145,22 @@
 					this.pageUtil.currentPage = 1;
 				} else {
 					this.pageUtil.currentPage -= 1;
-					this.updateNep5TransView(ap, this.pageUtil);
+					this.updateNep5TransView(ap, this.pageUtil); //
 				}
 			});
 
+			/*$("#i_acallblock").off("click").click(() => { //
+				if (this.pageUtil.currentPage <= 1) {
+					this.pageUtil.currentPage = 1;
+				} else {
+					this.pageUtil.currentPage -= 1;
+					this.updateNep5TransView(ap, this.pageUtil); // this is for the ac blocks click button
+
+				//this.allacblock.href = document.getElementById("assets-balance-list") as HTMLAnchorElement; //
+				}
+			});*/
+
+			
 			this.div.hidden = false;
 			this.footer.hidden = false;
 		}
@@ -161,7 +185,6 @@
 				$("#precision4").text(valsplit[3]);
 				$("#admin").text(appchain.owner);
 			})
-
 
 		}
 		public async updateBlocks(appchain: string, pageUtil: PageUtil) {

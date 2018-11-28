@@ -730,8 +730,8 @@ var WebBrowser;
             });
         }
     }
-    WWW.api = "http://localhost   :59908/api/testnet/";
-    WWW.apiaggr = "http://localhost   :59999/api/testnet/";
+    WWW.api = "http://localhost:59908/api/testnet/";
+    WWW.apiaggr = "http://localhost:59999/api/testnet/";
     WebBrowser.WWW = WWW;
 })(WebBrowser || (WebBrowser = {}));
 var WebBrowser;
@@ -1323,6 +1323,9 @@ var WebBrowser;
         constructor(app) {
             this.div = document.getElementById("asset-info");
             this.footer = document.getElementById('footer-box');
+            this.allacaddress = document.getElementById("i_acalladdress");
+            this.allacblock = document.getElementById("i_acallblock");
+            this.allactxlist = document.getElementById("i_acalltxlist");
             this.actxcount = 0;
             this.acblockcount = 0;
             this.acaddcount = 0;
@@ -1361,6 +1364,9 @@ var WebBrowser;
         start() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.getLangs();
+                this.allacaddress.href = WebBrowser.Url.href_asset(this.ac); //  document.getElementById("i_acalladdress") as HTMLAnchorElement;
+                this.allacblock.href = WebBrowser.Url.href_asset(this.ac); //
+                this.allactxlist.href = WebBrowser.Url.href_asset(this.ac); //
                 var ap = this.ac;
                 ap = WebBrowser.locationtool.getParam();
                 ap = ap.replace('0x', '');
@@ -1420,9 +1426,19 @@ var WebBrowser;
                     }
                     else {
                         this.pageUtil.currentPage -= 1;
-                        this.updateNep5TransView(ap, this.pageUtil);
+                        this.updateNep5TransView(ap, this.pageUtil); //
                     }
                 });
+                /*$("#i_acallblock").off("click").click(() => { //
+                    if (this.pageUtil.currentPage <= 1) {
+                        this.pageUtil.currentPage = 1;
+                    } else {
+                        this.pageUtil.currentPage -= 1;
+                        this.updateNep5TransView(ap, this.pageUtil); // this is for the ac blocks click button
+    
+                    //this.allacblock.href = document.getElementById("assets-balance-list") as HTMLAnchorElement; //
+                    }
+                });*/
                 this.div.hidden = false;
                 this.footer.hidden = false;
             });
@@ -2356,7 +2372,7 @@ var WebBrowser;
                 $("#sysfee").text(txInfo["sys_fee"] + " gas");
                 $("#netfee").text(txInfo["net_fee"] + " gas");
                 let ajax = new WebBrowser.Ajax();
-                let blocks = yield WebBrowser.WWW.getblock(txInfo.blockindex); //let blocks: Block[] = await ajax.post('getblock', [txInfo.blockindex]);
+                let blocks = yield WebBrowser.WWW.getblock(txInfo.blockindex); //let blocks: Block[] = await ajax.post('getblock', [txInfo.blockindex]); 
                 let block = blocks[0];
                 let time = WebBrowser.DateTool.getTime(block.time);
                 $("#transaction-time").text(time);
@@ -2371,7 +2387,7 @@ var WebBrowser;
                         let address = vout.address;
                         let value = vout.value;
                         let name = WebBrowser.CoinTool.assetID2name[vout.asset];
-                        arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value });
+                        arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value }); //  fro
                     }
                     catch (error) {
                     }
@@ -2425,7 +2441,7 @@ var WebBrowser;
                 let nep5Name = yield WebBrowser.WWW.api_getnep5(asset);
                 let html = `
                     <tr>
-                    <td> <a href="` + href + `" target="_self">` + nep5Name[0].name + `</a></td>
+                    <td> <a href="` + href + `" target="_self">` + asset + `</a></td>
                     <td>` + from + `</td>
                     <td>` + to + `</td>
                     <td>` + value + `</td>

@@ -9,7 +9,11 @@
         }
 
         getLangs()
-        {
+		{
+
+			
+
+
             if (this.langType != this.app.langmgr.type) {
                 let page_lang = [
                     "acblock_info_title",
@@ -34,7 +38,9 @@
         }
         
         div: HTMLDivElement = document.getElementById("acblock-info") as HTMLDivElement;
-        footer: HTMLDivElement = document.getElementById('footer-box') as HTMLDivElement;
+		footer: HTMLDivElement = document.getElementById('footer-box') as HTMLDivElement;
+
+		
         private pageUtil: PageUtil;
         private txs: Tx[];
         public ac:string = locationtool.getParam2();
@@ -47,6 +53,10 @@
         start()
         {
             this.getLangs()
+
+
+			
+
 
             //this.div.innerHTML = pages.block;
             this.queryBlock(this.ac, locationtool.getParam3() as number);

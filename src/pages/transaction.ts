@@ -53,9 +53,9 @@ namespace WebBrowser {
 			this.getLangs()
 
 			//this.div.innerHTML = pages.transaction;
-			this.updateTxInfo(locationtool.getParam());
+			this.updateTxInfo(locationtool.getParam()); 
 			let href = locationtool.getUrl() + "/transactions";
-			let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("tran_goalltran") + '</a>';
+			let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("tran_goalltran") + '</a>'; 
 
 			$("#goalltrans").empty();
 			$("#goalltrans").append(html);
@@ -73,9 +73,9 @@ namespace WebBrowser {
 			$("#netfee").text(txInfo["net_fee"] + " gas");
 			let ajax: Ajax = new Ajax();
 			
-			let blocks: Block[] = await WWW.getblock(txInfo.blockindex); //let blocks: Block[] = await ajax.post('getblock', [txInfo.blockindex]);
+			let blocks: Block[] = await WWW.getblock(txInfo.blockindex); //let blocks: Block[] = await ajax.post('getblock', [txInfo.blockindex]); 
 			let block: Block = blocks[0];
-			let time = DateTool.getTime(block.time);
+			let time = DateTool.getTime(block.time); 
 
 			$("#transaction-time").text(time);
 			txInfo.vin = JSON.parse(txInfo.vin.toString());
@@ -90,7 +90,7 @@ namespace WebBrowser {
 					let address: string = vout.address;
 					let value: string = vout.value;
 					let name = CoinTool.assetID2name[vout.asset];
-					arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value });
+					arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value }); //  fro
 				} catch (error) {
 
 				}
@@ -141,10 +141,10 @@ namespace WebBrowser {
 
 		async loadTxidNep5View(asset: string, from: string, to: string, value: number) {
 			let href = Url.href_nep5(asset);
-			let nep5Name = await WWW.api_getnep5(asset);
+			let nep5Name = await WWW.api_getnep5(asset); 
 			let html = `
                     <tr>
-                    <td> <a href="`+ href + `" target="_self">` + nep5Name[0].name + `</a></td>
+                    <td> <a href="`+ href + `" target="_self">` + asset + `</a></td>
                     <td>` + from + `</td>
                     <td>` + to + `</td>
                     <td>` + value + `</td>

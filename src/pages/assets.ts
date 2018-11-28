@@ -6,6 +6,9 @@
 
 		div: HTMLDivElement = document.getElementById("asset-page") as HTMLDivElement;
 		footer: HTMLDivElement = document.getElementById('footer-box') as HTMLDivElement;
+
+		
+
 		close(): void {
 			this.div.hidden = true;
 			this.footer.hidden = true;
@@ -158,6 +161,8 @@
 
 		async start() {
 			this.getLangs()
+
+			
 
 			$("#asset-TxType").val("Assets");
 			this.assetType = <string>$("#asset-TxType").val();

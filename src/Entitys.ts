@@ -111,6 +111,8 @@ namespace WebBrowser
 			return locationtool.getUrl() + '/appchaintransaction/' + appchain + '/' + appchaintransaction;
 		}
 
+		
+
 		static href_appchainblock( appchain : string ,index: number) {         //appchain : string 
 			return locationtool.getUrl() + '/appchainblock/' + appchain + '/' + index;
 		}
