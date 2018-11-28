@@ -47,10 +47,135 @@ namespace WebBrowser
             }
         }
 
+        static ZoroFunction(){
+            var select = document.createElement('select');
+            var sitem = document.createElement("option");
+            sitem.text = "NEO->ZORO";
+            sitem.value = "NEOBCP";
+            select.appendChild(sitem);
+
+            var sitem = document.createElement("option");
+            sitem.text = "ZORO->NEO";
+            sitem.value = "ZOROBCP";
+            select.appendChild(sitem);
+
+            return select;
+        }
+
+        static ZoroAsset(){
+            var select = document.createElement('select');
+            var sitem = document.createElement("option");
+            sitem.text = "ZOROBCP";
+            sitem.value = "ZOROBCP";
+            select.appendChild(sitem);
+
+            var sitem = document.createElement("option");
+            sitem.text = "NEOBCP";
+            sitem.value = "NEOBCP";
+            select.appendChild(sitem);
+
+            var sitem = document.createElement("option");
+            sitem.text = "NEO";
+            sitem.value = "NEO";
+            select.appendChild(sitem);
+
+            var sitem = document.createElement("option");
+            sitem.text = "GAS";
+            sitem.value = "GAS";
+            select.appendChild(sitem);
+
+            return select;
+        }
+
+        static async getGold(type:string, address:string, chainHash = "gold"){
+            switch(type){
+                case "ZOROBCP":
+                return await WWW.rpc_getBalanceOf(chainHash == "0000000000000000000000000000000000000000"?AppChainTool.zoroBCP:AppChainTool.appChainBCP, address, chainHash);
+                case "NEOBCP":
+                return await WWW.rpc_getBalanceOf(AppChainTool.neoBCP, address);
+                case "NEO":
+                return AppChainTool.NEO;
+                case "GAS":
+                return AppChainTool.GAS;
+            }
+        }
+        static getassets(utxos)
+        {
+            var assets = {};
+            for (var i in utxos)
+            {
+                var item = utxos[i];
+                var txid = item.txid;
+                var n = item.n;
+                var asset = item.asset;
+                var count = item.value;
+                if (assets[asset] == undefined)
+                {
+                    assets[asset] = [];
+                }
+                var utxo = {
+                    addr:item.addr,
+                    asset:asset,
+                    n:n,
+                    txid:txid,
+                    count:Neo.Fixed8.parse(count+"")
+                };
+                assets[asset].push(utxo);
+            }
+            return assets;
+        }
+
+        static makeZoroTran(address:string, targetaddr:string, sendcount:Neo.Fixed8, assetid:string, chainHash:string): ThinNeo.Transaction
+        {
+            // if (sendcount.compareTo(Neo.Fixed8.Zero) <= 0)
+            //    throw new Error("can not send zero.");           
+            
+            var array = [];
+            var sb = new ThinNeo.ScriptBuilder();            
+           
+            var randomBytes = new Uint8Array(32);            
+            var key = Neo.Cryptography.RandomNumberGenerator.getRandomValues<Uint8Array>(randomBytes);
+            var randomNum = new Neo.BigInteger(key);
+            sb.EmitPushNumber(randomNum);
+            sb.Emit(ThinNeo.OpCode.DROP);
+            array.push("(addr)" + address);
+            array.push("(addr)" + targetaddr);
+            array.push("(int)" + sendcount);
+            sb.EmitParamJson(array);
+            sb.EmitPushString("transfer");
+            sb.EmitAppCall(assetid.hexToBytes().reverse());
+            // var scripthash = sb.ToArray().toHexString();
+
+            // var postArray = [];
+            // postArray.push(chainHash);
+            // postArray.push(scripthash);
+
+            var extdata = new ThinNeo.InvokeTransData();
+            extdata.script = sb.ToArray();
+            extdata.gas = Neo.Fixed8.Zero;
+
+            var tran = new  ThinNeo.Transaction();
+            tran.type = ThinNeo.TransactionType.InvocationTransaction;
+            tran.version = 1;
+            
+            tran.extdata = extdata;
+
+            var scriptHash = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(address);
+
+            tran.attributes = [];
+            tran.attributes[0] = new ThinNeo.Attribute();
+            tran.attributes[0].usage = ThinNeo.TransactionAttributeUsage.Script;
+            tran.attributes[0].data = scriptHash;
+            tran.inputs = [];
+            tran.outputs = [];
+           
+            return tran;
+        }
+
         static makeTran(utxos: { [id: string]: UTXO[] }, targetaddr: string, assetid: string, sendcount: Neo.Fixed8): ThinNeo.Transaction
         {
-            if (sendcount.compareTo(Neo.Fixed8.Zero) <= 0)
-                throw new Error("can not send zero.");
+            // if (sendcount.compareTo(Neo.Fixed8.Zero) <= 0)
+            //     throw new Error("can not send zero.");
             var tran = new ThinNeo.Transaction();
             tran.type = ThinNeo.TransactionType.ContractTransaction;
             tran.version = 0;//0 or 1
@@ -84,11 +209,14 @@ namespace WebBrowser
             {
                 tran.outputs = [];
                 //输出
-                var output = new ThinNeo.TransactionOutput();
-                output.assetId = assetid.hexToBytes().reverse();
-                output.value = sendcount;
-                output.toAddress = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(targetaddr);
-                tran.outputs.push(output);
+                if (sendcount.compareTo(Neo.Fixed8.Zero) > 0)
+                {
+                    var output = new ThinNeo.TransactionOutput();
+                    output.assetId = assetid.hexToBytes().reverse();
+                    output.value = sendcount;
+                    output.toAddress = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(targetaddr);
+                    tran.outputs.push(output);
+                }
 
                 //找零
                 var change = count.subtract(sendcount);

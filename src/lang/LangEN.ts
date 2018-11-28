@@ -15,6 +15,7 @@ namespace WebBrowser
             nav_blocka: "Blocks",
             nav_txlista: "Transactions",
             nav_addrsa: "Addresses",
+            nav_guia:"WEB-GUI",
 
             nav_asseta: "App Chains",
 

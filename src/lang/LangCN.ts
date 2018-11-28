@@ -6,7 +6,7 @@ namespace WebBrowser
 
         lang = {
 
-            connect_nodes_error: "服务器通讯异常，请刷新重新连接！",
+            connect_nodes_error: "服务器通讯异常，请刷新重新链接！",
 
             // navbar
             nav_indexa: "浏览器",
@@ -15,8 +15,13 @@ namespace WebBrowser
             nav_blocka: "区块",
             nav_txlista: "交易",
             nav_addrsa: "地址",
+<<<<<<< HEAD
 
 			nav_asseta: "应用链",
+=======
+            nav_guia:"钱包",
+            nav_asseta: "应用链",
+>>>>>>> 1abecc50249e110acdd75c70ad6a799a4ad6fbaa
 
             nav_errContent: "请输入正确的地址",
 
@@ -36,7 +41,11 @@ namespace WebBrowser
             i_walletcreate: "已创建的钱包地址数",
             i_alladdress: "查看所有地址",
             i_last10: "最新的10个区块",
+<<<<<<< HEAD
 			i_appchain:"应用链",
+=======
+            i_appchain:"哈希",
+>>>>>>> 1abecc50249e110acdd75c70ad6a799a4ad6fbaa
             i_last10_height: "高度",
             i_last10_size: "大小",
             i_last10_ctm: "创建时间",
@@ -58,7 +67,11 @@ namespace WebBrowser
             blocks_txcount: "交易数量",
             // block
             block_info_title: "区块信息",
+<<<<<<< HEAD
 			blocks_appchain: "应用链",
+=======
+            blocks_appchain: "应用链",
+>>>>>>> 1abecc50249e110acdd75c70ad6a799a4ad6fbaa
             block_info_block: "区块",
             block_info_hash: "哈希",
             block_info_time: "时间",
@@ -129,24 +142,31 @@ namespace WebBrowser
 
 
             // appchains
+<<<<<<< HEAD
 			assets_title: "应用链",
 			assets_asset: "应用链名",
 			assets_id: "应用链哈希",
 			assets_type: " 创建者",
+=======
+            assets_title: "应用链",
+            assets_asset: "应用链名",
+            assets_id: "应用链哈希",
+            assets_type: "创建者",
+>>>>>>> 1abecc50249e110acdd75c70ad6a799a4ad6fbaa
             assets_ava: "生成时间",
 			
 
 			//nep5assets
 
 			nep5assets_asset : "资产ID",
-	        nep5assets_ava: "名",
+	        nep5assets_ava: "名称",
 			nep5assets_pre: "总量",
 			nep5assets_val: "标", 
 			nep5assets_id: "小数点后位数", 
 
 			//nep5assetinfo
 			nep5assetid: "资产ID",
-			nep5name: "名",
+			nep5name: "名称",
 			nep5assettotalsupply: "总量",
 			nep5symbol: "标",
 			nep5decimals: "小数点后位数", 
@@ -157,18 +177,27 @@ namespace WebBrowser
 			asset_asset: "应用链名",
             asset_type: "生成时间",
             asset_ava: "高度",
+<<<<<<< HEAD
 			asset_pre: "共识节点1",
 			asset_pre2: "共识节点2",
 			asset_pre3: "共识节点3",
 			asset_pre4: "共识节点4",
             asset_adm: "连上地址数",
 			asset_title2: "应用链区块",
+=======
+			asset_pre: "链上交易数",
+			asset_pre2: "版本",
+			asset_pre3: "版本",
+			asset_pre4: "版本",
+            asset_adm: "链上地址数",
+            asset_title2: "应用链区块",
+>>>>>>> 1abecc50249e110acdd75c70ad6a799a4ad6fbaa
             asset_rank: "哈希",
             asset_addr: "大小",
 			asset_balance: "时间",
 			asset_blockheight: "高度",
 			asset_tx: "交易数",
-            asset_title3: "应用连交易",
+            asset_title3: "应用链交易",
             asset_txid: "交易ID",
             asset_from: "类型",
             asset_to: "大小",

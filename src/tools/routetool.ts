@@ -24,7 +24,8 @@ namespace WebBrowser
 			this.pagelist.push(this.app.assetinfo);
 			this.pagelist.push(this.app.nep5info);
 			this.pagelist.push(this.app.appchainblock);
-			this.pagelist.push(this.app.appchaintransaction);
+            this.pagelist.push(this.app.appchaintransaction);
+            this.pagelist.push(this.app.guiinfo);
 
             this.closePages();
 
@@ -99,7 +100,10 @@ namespace WebBrowser
 					return this.app.appchainblock;
 				case "appchaintransaction":
 					this.app.navbar.assetBtn.classList.add("active");
-					return this.app.appchaintransaction;
+                    return this.app.appchaintransaction;
+                    case "gui":
+                    this.app.navbar.guiBtn.classList.add( "active" );
+                    return this.app.guiinfo;
                 // case "nnsevent":
                 //     this.app.navbar.nnsBtn.classList.add("active");
                 //     return this.app.nnses;
@@ -135,6 +139,8 @@ namespace WebBrowser
                 this.app.navbar.txlistBtn.classList.remove( "active" );
                 this.app.navbar.addrsBtn.classList.remove( "active" );
                 this.app.navbar.assetBtn.classList.remove("active");
+                
+                this.app.navbar.guiBtn.classList.remove("active");
                 // this.app.navbar.nnsBtn.classList.remove("active");
             }
         }
