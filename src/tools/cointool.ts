@@ -209,11 +209,14 @@ namespace WebBrowser
             {
                 tran.outputs = [];
                 //输出
-                var output = new ThinNeo.TransactionOutput();
-                output.assetId = assetid.hexToBytes().reverse();
-                output.value = sendcount;
-                output.toAddress = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(targetaddr);
-                tran.outputs.push(output);
+                if (sendcount.compareTo(Neo.Fixed8.Zero) > 0)
+                {
+                    var output = new ThinNeo.TransactionOutput();
+                    output.assetId = assetid.hexToBytes().reverse();
+                    output.value = sendcount;
+                    output.toAddress = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(targetaddr);
+                    tran.outputs.push(output);
+                }
 
                 //找零
                 var change = count.subtract(sendcount);

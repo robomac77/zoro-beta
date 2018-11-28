@@ -5,7 +5,8 @@ namespace WebBrowser {
 		static apiaggr: string = "http://115.159.53.39:59999/api/testnet/";
 
 		static rpc: string = "http://115.159.53.39:10000/";
-		static neoRpc:string = "https://api.nel.group/api/testnet/";
+		static neoRpc:string = "http://47.52.192.77:20332";
+		static neoGetUTXO:string = "https://api.nel.group/api/testnet/";
         static rpcName: string = "";
 
         static blockHeight:number = 0;
@@ -351,7 +352,7 @@ namespace WebBrowser {
 		}
 
 		static async rpc_getUTXO(address:string){
-			var str = WWW.makeUrl("getutxo", WWW.neoRpc, address);
+			var str = WWW.makeUrl("getutxo", WWW.neoGetUTXO, address);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
@@ -391,7 +392,7 @@ namespace WebBrowser {
 			var json = await result.json();
 			var r;
 			if (chainHash == null) {
-				r = json["result"][0]["stack"][0]["value"];
+				r = json["result"]["stack"][0]["value"];
 			}else{
 				if (json["result"]["stack"].length == 0){
 					r = 0;

@@ -266,7 +266,9 @@ namespace WebBrowser
           
           tran.type = ThinNeo.TransactionType.InvocationTransaction;
           tran.extdata = new ThinNeo.InvokeTransData();
+
           var sb = new ThinNeo.ScriptBuilder();
+
           var randomBytes = new Uint8Array(32);            
           var key = Neo.Cryptography.RandomNumberGenerator.getRandomValues<Uint8Array>(randomBytes);
           var randomNum = new Neo.BigInteger(key);
@@ -283,11 +285,11 @@ namespace WebBrowser
           (tran.extdata as ThinNeo.InvokeTransData).gas = Neo.Fixed8.Zero;
           var msg = tran.GetMessage();
            var signdata = ThinNeo.Helper.Sign(msg, prikey);
-           tran.AddWitness(signdata, pubkey, ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+           tran.AddWitness(signdata, pubkey, address);
            var data = tran.GetRawData();
 
            var postResult = await WWW.rpc_postRawTransaction(data);
-           if (postResult["result"])
+           if (postResult)
            alert(tran.GetHash().clone().reverse().toHexString());
        }
 

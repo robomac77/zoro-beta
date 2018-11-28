@@ -1924,7 +1924,7 @@ var WebBrowser;
         }
         static rpc_getUTXO(address) {
             return __awaiter(this, void 0, void 0, function* () {
-                var str = WWW.makeUrl("getutxo", WWW.neoRpc, address);
+                var str = WWW.makeUrl("getutxo", WWW.neoGetUTXO, address);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -1964,7 +1964,7 @@ var WebBrowser;
                 var json = yield result.json();
                 var r;
                 if (chainHash == null) {
-                    r = json["result"][0]["stack"][0]["value"];
+                    r = json["result"]["stack"][0]["value"];
                 }
                 else {
                     if (json["result"]["stack"].length == 0) {
@@ -2054,7 +2054,8 @@ var WebBrowser;
     WWW.api = "http://115.159.53.39:59908/api/testnet/";
     WWW.apiaggr = "http://115.159.53.39:59999/api/testnet/";
     WWW.rpc = "http://115.159.53.39:10000/";
-    WWW.neoRpc = "https://api.nel.group/api/testnet/";
+    WWW.neoRpc = "http://47.52.192.77:20332";
+    WWW.neoGetUTXO = "https://api.nel.group/api/testnet/";
     WWW.rpcName = "";
     WWW.blockHeight = 0;
     WWW.chainHashLength = 1;
@@ -2227,11 +2228,13 @@ var WebBrowser;
              {
                 tran.outputs = [];
                 //输出
-                var output = new ThinNeo.TransactionOutput();
-                output.assetId = assetid.hexToBytes().reverse();
-                output.value = sendcount;
-                output.toAddress = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(targetaddr);
-                tran.outputs.push(output);
+                if (sendcount.compareTo(Neo.Fixed8.Zero) > 0) {
+                    var output = new ThinNeo.TransactionOutput();
+                    output.assetId = assetid.hexToBytes().reverse();
+                    output.value = sendcount;
+                    output.toAddress = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(targetaddr);
+                    tran.outputs.push(output);
+                }
                 //找零
                 var change = count.subtract(sendcount);
                 if (change.compareTo(Neo.Fixed8.Zero) > 0) {
@@ -3458,10 +3461,10 @@ var WebBrowser;
                 tran.extdata.gas = Neo.Fixed8.Zero;
                 var msg = tran.GetMessage();
                 var signdata = ThinNeo.Helper.Sign(msg, prikey);
-                tran.AddWitness(signdata, pubkey, ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                tran.AddWitness(signdata, pubkey, address);
                 var data = tran.GetRawData();
                 var postResult = yield WebBrowser.WWW.rpc_postRawTransaction(data);
-                if (postResult["result"])
+                if (postResult)
                     alert(tran.GetHash().clone().reverse().toHexString());
             });
         }
