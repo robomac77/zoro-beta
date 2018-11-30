@@ -8,15 +8,11 @@ namespace WebBrowser
         private getUrlBase(netType) {
             switch (netType) {
                 case "testnet":
-<<<<<<< HEAD
+
 					return "http://localhost:59908/api/testnet/"
                 case "mainnet":
 					return "http://localhost:59908/api/testnet/"
-=======
-                    return "http://115.159.53.39:59908/api/testnet/"
-                case "mainnet":
-                    return "http://115.159.53.39:59908/api/testnet/"
->>>>>>> 1abecc50249e110acdd75c70ad6a799a4ad6fbaa
+
             }
         }
         
@@ -32,11 +28,9 @@ namespace WebBrowser
                 
                 $.ajax({
                     type: 'POST',
-<<<<<<< HEAD
+
 					url: 'http://localhost:59908/api/testnet/'+ arr[0],
-=======
-                    url: 'http://115.159.53.39:59908/api/testnet/'+ arr[0],
->>>>>>> 1abecc50249e110acdd75c70ad6a799a4ad6fbaa
+
                     data: JSON.stringify({
                         "jsonrpc": "2.0",
                         "method": method,
@@ -85,11 +79,9 @@ namespace WebBrowser
             {
                 $.ajax({
                     type: 'GET',
-<<<<<<< HEAD
+
 					url: 'http://localhost:59908/api/testnet/' + arr[0] + '?jsonrpc=2.0&method=getblock&params=%5b1000%5d&id=1001',
-=======
-                    url: 'http://115.159.53.39:59908/api/testnet/' + arr[0] + '?jsonrpc=2.0&method=getblock&params=%5b1000%5d&id=1001',
->>>>>>> 1abecc50249e110acdd75c70ad6a799a4ad6fbaa
+
 
                     success: (data, status) =>
                     {

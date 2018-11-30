@@ -146,12 +146,12 @@
                 var asset = data[0];
                 
                 asset.names = CoinTool.assetID2name[asset.id];
-                $("#nep5name").text(asset.names);
-                $("#nep5asset-info-type").text(asset.type);
-                $("#nep5id").text(asset.id);
-                $("#nep5available").text(asset.available);
-                $("#nep5precision").text(asset.precision);
-                $("#nep5admin").text(asset.admin);                
+                $("#nep5assetid").text(asset.assetid);
+                $("#nep5name").text(asset.name);
+                $("#nep5assettotalsupply").text(asset.totalsupply);
+                $("#nep5symbol").text(asset.symbol);
+                $("#nep5decimals").text(asset.decimals);
+               // $("#nep5admin").text(asset.admin);                
             })
         }
         async updateAssetBalanceView(nep5assetid: string, pageUtil: PageUtil) {

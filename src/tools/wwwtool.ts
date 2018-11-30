@@ -1,10 +1,7 @@
 ﻿
 namespace WebBrowser {
 	export class WWW {
-<<<<<<< HEAD
-		static api: string = "http://localhost:59908/api/testnet/";
-		static apiaggr: string = "http://localhost:59999/api/testnet/";
-=======
+
 		static api: string = "http://115.159.53.39:59908/api/testnet/";
 		static apiaggr: string = "http://115.159.53.39:59999/api/testnet/";
 
@@ -15,7 +12,6 @@ namespace WebBrowser {
 
         static blockHeight:number = 0;
 		static chainHashLength:number = 1;
->>>>>>> 1abecc50249e110acdd75c70ad6a799a4ad6fbaa
 
 		static makeRpcUrl(method: string, ..._params: any[]) {
 			var url = WWW.api;
@@ -356,12 +352,13 @@ namespace WebBrowser {
             return urlout;
 		}
 
+		// neo gas 
 		static async rpc_getUTXO(address:string){
 			var str = WWW.makeUrl("getutxo", WWW.neoGetUTXO, address);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
-			AppChainTool.GAS = 0;
+			AppChainTool.GAS = 0; 
 			AppChainTool.NEO = 0;
 			if (r)
 			r.forEach(element => {
@@ -371,6 +368,7 @@ namespace WebBrowser {
 				if (element["asset"] == AppChainTool.id_NEO){
 					AppChainTool.NEO += parseFloat(element["value"]);
 				}
+				
 			});
 			return r;
 		}
