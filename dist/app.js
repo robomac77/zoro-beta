@@ -340,7 +340,7 @@ var WebBrowser;
         }
         updateBlocks(pageUtil) {
             return __awaiter(this, void 0, void 0, function* () {
-                let blocks = yield WebBrowser.WWW.getblocks(pageUtil.pageSize, pageUtil.currentPage); // the limit for data display here is 15 after each 15
+                let blocks = yield WebBrowser.WWW.getblocks(pageUtil.pageSize, pageUtil.currentPage); //limit this to the 15 by 15 splitting
                 $("#blocks-page").children("table").children("tbody").empty();
                 if (pageUtil.totalPage - pageUtil.currentPage) {
                     $("#blocks-page-next").removeClass('disabled');
@@ -1587,6 +1587,8 @@ var WebBrowser;
 (function (WebBrowser) {
     class AssetInfo {
         constructor(app) {
+            this.acblockssection = document.getElementById("assets-balance-list");
+            this.actranssection = document.getElementById("assets-trans-list");
             this.div = document.getElementById("asset-info");
             this.footer = document.getElementById('footer-box');
             this.allacaddress = document.getElementById("i_acalladdress");
@@ -1630,9 +1632,9 @@ var WebBrowser;
         start() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.getLangs();
-                this.allacaddress.href = WebBrowser.Url.href_asset(this.ac); //  document.getElementById("i_acalladdress") as HTMLAnchorElement;
-                this.allacblock.href = WebBrowser.Url.href_asset(this.ac); //
-                this.allactxlist.href = WebBrowser.Url.href_asset(this.ac); //
+                this.allacaddress.href = WebBrowser.Url.href_addresses(); // document.getElementById("i_acalladdress") as HTMLAnchorElement;  // 
+                this.allacblock.href = WebBrowser.Url.href_assetblock(); // addeventlistener // this.acblockssection
+                this.allactxlist.href = WebBrowser.Url.href_assettran(); // location.getUrl()   //  window.location.href()          
                 var ap = this.ac;
                 ap = WebBrowser.locationtool.getParam();
                 ap = ap.replace('0x', '');
@@ -1648,8 +1650,8 @@ var WebBrowser;
                 this.actxcount = (yield WebBrowser.WWW.getappchaintxcount(ap));
                 this.transpageUtil = new WebBrowser.PageUtil(this.actxcount, 15);
                 this.updateNep5TransView(ap, this.transpageUtil);
-                $("#acblockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount));
-                $("#actxcount").text(this.actxcount); //$("#txcount").text(NumberTool.toThousands(this.actxcount));
+                $("#acblockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount)); 
+                $("#actxcount").text(this.actxcount); //$("#txcount").text(NumberTool.toThousands(this.actxcount)); // 
                 $("#acaddrCount").text(this.acaddcount); //$("#addrCount").text(NumberTool.toThousands(this.acaddcount));
                 this.div.hidden = false;
                 this.footer.hidden = false;
@@ -1714,7 +1716,7 @@ var WebBrowser;
             this.footer.hidden = true;
         }
         loadAssetInfoView(appchain) {
-            //this.div.innerHTML = pages.asset;
+            //this.div.innerHTML = pages.asset; 
             WebBrowser.WWW.api_getAppchain(appchain).then((data) => {
                 var appchain = data[0];
                 var valsplit = appchain.validators;
@@ -1761,7 +1763,7 @@ var WebBrowser;
                     let txcounts = item.tx.length;
                     var id = item.hash;
                     id = id.replace('0x', '');
-                    //id = id.substring(0, 4) + '...' + ap.substring(id.length - 4);
+                    //id = id.substring(0, 4) + '...' + ap.substring(id.length - 4); 
                     var ap = appchain;
                     ap = ap.replace('0x', '');
                     //ap = ap.substring(0, 4) + '...' + ap.substring(id.length - 4);
@@ -1779,7 +1781,7 @@ var WebBrowser;
             return __awaiter(this, void 0, void 0, function* () {
                 var ap = this.ac;
                 ap = ap.replace('0x', '');
-                let tranList = yield WebBrowser.WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage); //
+                let tranList = yield WebBrowser.WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage); // update Nep5 transfer loads the nep5s html element, as Tx
                 $("#assets-tran-list").empty();
                 if (tranList) {
                     tranList.forEach((item) => {
@@ -3417,6 +3419,12 @@ var WebBrowser;
         }
         static href_asset(asset) {
             return WebBrowser.locationtool.getUrl() + '/asset/' + asset;
+        }
+        static href_assettran() {
+            return WebBrowser.locationtool.getUrl() + '/asset/';
+        }
+        static href_assetblock() {
+            return WebBrowser.locationtool.getUrl() + '/asset/';
         }
         static href_nep5(nep5) {
             return WebBrowser.locationtool.getUrl() + '/nep5/' + nep5;

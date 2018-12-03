@@ -42,6 +42,9 @@
 
 		}
 
+		acblockssection: HTMLDivElement = document.getElementById("assets-balance-list") as HTMLDivElement;
+		actranssection: HTMLDivElement = document.getElementById("assets-trans-list") as HTMLDivElement;
+
 		div: HTMLDivElement = document.getElementById("asset-info") as HTMLDivElement;
 		footer: HTMLDivElement = document.getElementById('footer-box') as HTMLDivElement;
 
@@ -70,11 +73,14 @@
 		async start() {
 
 			this.getLangs()
+			
 
-			this.allacaddress.href = Url.href_asset(this.ac);//  document.getElementById("i_acalladdress") as HTMLAnchorElement;
-			this.allacblock.href = Url.href_asset(this.ac); //
-			this.allactxlist.href = Url.href_asset(this.ac); //
 
+			this.allacaddress.href = Url.href_addresses();// document.getElementById("i_acalladdress") as HTMLAnchorElement;  // 
+			this.allacblock.href = Url.href_assetblock(); // addeventlistener // this.acblockssection
+			this.allactxlist.href = Url.href_assettran(); // location.getUrl()   //  window.location.href()          
+			
+			
 
 			var ap = this.ac
 			ap = locationtool.getParam();
@@ -98,9 +104,9 @@
 			this.transpageUtil = new PageUtil(this.actxcount, 15);
 			this.updateNep5TransView(ap, this.transpageUtil);
 
-			$("#acblockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount));
+			$("#acblockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount)); 
 
-			$("#actxcount").text(this.actxcount);//$("#txcount").text(NumberTool.toThousands(this.actxcount));
+			$("#actxcount").text(this.actxcount);//$("#txcount").text(NumberTool.toThousands(this.actxcount)); // 
 
 			$("#acaddrCount").text(this.acaddcount); //$("#addrCount").text(NumberTool.toThousands(this.acaddcount));
 
@@ -158,7 +164,8 @@
 
 				//this.allacblock.href = document.getElementById("assets-balance-list") as HTMLAnchorElement; //
 				}
-			});*/
+			});*/ 
+
 
 			
 			this.div.hidden = false;
@@ -169,7 +176,7 @@
 			this.footer.hidden = true;
 		}
 		loadAssetInfoView(appchain: string) {
-			//this.div.innerHTML = pages.asset;
+			//this.div.innerHTML = pages.asset; 
 			WWW.api_getAppchain(appchain).then((data) => {
 				var appchain = data[0];
 				var valsplit = appchain.validators;
@@ -183,7 +190,7 @@
 				$("#precision2").text(valsplit[1]);
 				$("#precision3").text(valsplit[2]);
 				$("#precision4").text(valsplit[3]);
-				$("#admin").text(appchain.owner);
+				$("#admin").text(appchain.owner); 
 			})
 
 		}
@@ -219,7 +226,7 @@
 				let txcounts = item.tx.length
 				var id = item.hash
 				id = id.replace('0x', '');
-				//id = id.substring(0, 4) + '...' + ap.substring(id.length - 4);
+				//id = id.substring(0, 4) + '...' + ap.substring(id.length - 4); 
 
 				var ap = appchain;
 				ap = ap.replace('0x', '');
@@ -240,7 +247,7 @@
 
 			var ap = this.ac;
 			ap = ap.replace('0x', '');
-			let tranList: Tx[] = await WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage);//
+			let tranList: Tx[] = await WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage);// update Nep5 transfer loads the nep5s html element, as Tx
             $("#assets-tran-list").empty();
             if (tranList) {
                 tranList.forEach((item) => {

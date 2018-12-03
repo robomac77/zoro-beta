@@ -112,12 +112,11 @@ namespace WebBrowser
 		}
 
 		
-
-		static href_appchainblock( appchain : string ,index: number) {         //appchain : string 
+		static href_appchainblock( appchain : string ,index: number) {         
 			return locationtool.getUrl() + '/appchainblock/' + appchain + '/' + index;
 		}
 
-		static href_nep5info(nep5id: string) {         //appchain : string 
+		static href_nep5info(nep5id: string) {         
 			return locationtool.getUrl() + '/nep5info/' + nep5id;
 		}
 		
@@ -164,7 +163,15 @@ namespace WebBrowser
         static href_asset(asset)
         {
 			return locationtool.getUrl() + '/asset/' + asset;
-        }
+		}
+
+		static href_assettran() {
+			return locationtool.getUrl() + '/asset/';
+		}
+
+		static href_assetblock() {
+			return locationtool.getUrl() + '/asset/';
+		}
         static href_nep5(nep5) {
             return locationtool.getUrl() + '/nep5/' + nep5
         }

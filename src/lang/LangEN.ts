@@ -200,7 +200,9 @@ namespace WebBrowser
 			asset_pre2: "Validator2",
 			asset_pre3: "Validator3",
 			asset_pre4: "Validator4",
-            asset_adm: "Owner",
+			asset_adm: "Owner",
+
+
             asset_title2: "App Chain Blocks",
             asset_rank: "Hash",
             asset_addr: "Size",
