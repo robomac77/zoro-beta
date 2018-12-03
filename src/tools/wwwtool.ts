@@ -5,7 +5,7 @@ namespace WebBrowser {
 		static api: string = "http://115.159.53.39:59908/api/testnet/";
 		static apiaggr: string = "http://115.159.53.39:59999/api/testnet/";
 
-		static rpc: string = "http://115.159.53.39:10000/";
+		static rpc: string = "http://115.159.53.39:20333/";
 		static neoRpc:string = "http://47.52.192.77:20332";
 		static neoGetUTXO:string = "https://api.nel.group/api/testnet/";
         static rpcName: string = "";
