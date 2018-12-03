@@ -619,9 +619,9 @@ var WebBrowser;
         getUrlBase(netType) {
             switch (netType) {
                 case "testnet":
-                    return "http://localhost:59908/api/testnet/";
+                    return "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/";
                 case "mainnet":
-                    return "http://localhost:59908/api/testnet/";
+                    return "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/";
             }
         }
         /**
@@ -634,7 +634,7 @@ var WebBrowser;
                 let promise = new Promise((resolve, reject) => {
                     $.ajax({
                         type: 'POST',
-                        url: 'http://localhost:59908/api/testnet/' + arr[0],
+                        url: "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/" + arr[0],
                         data: JSON.stringify({
                             "jsonrpc": "2.0",
                             "method": method,
@@ -676,7 +676,7 @@ var WebBrowser;
                 let promise = new Promise((resolve, reject) => {
                     $.ajax({
                         type: 'GET',
-                        url: 'http://localhost:59908/api/testnet/' + arr[0] + '?jsonrpc=2.0&method=getblock&params=%5b1000%5d&id=1001',
+                        url: "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/" + arr[0] + "?jsonrpc=2.0&method=getblock&params=%5b1000%5d&id=1001",
                         success: (data, status) => {
                             resolve(data['result']);
                         },
@@ -6224,18 +6224,16 @@ var WebBrowser;
 (function (WebBrowser) {
     class NetMgr {
         constructor(app) {
-            //url = "localhost";
-            this.url = "115.159.68.43";
             this.app = app;
             this.types = [1, 2];
             this.nodes = {};
             this.nodes[1] = [
                 // 主网nelnode
-                ["CN", "http://localhost:59908/api/mainnet", "_1", "http://localhost:59908/api/mainnet"],
+                ["CN", "http://" + NetMgr.url + ":59908/api/mainnet", "_1", "http://" + NetMgr.url + ":59908/api/mainnet"],
             ];
             this.nodes[2] = [
                 // 测试网nelnode
-                ["CN", "http://localhost:59908/api/testnet", "_1", "http://localhost:59908/api/testnet"],
+                ["CN", "http://" + NetMgr.url + ":59908/api/testnet", "_1", "http://" + NetMgr.url + ":59908/api/testnet"],
             ];
             this.nodes_server = {};
             this.default_type = 1;
@@ -6361,6 +6359,8 @@ var WebBrowser;
             return scan;
         }
     }
+    //url = "localhost";
+    NetMgr.url = "115.159.68.43";
     WebBrowser.NetMgr = NetMgr;
 })(WebBrowser || (WebBrowser = {}));
 /// <reference path="../lib/neo-ts.d.ts"/>
