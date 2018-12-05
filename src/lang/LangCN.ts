@@ -96,7 +96,7 @@ namespace WebBrowser
             tran_input: "输入",
             tran_output: "输出",
 
-            tran_nep5: "Nep5",
+            tran_nep5: "Nep5 调用",
             tran_nep5_asset: "资产",
             tran_nep5_from: "转出",
             tran_nep5_to: "转入",
@@ -138,11 +138,29 @@ namespace WebBrowser
             assets_asset: "应用链名",
             assets_id: "应用链哈希",
             assets_type: "创建者",
-            assets_ava: "生成时间",
+			assets_ava: "生成时间",
+			assets_pre: "版本",
+
+			// app chain block
+			i_acsummary: "统计",
+			acblock_info_title: "应用链块信息",
+			acblock_info_block: "块",
+			acblock_info_hash: "哈希",
+			acblock_info_time: "时间",
+			acblock_info_size: "大小",
+			acblock_info_pre: "上一个块",
+			acblock_info_next: "下一个块",
+			acblock_info_tran: "交易",
+			acblock_info_txid: "交易ID",
+			acblock_info_type: "类型",
+			acblock_info_txsize: "大小",
+			acblock_info_ver: "版本",
+			acblock_goallblock: "返回",
 			
 
 			//nep5assets
-
+			//nep5asset-info:"资产信息",
+			nepassets_title: "资产",
 			nep5assets_asset : "资产ID",
 	        nep5assets_ava: "名称",
 			nep5assets_pre: "总量",
@@ -152,11 +170,40 @@ namespace WebBrowser
 			//nep5assetinfo
 			nep5assetid: "资产ID",
 			nep5name: "名称",
-			nep5assettotalsupply: "总量",
+			nep5assettotalsupply:"总量",
 			nep5symbol: "标",
 			nep5decimals: "小数点后位数", 
 
+			// appchain transaction
+			actran_title: "应用链交易信息",
+			actran_title_1: "交易",
+			actran_txid: "交易ID",
+			actran_type: "类型",
+			actran_netfee: "网费",
+			actran_sysfee: "系统费",
+			actran_size: "大小",
+			actran_height: "高度",
+			actran_time: "时间",
+			actran_input: "输入",
+			actran_output: "输出",
+
+			actran_nep5: "Nep5",
+			actran_nep5_asset: "资产",
+			actran_nep5_from: "从",
+			actran_nep5_to: "到",
+			actran_nep5_value: "价值",
+
+			actran_goalltran: "返回",
+
             // appchain
+			i_aclastblock: "上一个区快",
+			i_actotaltran: "交易",
+			i_acwalletcreate: "已创建的钱包地址数",
+
+			i_acallblock: "所有区块",
+			i_actotaltrans: "所有交易",
+			//i_acwalletcreate:"所有钱包地址", 
+		
 			asset_title: "应用链信息",
 			asset_id: "应用链",
 			asset_asset: "应用链名",
@@ -167,7 +214,7 @@ namespace WebBrowser
 			asset_pre2: "共识节点2",
 			asset_pre3: "共识节点3",
 			asset_pre4: "共识节点4",
-            asset_adm: "连上地址数",
+			asset_adm: "创建者",
 			asset_title2: "应用链区块",
 
             asset_addr: "大小",

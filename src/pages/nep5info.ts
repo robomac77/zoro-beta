@@ -68,7 +68,8 @@
                 html = '<a href="' + href + '" target="_self">&lt&lt&lt返回</a>';
             }
             $("#nep5asset").empty();
-            $("#nep5asset").append(html);
+			$("#nep5asset").append(html);
+
 
             this.loadAssetInfoView(nep5assetid);
 
@@ -151,7 +152,7 @@
                 $("#nep5assettotalsupply").text(asset.totalsupply);
                 $("#nep5symbol").text(asset.symbol);
                 $("#nep5decimals").text(asset.decimals);
-               // $("#nep5admin").text(asset.admin);                
+               // $("#nep5admin").text(asset.admin);      
             })
         }
         async updateAssetBalanceView(nep5assetid: string, pageUtil: PageUtil) {

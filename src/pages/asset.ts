@@ -78,8 +78,7 @@
 
 			this.allacaddress.href = Url.href_addresses();// document.getElementById("i_acalladdress") as HTMLAnchorElement;  // 
 			this.allacblock.href = Url.href_assetblock(); // addeventlistener // this.acblockssection
-			this.allactxlist.href = Url.href_assettran(); // location.getUrl()   //  window.location.href()          
-			
+			this.allactxlist.href = Url.href_assetblock(); // 
 			
 
 			var ap = this.ac
@@ -97,7 +96,7 @@
 
 			this.acaddcount = await WWW.api_getAppchainAddrcount(ap) as number;
 			this.acblockcount = await WWW.api_getAppchainBlockcount(ap) as number;
-			this.pageUtil = new PageUtil(this.acblockcount, 15);
+			this.pageUtil = new PageUtil(this.acblockcount, 15);  // delta 15 * 15, change the delta to more del
 			await this.updateBlocks(ap, this.pageUtil);
 
 			this.actxcount = await WWW.getappchaintxcount(ap) as number;

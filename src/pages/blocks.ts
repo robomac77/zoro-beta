@@ -35,8 +35,8 @@ namespace WebBrowser
             this.getLangs()
             
             var count = await WWW.api_getHeight();
-            this.pageUtil = new PageUtil(count, 15);
-            await this.updateBlocks(this.pageUtil);
+            this.pageUtil = new PageUtil(count, 15);  // delta 15 * 15
+            await this.updateBlocks(this.pageUtil); // this.pageUtil
             this.div.hidden = false;
             this.footer.hidden = false;
             $("#blocks-page-next").off("click").click(() => {
@@ -96,7 +96,7 @@ namespace WebBrowser
 
                 let html = `
                 <tr>
-                <td><a href="`+ Url.href_asset(id) + `" target="_self">` + id + `</a></td>
+                <td><a href="`+ Url.href_blockh(id) + `" target="_self">` + id + `</a></td>
                 <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + Url.href_block(item.index) + `" target="_self">` + item.index + `</a></td>
                 <td>` + txcounts + `</td>
                 </tr>`;

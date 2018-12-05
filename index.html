@@ -339,7 +339,7 @@
 			<div class="row">
 				<div class="col-md-2">
 					<div class="title">
-						<span id="assets_title">Assets</span>
+						<span id="nepassets_title">Assets</span>
 					</div>
 				</div>
 			</div>
@@ -444,6 +444,7 @@
 				<div id="addrs-page-next" class="page-next">
 					<img src="./img/righttrangle.svg" alt="">
 				</div>
+				
 
 			</div>
 		</div>
@@ -640,9 +641,9 @@
 				<span id="asset_title">Asset Information</span>
 				<div class="go-back" id="goallasset"></div>
 			</div>
-			<div class="title">
-				<span id="i_summary">Summary</span>
-			</div>
+			<!--<div class="title">
+		<span id="i_acsummary">Dashboard</span>
+	</div>-->
 			<div class="row summary">
 				<div class="col-md-4 ">
 					<div class="block">
@@ -679,7 +680,7 @@
 				</div>
 			</div>
 			<div class="title">
-				<span id="i_chaindata">Chain Data</span>
+				<span id="i_chaindata">Chain Information</span>
 			</div>
 			<div class="list-nel">
 				<div class="list-body">
@@ -755,136 +756,136 @@
 				</div>
 			</div>
 		</div>
-		<!--交易详情-->
-		<div id="transaction-info" style="min-height: 619px;">
-			<div class="title">
-				<span id="tran_title">Transaction Information</span>
-				<div class="go-back" id="goalltrans"></div>
-			</div>
-			<div class="list-nel">
-				<div class="list-head">
-					<div class="line"><div class="title-nel"><span id="tran_title_1">Transaction </span></div></div>
-				</div>
-				<div class="list-body">
-					<div class="line"><div class="title-nel"><span id="tran_txid">TXID</span></div> <div class="content-nel"><span id="txid"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="tran_type">Type</span></div> <div class="content-nel"><span id="type"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="tran_netfee">Network Fee</span></div><div class="content-nel"><span id="netfee"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="tran_sysfee">System Fee</span></div><div class="content-nel"><span id="sysfee"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="tran_size">Size</span></div><div class="content-nel"><span id="txsize"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="tran_height">Height</span></div><div class="content-nel"><span id="blockindex"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="tran_time">Time</span></div><div class="content-nel"><span id="transaction-time"></span></div></div>
-				</div>
-			</div>
-			<div style="padding-top:25px">
-				<div class="row">
-					<div class="col-md-6">
-						<div class="list-nel">
-							<div class="list-head">
-								<div class="line"><div class="title-nel"><span id="tran_input">Input</span></div></div>
-							</div>
-							<div class="list-body" id="from">
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="list-nel">
-							<div class="list-head">
-								<div class="line"><div class="title-nel"><span id="tran_output">Output</span></div></div>
-							</div>
-							<div class="list-body" id="to">
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="txidnep-warp">
+	<!--交易详情-->
+			<div id="transaction-info" style="min-height: 619px;">
 				<div class="title">
-					<span id="tran_nep5">Nep5</span>
+					<span id="tran_title">Transaction Information</span>
+					<div class="go-back" id="goalltrans"></div>
 				</div>
-				<table class="table cool table-nel">
-					<thead>
-						<tr>
-							<th id="tran_nep5_asset">Asset</th>
-							<th id="tran_nep5_from">From</th>
-							<th id="tran_nep5_to">To</th>
-							<th id="tran_nep5_value">Value</th>
-						</tr>
-					</thead>
-					<tbody id="txidnep5"></tbody>
-				</table>
+				<div class="list-nel">
+					<div class="list-head">
+						<div class="line"><div class="title-nel"><span id="tran_title_1">Transaction </span></div></div>
+					</div>
+					<div class="list-body">
+						<div class="line"><div class="title-nel"><span id="tran_txid">TXID</span></div> <div class="content-nel"><span id="txid"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="tran_type">Type</span></div> <div class="content-nel"><span id="type"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="tran_netfee">Network Fee</span></div><div class="content-nel"><span id="netfee"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="tran_sysfee">System Fee</span></div><div class="content-nel"><span id="sysfee"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="tran_size">Size</span></div><div class="content-nel"><span id="txsize"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="tran_height">Height</span></div><div class="content-nel"><span id="blockindex"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="tran_time">Time</span></div><div class="content-nel"><span id="transaction-time"></span></div></div>
+					</div>
+				</div>
+				<div style="padding-top:25px">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="list-nel">
+								<div class="list-head">
+									<div class="line"><div class="title-nel"><span id="tran_input">Input</span></div></div>
+								</div>
+								<div class="list-body" id="from">
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="list-nel">
+								<div class="list-head">
+									<div class="line"><div class="title-nel"><span id="tran_output">Output</span></div></div>
+								</div>
+								<div class="list-body" id="to">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="txidnep-warp">
+					<div class="title">
+						<span id="tran_nep5">Nep5 Transfer</span>
+					</div>
+					<table class="table cool table-nel">
+						<thead>
+							<tr>
+								<th id="tran_nep5_asset">Asset</th>
+								<th id="tran_nep5_from">From</th>
+								<th id="tran_nep5_to">To</th>
+								<th id="tran_nep5_value">Value</th>
+							</tr>
+						</thead>
+						<tbody id="txidnep5"></tbody>
+					</table>
+				</div>
 			</div>
-		</div>
 
-		<!--AC交易详情-->
-		<div id="actransaction-info" style="min-height: 619px;">
-			<div class="title">
-				<span id="actran_title">App Chain Transaction Information</span>
-				<div class="go-back" id="acgoalltrans"></div>
-			</div>
-			<div class="list-nel">
-				<div class="list-head">
-					<div class="line"><div class="title-nel"><span id="actran_title_1">Transaction </span></div></div>
-				</div>
-				<div class="list-body">
-					<div class="line"><div class="title-nel"><span id="actran_txid">TXID</span></div> <div class="content-nel"><span id="actxid"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="actran_type">Type</span></div> <div class="content-nel"><span id="actype"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="actran_netfee">Network Fee</span></div><div class="content-nel"><span id="acnetfee"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="actran_sysfee">System Fee</span></div><div class="content-nel"><span id="acsysfee"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="actran_size">Size</span></div><div class="content-nel"><span id="actxsize"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="actran_height">Height</span></div><div class="content-nel"><span id="acblockindex"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="actran_time">Time</span></div><div class="content-nel"><span id="actransaction-time"></span></div></div>
-				</div>
-			</div>
-			<div style="padding-top:25px">
-				<div class="row">
-					<div class="col-md-6">
-						<div class="list-nel">
-							<div class="list-head">
-								<div class="line"><div class="title-nel"><span id="actran_input">Input</span></div></div>
-							</div>
-							<div class="list-body" id="acfrom">
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="list-nel">
-							<div class="list-head">
-								<div class="line"><div class="title-nel"><span id="actran_output">Output</span></div></div>
-							</div>
-							<div class="list-body" id="acto">
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="actxidnep-warp">
+			<!--AC交易详情-->
+			<div id="actransaction-info" style="min-height: 619px;">
 				<div class="title">
-					<span id="actran_nep5">Nep5</span>
+					<span id="actran_title">App Chain Transaction Information</span>
+					<div class="go-back" id="acgoalltrans"></div>
 				</div>
-				<table class="table cool table-nel">
-					<thead>
-						<tr>
-							<th id="actran_nep5_asset">Asset</th>
-							<th id="actran_nep5_from">From</th>
-							<th id="actran_nep5_to">To</th>
-							<th id="actran_nep5_value">Value</th>
-						</tr>
-					</thead>
-					<tbody id="actxidnep5"></tbody>
-				</table>
+				<div class="list-nel">
+					<div class="list-head">
+						<div class="line"><div class="title-nel"><span id="actran_title_1">Transaction </span></div></div>
+					</div>
+					<div class="list-body">
+						<div class="line"><div class="title-nel"><span id="actran_txid">TXID</span></div> <div class="content-nel"><span id="actxid"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="actran_type">Type</span></div> <div class="content-nel"><span id="actype"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="actran_netfee">Network Fee</span></div><div class="content-nel"><span id="acnetfee"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="actran_sysfee">System Fee</span></div><div class="content-nel"><span id="acsysfee"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="actran_size">Size</span></div><div class="content-nel"><span id="actxsize"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="actran_height">Height</span></div><div class="content-nel"><span id="acblockindex"></span></div></div>
+						<div class="line"><div class="title-nel"><span id="actran_time">Time</span></div><div class="content-nel"><span id="actransaction-time"></span></div></div>
+					</div>
+				</div>
+				<div style="padding-top:25px">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="list-nel">
+								<div class="list-head">
+									<div class="line"><div class="title-nel"><span id="actran_input">Input</span></div></div>
+								</div>
+								<div class="list-body" id="acfrom">
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="list-nel">
+								<div class="list-head">
+									<div class="line"><div class="title-nel"><span id="actran_output">Output</span></div></div>
+								</div>
+								<div class="list-body" id="acto">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="actxidnep-warp">
+					<div class="title">
+						<span id="actran_nep5">Nep5</span>
+					</div>
+					<table class="table cool table-nel">
+						<thead>
+							<tr>
+								<th id="actran_nep5_asset">Asset</th>
+								<th id="actran_nep5_from">From</th>
+								<th id="actran_nep5_to">To</th>
+								<th id="actran_nep5_value">Value</th>
+							</tr>
+						</thead>
+						<tbody id="actxidnep5"></tbody>
+					</table>
 
+				</div>
 			</div>
-		</div>
 
-		<div id="notfound" class="notfound" hidden>
-			<div>
-				<span>Oops! It looks like you are lost.</span>
-				<br>
-				<button class="btn">Go to Homepage</button>
+			<div id="notfound" class="notfound" hidden>
+				<div>
+					<span>Oops! It looks like you are lost.</span>
+					<br>
+					<button class="btn">Go to Homepage</button>
+				</div>
 			</div>
+			<div style="height:100px;"></div>
 		</div>
-		<div style="height:100px;"></div>
-	</div>
     <div id="footer-box" class="footer-box" hidden>
         <div class="footer-warp">
             <div class="footer-continar">

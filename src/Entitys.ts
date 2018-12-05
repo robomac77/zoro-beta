@@ -173,14 +173,17 @@ namespace WebBrowser
 			return locationtool.getUrl() + '/asset/';
 		}
         static href_nep5(nep5) {
-            return locationtool.getUrl() + '/nep5/' + nep5
-        }
+			return locationtool.getUrl() + '/nep5/' + nep5 ;
+		}
+
+		
         static href_nnsbeing() {
             return locationtool.getUrl() + '/nnsauction/'
         }
         static href_nnsrank() {
-            return locationtool.getUrl() + '/nnsrank/'
-        }
+			return locationtool.getUrl() + '/nnsrank/';
+		}
+		
         static href_nns(domain) {
             return locationtool.getUrl() + '/nns/' + domain
         }

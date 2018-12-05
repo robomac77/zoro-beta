@@ -74,13 +74,14 @@ namespace WebBrowser
             block_goallblock: "Back to all blocks",
 
             // app chain block
+
             acblock_info_title: "App Chain Block Information",
             acblock_info_block: "Block",
 			acblock_info_hash: "Hash",
 			//block_info_chainhash: "App Chain Hash",
             acblock_info_time: "Time",
             acblock_info_size: "Size",
-           acblock_info_pre: "Previous Block",
+            acblock_info_pre: "Previous Block",
             acblock_info_next: "Next Block",
             acblock_info_tran: "Transactions",
             acblock_info_txid: "TXID",
@@ -130,7 +131,7 @@ namespace WebBrowser
             actran_input: "Input",
             actran_output: "Output",
 
-            actran_nep5: "Nep5",
+            actran_nep5: "Nep5 Transfer",
             actran_nep5_asset: "Asset",
             actran_nep5_from: "From",
             actran_nep5_to: "To",
@@ -166,7 +167,7 @@ namespace WebBrowser
             addr_goalladress: "Back to all addresses",
 
 
-            // assets
+            // appchains
             assets_title: "App Chains",
             assets_asset: "App Chain Name",
             assets_id: "App Chain Hash",
@@ -176,14 +177,16 @@ namespace WebBrowser
 			
 
 			//nep5assets
-
+			nepassets_title: "Assets",
 			nep5assets_asset: "Asset ID",
 			nep5assets_ava: "Name",
 			nep5assets_pre: "Total Supply",
 			nep5assets_val: "Symbol",
 			nep5assets_id: "Decimals", 
+			
 
 			//nep5assetinfo
+			//nep5asset-info:"Asset Information",
 		    nep5assetid: "Asset ID",
 			nep5name: "Name",
 			nep5assettotalsupply: "Total Supply",
@@ -191,6 +194,11 @@ namespace WebBrowser
 			nep5decimals: "Decimals", 
 
             // asset
+			i_acsummary: "Dashboard",
+
+			i_aclastblock: "Last Block",
+			i_actotaltran: "View All Transactions",
+			i_acwalletcreate: "View All Wallets",
             asset_title: "App Chain Information",
             asset_id: "App Chain Hash",
             asset_asset: "App Chain Name",
@@ -201,7 +209,7 @@ namespace WebBrowser
 			asset_pre3: "Validator3",
 			asset_pre4: "Validator4",
 			asset_adm: "Owner",
-
+		
 
             asset_title2: "App Chain Blocks",
             asset_rank: "Hash",

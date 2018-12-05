@@ -310,8 +310,8 @@ var WebBrowser;
             return __awaiter(this, void 0, void 0, function* () {
                 this.getLangs();
                 var count = yield WebBrowser.WWW.api_getHeight();
-                this.pageUtil = new WebBrowser.PageUtil(count, 15);
-                yield this.updateBlocks(this.pageUtil);
+                this.pageUtil = new WebBrowser.PageUtil(count, 15); // delta 15 * 15
+                yield this.updateBlocks(this.pageUtil); // this.pageUtil
                 this.div.hidden = false;
                 this.footer.hidden = false;
                 $("#blocks-page-next").off("click").click(() => {
@@ -372,7 +372,7 @@ var WebBrowser;
                     id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
                     let html = `
                 <tr>
-                <td><a href="` + WebBrowser.Url.href_asset(id) + `" target="_self">` + id + `</a></td>
+                <td><a href="` + WebBrowser.Url.href_blockh(id) + `" target="_self">` + id + `</a></td>
                 <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + WebBrowser.Url.href_block(item.index) + `" target="_self">` + item.index + `</a></td>
                 <td>` + txcounts + `</td>
                 </tr>`;
@@ -1634,7 +1634,7 @@ var WebBrowser;
                 this.getLangs();
                 this.allacaddress.href = WebBrowser.Url.href_addresses(); // document.getElementById("i_acalladdress") as HTMLAnchorElement;  // 
                 this.allacblock.href = WebBrowser.Url.href_assetblock(); // addeventlistener // this.acblockssection
-                this.allactxlist.href = WebBrowser.Url.href_assettran(); // location.getUrl()   //  window.location.href()          
+                this.allactxlist.href = WebBrowser.Url.href_assetblock(); // 
                 var ap = this.ac;
                 ap = WebBrowser.locationtool.getParam();
                 ap = ap.replace('0x', '');
@@ -1645,7 +1645,7 @@ var WebBrowser;
                 this.loadAssetInfoView(ap);
                 this.acaddcount = (yield WebBrowser.WWW.api_getAppchainAddrcount(ap));
                 this.acblockcount = (yield WebBrowser.WWW.api_getAppchainBlockcount(ap));
-                this.pageUtil = new WebBrowser.PageUtil(this.acblockcount, 15);
+                this.pageUtil = new WebBrowser.PageUtil(this.acblockcount, 15); // delta 15 * 15, change the delta to more del
                 yield this.updateBlocks(ap, this.pageUtil);
                 this.actxcount = (yield WebBrowser.WWW.getappchaintxcount(ap));
                 this.transpageUtil = new WebBrowser.PageUtil(this.actxcount, 15);
@@ -4406,7 +4406,7 @@ var WebBrowser;
                 $("#nep5assettotalsupply").text(asset.totalsupply);
                 $("#nep5symbol").text(asset.symbol);
                 $("#nep5decimals").text(asset.decimals);
-                // $("#nep5admin").text(asset.admin);                
+                // $("#nep5admin").text(asset.admin);      
             });
         }
         updateAssetBalanceView(nep5assetid, pageUtil) {
@@ -5833,7 +5833,7 @@ var WebBrowser;
                 tran_time: "时间",
                 tran_input: "输入",
                 tran_output: "输出",
-                tran_nep5: "Nep5",
+                tran_nep5: "Nep5 调用",
                 tran_nep5_asset: "资产",
                 tran_nep5_from: "转出",
                 tran_nep5_to: "转入",
@@ -5865,7 +5865,25 @@ var WebBrowser;
                 assets_id: "应用链哈希",
                 assets_type: "创建者",
                 assets_ava: "生成时间",
+                assets_pre: "版本",
+                // app chain block
+                i_acsummary: "统计",
+                acblock_info_title: "应用链块信息",
+                acblock_info_block: "块",
+                acblock_info_hash: "哈希",
+                acblock_info_time: "时间",
+                acblock_info_size: "大小",
+                acblock_info_pre: "上一个块",
+                acblock_info_next: "下一个块",
+                acblock_info_tran: "交易",
+                acblock_info_txid: "交易ID",
+                acblock_info_type: "类型",
+                acblock_info_txsize: "大小",
+                acblock_info_ver: "版本",
+                acblock_goallblock: "返回",
                 //nep5assets
+                //nep5asset-info:"资产信息",
+                nepassets_title: "资产",
                 nep5assets_asset: "资产ID",
                 nep5assets_ava: "名称",
                 nep5assets_pre: "总量",
@@ -5877,7 +5895,31 @@ var WebBrowser;
                 nep5assettotalsupply: "总量",
                 nep5symbol: "标",
                 nep5decimals: "小数点后位数",
+                // appchain transaction
+                actran_title: "应用链交易信息",
+                actran_title_1: "交易",
+                actran_txid: "交易ID",
+                actran_type: "类型",
+                actran_netfee: "网费",
+                actran_sysfee: "系统费",
+                actran_size: "大小",
+                actran_height: "高度",
+                actran_time: "时间",
+                actran_input: "输入",
+                actran_output: "输出",
+                actran_nep5: "Nep5",
+                actran_nep5_asset: "资产",
+                actran_nep5_from: "从",
+                actran_nep5_to: "到",
+                actran_nep5_value: "价值",
+                actran_goalltran: "返回",
                 // appchain
+                i_aclastblock: "上一个区快",
+                i_actotaltran: "交易",
+                i_acwalletcreate: "已创建的钱包地址数",
+                i_acallblock: "所有区块",
+                i_actotaltrans: "所有交易",
+                //i_acwalletcreate:"所有钱包地址", 
                 asset_title: "应用链信息",
                 asset_id: "应用链",
                 asset_asset: "应用链名",
@@ -5887,7 +5929,7 @@ var WebBrowser;
                 asset_pre2: "共识节点2",
                 asset_pre3: "共识节点3",
                 asset_pre4: "共识节点4",
-                asset_adm: "连上地址数",
+                asset_adm: "创建者",
                 asset_title2: "应用链区块",
                 asset_addr: "大小",
                 asset_balance: "时间",
@@ -6022,7 +6064,7 @@ var WebBrowser;
                 actran_time: "Time",
                 actran_input: "Input",
                 actran_output: "Output",
-                actran_nep5: "Nep5",
+                actran_nep5: "Nep5 Transfer",
                 actran_nep5_asset: "Asset",
                 actran_nep5_from: "From",
                 actran_nep5_to: "To",
@@ -6048,7 +6090,7 @@ var WebBrowser;
                 addr_utxo_number: "Number",
                 addr_utxo_txid: "TXID",
                 addr_goalladress: "Back to all addresses",
-                // assets
+                // appchains
                 assets_title: "App Chains",
                 assets_asset: "App Chain Name",
                 assets_id: "App Chain Hash",
@@ -6056,18 +6098,24 @@ var WebBrowser;
                 assets_ava: "Time Created",
                 assets_pre: "Version",
                 //nep5assets
+                nepassets_title: "Assets",
                 nep5assets_asset: "Asset ID",
                 nep5assets_ava: "Name",
                 nep5assets_pre: "Total Supply",
                 nep5assets_val: "Symbol",
                 nep5assets_id: "Decimals",
                 //nep5assetinfo
+                //nep5asset-info:"Asset Information",
                 nep5assetid: "Asset ID",
                 nep5name: "Name",
                 nep5assettotalsupply: "Total Supply",
                 nep5symbol: "Symbol",
                 nep5decimals: "Decimals",
                 // asset
+                i_acsummary: "Dashboard",
+                i_aclastblock: "Last Block",
+                i_actotaltran: "View All Transactions",
+                i_acwalletcreate: "View All Wallets",
                 asset_title: "App Chain Information",
                 asset_id: "App Chain Hash",
                 asset_asset: "App Chain Name",
