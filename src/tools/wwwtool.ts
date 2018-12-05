@@ -428,6 +428,17 @@ namespace WebBrowser {
             return r;
 		}
 		
+		//获得高度
+		static async  api_getNEOHeight()    // covered ; gets the id of lastblockheight
+		{
+			var str = WWW.makeUrl("getblockcount", WWW.neoRpc);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			var height = parseInt(r as string) - 1;
+			return height;
+		}
+
 		static async api_getZoroHeight(chainHash:any)
         {
             var str = WWW.makeZoroRpcUrl(WWW.rpc, "getblockcount", chainHash);

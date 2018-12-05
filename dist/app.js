@@ -2009,6 +2009,17 @@ var WebBrowser;
                 return r;
             });
         }
+        //获得高度
+        static api_getNEOHeight() {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeUrl("getblockcount", WWW.neoRpc);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                var height = parseInt(r) - 1;
+                return height;
+            });
+        }
         static api_getZoroHeight(chainHash) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeZoroRpcUrl(WWW.rpc, "getblockcount", chainHash);
@@ -3258,8 +3269,9 @@ var WebBrowser;
         static initAllAppChain() {
             return __awaiter(this, void 0, void 0, function* () {
                 var allChainHash = yield WebBrowser.WWW.api_getAllAppChain();
+                this.chainName2Hash["NEO"] = "NEO";
                 this.chainName2Hash["AppRoot"] = "0000000000000000000000000000000000000000";
-                this.appChainLength = 1;
+                this.appChainLength = 2;
                 for (var a in allChainHash) {
                     var chainHash = allChainHash[a];
                     var chainName = yield WebBrowser.WWW.api_getAppChainName(chainHash);
@@ -3273,8 +3285,9 @@ var WebBrowser;
         static updateAllAppChain() {
             return __awaiter(this, void 0, void 0, function* () {
                 var allChainHash = yield WebBrowser.WWW.api_getAllAppChain();
+                this.chainName2Hash["NEO"] = "NEO";
                 this.chainName2Hash["AppRoot"] = "0000000000000000000000000000000000000000";
-                this.appChainLength = 1;
+                this.appChainLength = 2;
                 for (var a in allChainHash) {
                     var chainHash = allChainHash[a];
                     var chainName = yield WebBrowser.WWW.api_getAppChainName(chainHash);
@@ -3580,26 +3593,72 @@ var WebBrowser;
     };
     WebBrowser.AppChainTool = AppChainTool;
 })(WebBrowser || (WebBrowser = {}));
-/// <reference path="../app.ts"/>
-/// <reference path="../tools/AppChainTool.ts"/> 
-/// <reference path="../tools/wwwtool.ts"/> 
 var WebBrowser;
-/// <reference path="../app.ts"/>
-/// <reference path="../tools/AppChainTool.ts"/> 
-/// <reference path="../tools/wwwtool.ts"/> 
 (function (WebBrowser) {
-    class GUI {
-        constructor(app) {
-            this.div = document.getElementById('gui-info');
-            this.footer = document.getElementById('footer-box');
-            this.app = app;
-            Neo.Cryptography.RandomNumberGenerator.startCollectors();
-            WebBrowser.AppChainTool.initAppChainSelectList();
+    class GUITool {
+    }
+    WebBrowser.GUITool = GUITool;
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="./Base.ts"/>
+var WebBrowser;
+/// <reference path="./Base.ts"/>
+(function (WebBrowser) {
+    class GUI_Route {
+        constructor() {
+            this.pageName = [];
         }
-        getLangs() {
-            if (this.langType != this.app.langmgr.type) {
-                this.langType = this.app.langmgr.type;
+        static get instance() {
+            if (this.route == null) {
+                this.route = new GUI_Route();
             }
+            return this.route;
+        }
+        showUI(pageName) {
+            if (this.pageName[pageName])
+                this.pageName[pageName].showUI();
+        }
+        pushUI(pageName, base) {
+            this.pageName[pageName] = base;
+        }
+        hideUI(pageName) {
+            if (this.pageName[pageName])
+                this.pageName[pageName].hideUI();
+        }
+        getUI(pageName) {
+            if (this.pageName[pageName])
+                return this.pageName[pageName];
+            return null;
+        }
+    }
+    GUI_Route.route = null;
+    WebBrowser.GUI_Route = GUI_Route;
+    let PageName;
+    (function (PageName) {
+        PageName[PageName["Login"] = 0] = "Login";
+        PageName[PageName["Wallet"] = 1] = "Wallet";
+        PageName[PageName["MainView"] = 2] = "MainView";
+        PageName[PageName["Title"] = 3] = "Title";
+        PageName[PageName["Asset"] = 4] = "Asset";
+        PageName[PageName["Charge"] = 5] = "Charge";
+        PageName[PageName["AppChain"] = 6] = "AppChain";
+        PageName[PageName["Contract"] = 7] = "Contract";
+        PageName[PageName["TxMessage"] = 8] = "TxMessage";
+    })(PageName = WebBrowser.PageName || (WebBrowser.PageName = {}));
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="./Base.ts"/>
+/// <reference path="./GUIRoute.ts"/>
+var WebBrowser;
+/// <reference path="./Base.ts"/>
+/// <reference path="./GUIRoute.ts"/>
+(function (WebBrowser) {
+    class GUI_Login {
+        constructor(div) {
+            this.div = div;
+        }
+        showUI() {
+            this.login();
+        }
+        hideUI() {
         }
         login() {
             this.div.removeChild(this.div.firstChild);
@@ -3625,10 +3684,10 @@ var WebBrowser;
                     var s = wallet.scrypt;
                     ThinNeo.Helper.GetPrivateKeyFromNep2(nepkey, password.value, s.N, s.r, s.p, (info, result) => {
                         if (info == "finish") {
-                            this.prikey = result;
-                            this.pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(this.prikey);
-                            this.address = ThinNeo.Helper.GetAddressFromPublicKey(this.pubkey);
-                            this.mainMenu();
+                            WebBrowser.GUITool.prikey = result;
+                            WebBrowser.GUITool.pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(WebBrowser.GUITool.prikey);
+                            WebBrowser.GUITool.address = ThinNeo.Helper.GetAddressFromPublicKey(WebBrowser.GUITool.pubkey);
+                            WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.MainView);
                         }
                     });
                 }
@@ -3637,7 +3696,7 @@ var WebBrowser;
             loginbackground.appendChild(createWallet);
             createWallet.textContent = "创建钱包";
             createWallet.onclick = () => {
-                this.createWallet();
+                WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.Wallet);
             };
             var wallet;
             var reader = new FileReader();
@@ -3651,6 +3710,22 @@ var WebBrowser;
                     reader.readAsText(file.files[0]);
                 }
             };
+        }
+    }
+    WebBrowser.GUI_Login = GUI_Login;
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="./Base.ts"/>
+var WebBrowser;
+/// <reference path="./Base.ts"/>
+(function (WebBrowser) {
+    class GUI_Wallet {
+        constructor(div) {
+            this.div = div;
+        }
+        showUI() {
+            this.createWallet();
+        }
+        hideUI() {
         }
         createWallet() {
             this.div.removeChild(this.div.firstChild);
@@ -3694,9 +3769,9 @@ var WebBrowser;
                         if (info == "finish") {
                             wallet.accounts[0].nep2key = result;
                             wallet.accounts[0].contract = new ThinNeo.contract();
-                            this.prikey = key;
-                            this.pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(key);
-                            this.address = ThinNeo.Helper.GetAddressFromPublicKey(this.pubkey);
+                            WebBrowser.GUITool.prikey = key;
+                            WebBrowser.GUITool.pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(key);
+                            WebBrowser.GUITool.address = ThinNeo.Helper.GetAddressFromPublicKey(WebBrowser.GUITool.pubkey);
                             wallet.accounts[0].contract.script = ThinNeo.Helper.GetAddressCheckScriptFromPublicKey(pubkey).toHexString();
                             var jsonstr = JSON.stringify(wallet.toJson());
                             var blob = new Blob([ThinNeo.Helper.String2Bytes(jsonstr)]);
@@ -3712,7 +3787,7 @@ var WebBrowser;
             loginbackground.appendChild(returnLogin);
             returnLogin.textContent = "返回登录>>";
             returnLogin.onclick = () => {
-                this.login();
+                WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.Login);
             };
         }
         downloadWallet(url, walletName) {
@@ -3734,92 +3809,40 @@ var WebBrowser;
             var downLoad = document.createElement('button');
             loginbackground.appendChild(downLoad);
             downLoad.textContent = "下载文件";
+            var b = true;
             downLoad.onclick = () => {
                 var downurl = document.createElement("a");
-                downLoad.appendChild(downurl);
+                loginbackground.appendChild(downurl);
                 downurl.download = walletName + ".json";
                 downurl.href = url;
-                downurl.click();
-                this.mainMenu();
+                if (b) {
+                    downurl.click();
+                    b = false;
+                }
+                WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.MainView);
             };
             var returnLogin = document.createElement('a');
             loginbackground.appendChild(returnLogin);
             returnLogin.textContent = "返回登录>>";
             returnLogin.onclick = () => {
-                this.login();
+                WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.Login);
             };
         }
-        mainMenu() {
-            this.div.removeChild(this.div.firstChild);
-            var background = document.createElement('div');
-            this.div.appendChild(background);
-            this.title(background);
+    }
+    WebBrowser.GUI_Wallet = GUI_Wallet;
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="./Base.ts"/>
+var WebBrowser;
+/// <reference path="./Base.ts"/>
+(function (WebBrowser) {
+    class GUI_Asset {
+        constructor(div) {
+            this.div = div;
         }
-        title(div) {
-            var title = document.createElement('div');
-            title.style.width = "100%";
-            div.appendChild(title);
-            var mainValueBackGround = document.createElement('div');
-            mainValueBackGround.style.width = "100%";
-            div.appendChild(mainValueBackGround);
-            this.initAppChain(mainValueBackGround);
-            this.update();
-            var asset = document.createElement("button");
-            title.appendChild(asset);
-            asset.style.cssFloat = "left";
-            asset.style.width = "10%";
-            asset.textContent = "资产";
-            asset.onclick = () => {
-                this.mainAsset(mainValueBackGround);
-            };
-            asset.click();
-            var charge = document.createElement("button");
-            title.appendChild(charge);
-            charge.style.cssFloat = "left";
-            charge.style.width = "10%";
-            charge.textContent = "转账";
-            charge.onclick = () => {
-                this.mainCharge(mainValueBackGround);
-            };
-            var appChain = document.createElement("button");
-            title.appendChild(appChain);
-            appChain.style.cssFloat = "left";
-            appChain.style.width = "10%";
-            appChain.textContent = "应用链";
-            appChain.onclick = () => {
-                this.mainAppChain(mainValueBackGround);
-            };
-            var contract = document.createElement("button");
-            title.appendChild(contract);
-            contract.style.cssFloat = "left";
-            contract.style.width = "10%";
-            contract.textContent = "发布合约";
-            contract.onclick = () => {
-                this.mainContract(mainValueBackGround);
-            };
-            var transaction = document.createElement("button");
-            title.appendChild(transaction);
-            transaction.style.cssFloat = "left";
-            transaction.style.width = "10%";
-            transaction.textContent = "交易记录";
-            transaction.onclick = () => {
-            };
-            var message = document.createElement("button");
-            title.appendChild(message);
-            message.style.cssFloat = "left";
-            message.style.width = "10%";
-            message.textContent = "信息";
-            message.onclick = () => {
-            };
-            this.selectAppChain = document.createElement("select");
-            this.selectAppChain.style.cssFloat = "right";
-            this.selectAppChain.style.width = "15%";
-            title.appendChild(this.selectAppChain);
-            this.height = document.createElement("span");
-            title.appendChild(this.height);
-            this.height.style.cssFloat = "right";
-            this.height.style.width = "6%";
-            this.height.textContent = "0";
+        showUI() {
+            this.mainAsset(this.div);
+        }
+        hideUI() {
         }
         mainAsset(div) {
             return __awaiter(this, void 0, void 0, function* () {
@@ -3843,7 +3866,7 @@ var WebBrowser;
                 var BCP = document.createElement('span');
                 BCP.style.width = "100%";
                 BCP.style.cssFloat = "left";
-                var bcpnum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.zoroBCP, this.address, "0000000000000000000000000000000000000000");
+                var bcpnum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.zoroBCP, WebBrowser.GUITool.address, "0000000000000000000000000000000000000000");
                 BCP.style.color = "#eeeeee";
                 BCP.textContent = 'BCP = ' + bcpnum;
                 zoroChain.appendChild(BCP);
@@ -3858,7 +3881,7 @@ var WebBrowser;
                 name.style.color = "#eeeeee";
                 name.textContent = 'NEO CHAIN';
                 neoChain.appendChild(name);
-                var utxo = yield WebBrowser.WWW.rpc_getUTXO(this.address);
+                var utxo = yield WebBrowser.WWW.rpc_getUTXO(WebBrowser.GUITool.address);
                 var GAS = document.createElement('span');
                 GAS.style.width = "100%";
                 GAS.style.cssFloat = "left";
@@ -3869,7 +3892,7 @@ var WebBrowser;
                 CGAS.style.width = "100%";
                 CGAS.style.cssFloat = "left";
                 CGAS.style.color = "#eeeeee";
-                var CgasNum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.CGAS, this.address);
+                var CgasNum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.CGAS, WebBrowser.GUITool.address);
                 CGAS.textContent = 'CGAS = ' + CgasNum;
                 neoChain.appendChild(CGAS);
                 var NEO = document.createElement('span');
@@ -3882,18 +3905,19 @@ var WebBrowser;
                 CNEO.style.width = "100%";
                 CNEO.style.cssFloat = "left";
                 CNEO.style.color = "#eeeeee";
-                var CneoNum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.CNEO, this.address);
+                var CneoNum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.CNEO, WebBrowser.GUITool.address);
                 CNEO.textContent = 'CNEO = ' + CneoNum;
                 neoChain.appendChild(CNEO);
                 var NBCP = document.createElement('span');
                 NBCP.style.width = "100%";
                 NBCP.style.cssFloat = "left";
                 NBCP.style.color = "#eeeeee";
-                var bcpnum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.neoBCP, this.address);
+                var bcpnum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.neoBCP, WebBrowser.GUITool.address);
                 NBCP.textContent = 'BCP = ' + bcpnum;
                 neoChain.appendChild(NBCP);
                 //appchain
-                if (this.chainHash == "0000000000000000000000000000000000000000" || this.height.textContent == "N/A") {
+                let title = WebBrowser.GUI_Route.instance.getUI(WebBrowser.PageName.Title);
+                if (WebBrowser.GUITool.chainHash == "0000000000000000000000000000000000000000" || WebBrowser.GUITool.chainHash == "NEO" || title.height.textContent == "N/A") {
                     return;
                 }
                 var appChain = document.createElement('div');
@@ -3910,10 +3934,27 @@ var WebBrowser;
                 BCP.style.width = "100%";
                 BCP.style.cssFloat = "left";
                 BCP.style.color = "#eeeeee";
-                var bcpnum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.appChainBCP, this.address, this.chainHash);
+                var bcpnum = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.appChainBCP, WebBrowser.GUITool.address, WebBrowser.GUITool.chainHash);
                 BCP.textContent = 'BCP = ' + bcpnum;
                 appChain.appendChild(BCP);
             });
+        }
+    }
+    WebBrowser.GUI_Asset = GUI_Asset;
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="./Base.ts"/>
+var WebBrowser;
+/// <reference path="./Base.ts"/>
+(function (WebBrowser) {
+    class GUI_Charge {
+        constructor(div) {
+            this.div = div;
+        }
+        showUI() {
+            this.mainCharge(this.div);
+            WebBrowser.GUI_Route.instance.hideUI(WebBrowser.PageName.Title);
+        }
+        hideUI() {
         }
         mainCharge(div) {
             if (div.firstChild)
@@ -3947,6 +3988,141 @@ var WebBrowser;
             chainCharge.onclick = () => {
                 this.chainCharge(downBackGround);
             };
+        }
+        normalCharge(div) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (div.firstChild)
+                    div.removeChild(div.firstChild);
+                var normalbackground = document.createElement('div');
+                div.appendChild(normalbackground);
+                var up = document.createElement('div');
+                up.style.width = "100%";
+                up.style.cssFloat = "left";
+                normalbackground.appendChild(up);
+                var asset = document.createElement('span');
+                up.appendChild(asset);
+                asset.style.color = "#eeeeee";
+                asset.textContent = "资产";
+                var select = WebBrowser.CoinTool.ZoroAsset();
+                up.appendChild(select);
+                var coin = document.createElement('span');
+                up.appendChild(coin);
+                coin.style.color = "#eeeeee";
+                coin.textContent = "余额";
+                var coinNum = document.createElement('span');
+                up.appendChild(coinNum);
+                coinNum.style.color = "#eeeeee";
+                let title = WebBrowser.GUI_Route.instance.getUI(WebBrowser.PageName.Title);
+                if (title.height.textContent == "N/A") {
+                    coinNum.textContent = yield WebBrowser.CoinTool.getGold(select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.address);
+                }
+                else
+                    coinNum.textContent = yield WebBrowser.CoinTool.getGold(select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.address, WebBrowser.GUITool.chainHash);
+                var addrText = document.createElement('span');
+                normalbackground.appendChild(addrText);
+                addrText.style.color = "#eeeeee";
+                addrText.textContent = "地址";
+                var addr = document.createElement('input');
+                normalbackground.appendChild(addr);
+                var goldText = document.createElement('span');
+                normalbackground.appendChild(goldText);
+                goldText.style.color = "#eeeeee";
+                goldText.textContent = "金额";
+                var gold = document.createElement('input');
+                normalbackground.appendChild(gold);
+                var btnSend = document.createElement('button');
+                normalbackground.appendChild(btnSend);
+                btnSend.textContent = "发送";
+                btnSend.onclick = () => __awaiter(this, void 0, void 0, function* () {
+                    if (coinNum.textContent == "0")
+                        return;
+                    switch (select.childNodes[select.selectedIndex].value) {
+                        case "ZOROBCP":
+                            return yield WebBrowser.AppChainTool.MakeZoroTransaction(WebBrowser.GUITool.address, addr.value, parseInt(gold.value), WebBrowser.GUITool.chainHash == "0000000000000000000000000000000000000000" ? WebBrowser.AppChainTool.zoroBCP : WebBrowser.AppChainTool.appChainBCP, WebBrowser.AppChainTool.zoroBCP, WebBrowser.GUITool.prikey, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.chainHash);
+                        case "NEOBCP":
+                            var utxo = yield WebBrowser.WWW.rpc_getUTXO(WebBrowser.GUITool.address);
+                            return yield WebBrowser.AppChainTool.MakeInvokeTransaction(WebBrowser.CoinTool.getassets(utxo), WebBrowser.GUITool.address, addr.value, WebBrowser.AppChainTool.neoBCP, parseInt(gold.value), WebBrowser.GUITool.prikey, WebBrowser.GUITool.pubkey);
+                        case "NEO":
+                            var utxo = yield WebBrowser.WWW.rpc_getUTXO(WebBrowser.GUITool.address);
+                            return yield WebBrowser.AppChainTool.MakeTransaction(WebBrowser.CoinTool.getassets(utxo), addr.value, WebBrowser.AppChainTool.id_NEO, parseInt(gold.value), WebBrowser.GUITool.prikey, WebBrowser.GUITool.pubkey);
+                        case "GAS":
+                            var utxo = yield WebBrowser.WWW.rpc_getUTXO(WebBrowser.GUITool.address);
+                            return yield WebBrowser.AppChainTool.MakeTransaction(WebBrowser.CoinTool.getassets(utxo), addr.value, WebBrowser.AppChainTool.id_GAS, parseInt(gold.value), WebBrowser.GUITool.prikey, WebBrowser.GUITool.pubkey);
+                    }
+                });
+            });
+        }
+        chainCharge(div) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (div.firstChild)
+                    div.removeChild(div.firstChild);
+                var chainbackground = document.createElement('div');
+                div.appendChild(chainbackground);
+                var asset = document.createElement('span');
+                chainbackground.appendChild(asset);
+                asset.style.color = "#eeeeee";
+                asset.textContent = "方法";
+                var funcSelect = WebBrowser.CoinTool.ZoroFunction();
+                chainbackground.appendChild(funcSelect);
+                var asset = document.createElement('span');
+                chainbackground.appendChild(asset);
+                asset.style.color = "#eeeeee";
+                asset.textContent = "资产";
+                var coinSelect = document.createElement('select');
+                var sitem = document.createElement("option");
+                sitem.text = "BCP";
+                sitem.value = "BCP";
+                coinSelect.appendChild(sitem);
+                chainbackground.appendChild(coinSelect);
+                var coin = document.createElement('span');
+                chainbackground.appendChild(coin);
+                coin.style.color = "#eeeeee";
+                coin.textContent = "余额";
+                var coinNum = document.createElement('span');
+                chainbackground.appendChild(coinNum);
+                coinNum.style.color = "#eeeeee";
+                coinNum.textContent = yield WebBrowser.CoinTool.getGold(funcSelect.childNodes[funcSelect.selectedIndex].value, WebBrowser.GUITool.address, WebBrowser.GUITool.chainHash);
+                var goldText = document.createElement('span');
+                chainbackground.appendChild(goldText);
+                goldText.style.color = "#eeeeee";
+                goldText.textContent = "金额";
+                var gold = document.createElement('input');
+                chainbackground.appendChild(gold);
+                var btnSend = document.createElement('button');
+                chainbackground.appendChild(btnSend);
+                btnSend.textContent = "发送";
+                btnSend.onclick = () => __awaiter(this, void 0, void 0, function* () {
+                    if (coinNum.textContent == "0")
+                        return;
+                    switch (funcSelect.childNodes[funcSelect.selectedIndex].value) {
+                        case "ZOROBCP":
+                            return yield WebBrowser.AppChainTool.MakeZoroTransaction(WebBrowser.GUITool.address, "AUB7tMoKTzN33iVVqhz98vnT3KiG4bqx3f", parseInt(gold.value), WebBrowser.AppChainTool.Zorotransfer, WebBrowser.AppChainTool.Zorotransfer, WebBrowser.GUITool.prikey, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.chainHash);
+                        case "NEOBCP":
+                            var utxo = yield WebBrowser.WWW.rpc_getUTXO(WebBrowser.GUITool.address);
+                            return yield WebBrowser.AppChainTool.MakeInvokeTransaction(WebBrowser.CoinTool.getassets(utxo), WebBrowser.GUITool.address, "AMjCDmrbfcBxGPitHcdrUYRyPXD7DfC52c", WebBrowser.AppChainTool.Neotransfer, parseInt(gold.value), WebBrowser.GUITool.prikey, WebBrowser.GUITool.pubkey);
+                    }
+                });
+                funcSelect.onchange = () => __awaiter(this, void 0, void 0, function* () {
+                    coinNum.textContent = yield WebBrowser.CoinTool.getGold(funcSelect.childNodes[funcSelect.selectedIndex].value, WebBrowser.GUITool.address, WebBrowser.GUITool.chainHash);
+                });
+            });
+        }
+    }
+    WebBrowser.GUI_Charge = GUI_Charge;
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="./Base.ts"/>
+var WebBrowser;
+/// <reference path="./Base.ts"/>
+(function (WebBrowser) {
+    class GUI_AppChain {
+        constructor(div) {
+            this.div = div;
+        }
+        showUI() {
+            this.mainAppChain(this.div);
+            WebBrowser.GUI_Route.instance.hideUI(WebBrowser.PageName.Title);
+        }
+        hideUI() {
         }
         mainAppChain(div) {
             if (div.firstChild)
@@ -4028,9 +4204,26 @@ var WebBrowser;
                     ip2.childNodes[ip2.selectedIndex].value + ":" + port2.value,
                     ip3.childNodes[ip3.selectedIndex].value + ":" + port3.value,
                     ip4.childNodes[ip4.selectedIndex].value + ":" + port4.value];
-                WebBrowser.AppChainTool.SendCreateAppChain(name.value, this.pubkey, pubkey, ip, this.prikey, "0000000000000000000000000000000000000000");
+                WebBrowser.AppChainTool.SendCreateAppChain(name.value, WebBrowser.GUITool.pubkey, pubkey, ip, WebBrowser.GUITool.prikey, "0000000000000000000000000000000000000000");
             };
             appChainBackGround.appendChild(btnCreate);
+        }
+    }
+    WebBrowser.GUI_AppChain = GUI_AppChain;
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="./Base.ts"/>
+var WebBrowser;
+/// <reference path="./Base.ts"/>
+(function (WebBrowser) {
+    class GUI_Contract {
+        constructor(div) {
+            this.div = div;
+        }
+        showUI() {
+            this.mainContract(this.div);
+            WebBrowser.GUI_Route.instance.hideUI(WebBrowser.PageName.Title);
+        }
+        hideUI() {
         }
         mainContract(div) {
             if (div.firstChild)
@@ -4041,7 +4234,7 @@ var WebBrowser;
             div.appendChild(contractBackGround);
             var ContractText = document.createElement('span');
             ContractText.style.color = "#eeeeee";
-            ContractText.textContent = "发布合约";
+            ContractText.textContent = "合约";
             contractBackGround.appendChild(ContractText);
             var storageName = document.createElement('span');
             storageName.style.color = "#eeeeee";
@@ -4049,7 +4242,7 @@ var WebBrowser;
             contractBackGround.appendChild(storageName);
             var need_storage = document.createElement('input');
             need_storage.type = "checkbox";
-            need_storage.checked = true;
+            need_storage.checked = false;
             contractBackGround.appendChild(need_storage);
             var canChargeName = document.createElement('span');
             canChargeName.style.color = "#eeeeee";
@@ -4057,7 +4250,7 @@ var WebBrowser;
             contractBackGround.appendChild(canChargeName);
             var need_canCharge = document.createElement('input');
             need_canCharge.type = "checkbox";
-            need_canCharge.checked = true;
+            need_canCharge.checked = false;
             contractBackGround.appendChild(need_canCharge);
             var nameText = document.createElement('span');
             nameText.style.color = "#eeeeee";
@@ -4110,9 +4303,9 @@ var WebBrowser;
                     alert("it can be .avm file.");
                     return;
                 }
-                WebBrowser.AppChainTool.SendContract(need_storage.checked, need_canCharge.checked, description.value, email.value, auther.value, version.value, name.value, ContractAvm, this.chainHash, this.pubkey, this.prikey);
+                WebBrowser.AppChainTool.SendContract(need_storage.checked, need_canCharge.checked, description.value, email.value, auther.value, version.value, name.value, ContractAvm, WebBrowser.GUITool.chainHash, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
                 setTimeout(() => {
-                    WebBrowser.AppChainTool.SendContractMethod(this.chainHash, this.pubkey, this.prikey);
+                    WebBrowser.AppChainTool.SendContractMethod(WebBrowser.GUITool.chainHash, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
                 }, 15000);
             });
             var reader = new FileReader();
@@ -4124,6 +4317,23 @@ var WebBrowser;
                     reader.readAsArrayBuffer(file.files[0]);
                 }
             };
+        }
+    }
+    WebBrowser.GUI_Contract = GUI_Contract;
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="./Base.ts"/>
+var WebBrowser;
+/// <reference path="./Base.ts"/>
+(function (WebBrowser) {
+    class GUI_TxMessage {
+        constructor(div) {
+            this.div = div;
+        }
+        showUI() {
+            this.mainTransaction(this.div);
+            WebBrowser.GUI_Route.instance.hideUI(WebBrowser.PageName.Title);
+        }
+        hideUI() {
         }
         mainTransaction(div) {
             if (div.firstChild)
@@ -4145,132 +4355,129 @@ var WebBrowser;
             timeText.textContent = "Date";
             transactionBackGround.appendChild(timeText);
         }
-        normalCharge(div) {
-            return __awaiter(this, void 0, void 0, function* () {
-                if (div.firstChild)
-                    div.removeChild(div.firstChild);
-                var normalbackground = document.createElement('div');
-                div.appendChild(normalbackground);
-                var up = document.createElement('div');
-                up.style.width = "100%";
-                up.style.cssFloat = "left";
-                normalbackground.appendChild(up);
-                var asset = document.createElement('span');
-                up.appendChild(asset);
-                asset.style.color = "#eeeeee";
-                asset.textContent = "资产";
-                var select = WebBrowser.CoinTool.ZoroAsset();
-                up.appendChild(select);
-                var coin = document.createElement('span');
-                up.appendChild(coin);
-                coin.style.color = "#eeeeee";
-                coin.textContent = "余额";
-                var coinNum = document.createElement('span');
-                up.appendChild(coinNum);
-                coinNum.style.color = "#eeeeee";
-                if (this.height.textContent == "N/A") {
-                    coinNum.textContent = yield WebBrowser.CoinTool.getGold(select.childNodes[select.selectedIndex].value, this.address);
-                }
-                else
-                    coinNum.textContent = yield WebBrowser.CoinTool.getGold(select.childNodes[select.selectedIndex].value, this.address, this.chainHash);
-                var addrText = document.createElement('span');
-                normalbackground.appendChild(addrText);
-                addrText.style.color = "#eeeeee";
-                addrText.textContent = "地址";
-                var addr = document.createElement('input');
-                normalbackground.appendChild(addr);
-                var goldText = document.createElement('span');
-                normalbackground.appendChild(goldText);
-                goldText.style.color = "#eeeeee";
-                goldText.textContent = "金额";
-                var gold = document.createElement('input');
-                normalbackground.appendChild(gold);
-                var btnSend = document.createElement('button');
-                normalbackground.appendChild(btnSend);
-                btnSend.textContent = "发送";
-                btnSend.onclick = () => __awaiter(this, void 0, void 0, function* () {
-                    if (coinNum.textContent == "0")
-                        return;
-                    switch (select.childNodes[select.selectedIndex].value) {
-                        case "ZOROBCP":
-                            return yield WebBrowser.AppChainTool.MakeZoroTransaction(this.address, addr.value, parseInt(gold.value), this.chainHash == "0000000000000000000000000000000000000000" ? WebBrowser.AppChainTool.zoroBCP : WebBrowser.AppChainTool.appChainBCP, WebBrowser.AppChainTool.zoroBCP, this.prikey, this.pubkey, this.chainHash);
-                        case "NEOBCP":
-                            var utxo = yield WebBrowser.WWW.rpc_getUTXO(this.address);
-                            return yield WebBrowser.AppChainTool.MakeInvokeTransaction(WebBrowser.CoinTool.getassets(utxo), this.address, addr.value, WebBrowser.AppChainTool.neoBCP, parseInt(gold.value), this.prikey, this.pubkey);
-                        case "NEO":
-                            var utxo = yield WebBrowser.WWW.rpc_getUTXO(this.address);
-                            return yield WebBrowser.AppChainTool.MakeTransaction(WebBrowser.CoinTool.getassets(utxo), addr.value, WebBrowser.AppChainTool.id_NEO, parseInt(gold.value), this.prikey, this.pubkey);
-                        case "GAS":
-                            var utxo = yield WebBrowser.WWW.rpc_getUTXO(this.address);
-                            return yield WebBrowser.AppChainTool.MakeTransaction(WebBrowser.CoinTool.getassets(utxo), addr.value, WebBrowser.AppChainTool.id_GAS, parseInt(gold.value), this.prikey, this.pubkey);
-                    }
-                });
-            });
+    }
+    WebBrowser.GUI_TxMessage = GUI_TxMessage;
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="./Base.ts"/>
+/// <reference path="./Asset.ts"/>
+/// <reference path="./Charge.ts"/>
+/// <reference path="./AppChain.ts"/>
+/// <reference path="./Contract.ts"/>
+/// <reference path="./TxMessage.ts"/>
+var WebBrowser;
+/// <reference path="./Base.ts"/>
+/// <reference path="./Asset.ts"/>
+/// <reference path="./Charge.ts"/>
+/// <reference path="./AppChain.ts"/>
+/// <reference path="./Contract.ts"/>
+/// <reference path="./TxMessage.ts"/>
+(function (WebBrowser) {
+    class GUI_Title {
+        constructor(div) {
+            this.div = div;
+            this.title = document.createElement('div');
+            this.title.style.width = "100%";
+            this.div.appendChild(this.title);
+            this.mainValueBackGround = document.createElement('div');
+            this.mainValueBackGround.style.width = "100%";
+            this.div.appendChild(this.mainValueBackGround);
+            WebBrowser.GUI_Route.instance.pushUI(WebBrowser.PageName.Asset, new WebBrowser.GUI_Asset(this.mainValueBackGround));
+            WebBrowser.GUI_Route.instance.pushUI(WebBrowser.PageName.Charge, new WebBrowser.GUI_Charge(this.mainValueBackGround));
+            WebBrowser.GUI_Route.instance.pushUI(WebBrowser.PageName.AppChain, new WebBrowser.GUI_AppChain(this.mainValueBackGround));
+            WebBrowser.GUI_Route.instance.pushUI(WebBrowser.PageName.Contract, new WebBrowser.GUI_Contract(this.mainValueBackGround));
+            WebBrowser.GUI_Route.instance.pushUI(WebBrowser.PageName.TxMessage, new WebBrowser.GUI_TxMessage(this.mainValueBackGround));
         }
-        chainCharge(div) {
-            return __awaiter(this, void 0, void 0, function* () {
-                if (div.firstChild)
-                    div.removeChild(div.firstChild);
-                var chainbackground = document.createElement('div');
-                div.appendChild(chainbackground);
-                var asset = document.createElement('span');
-                chainbackground.appendChild(asset);
-                asset.style.color = "#eeeeee";
-                asset.textContent = "方法";
-                var funcSelect = WebBrowser.CoinTool.ZoroFunction();
-                chainbackground.appendChild(funcSelect);
-                var asset = document.createElement('span');
-                chainbackground.appendChild(asset);
-                asset.style.color = "#eeeeee";
-                asset.textContent = "资产";
-                var coinSelect = document.createElement('select');
-                var sitem = document.createElement("option");
-                sitem.text = "BCP";
-                sitem.value = "BCP";
-                coinSelect.appendChild(sitem);
-                chainbackground.appendChild(coinSelect);
-                var coin = document.createElement('span');
-                chainbackground.appendChild(coin);
-                coin.style.color = "#eeeeee";
-                coin.textContent = "余额";
-                var coinNum = document.createElement('span');
-                chainbackground.appendChild(coinNum);
-                coinNum.style.color = "#eeeeee";
-                coinNum.textContent = yield WebBrowser.CoinTool.getGold(funcSelect.childNodes[funcSelect.selectedIndex].value, this.address, this.chainHash);
-                var goldText = document.createElement('span');
-                chainbackground.appendChild(goldText);
-                goldText.style.color = "#eeeeee";
-                goldText.textContent = "金额";
-                var gold = document.createElement('input');
-                chainbackground.appendChild(gold);
-                var btnSend = document.createElement('button');
-                chainbackground.appendChild(btnSend);
-                btnSend.textContent = "发送";
-                btnSend.onclick = () => __awaiter(this, void 0, void 0, function* () {
-                    if (coinNum.textContent == "0")
-                        return;
-                    switch (funcSelect.childNodes[funcSelect.selectedIndex].value) {
-                        case "ZOROBCP":
-                            return yield WebBrowser.AppChainTool.MakeZoroTransaction(this.address, "AUB7tMoKTzN33iVVqhz98vnT3KiG4bqx3f", parseInt(gold.value), WebBrowser.AppChainTool.Zorotransfer, WebBrowser.AppChainTool.Zorotransfer, this.prikey, this.pubkey, this.chainHash);
-                        case "NEOBCP":
-                            var utxo = yield WebBrowser.WWW.rpc_getUTXO(this.address);
-                            return yield WebBrowser.AppChainTool.MakeInvokeTransaction(WebBrowser.CoinTool.getassets(utxo), this.address, "AMjCDmrbfcBxGPitHcdrUYRyPXD7DfC52c", WebBrowser.AppChainTool.Neotransfer, parseInt(gold.value), this.prikey, this.pubkey);
-                    }
-                });
-                funcSelect.onchange = () => __awaiter(this, void 0, void 0, function* () {
-                    coinNum.textContent = yield WebBrowser.CoinTool.getGold(funcSelect.childNodes[funcSelect.selectedIndex].value, this.address, this.chainHash);
-                });
-            });
+        showUI() {
+            this.showTitle(this.title);
+        }
+        hideUI() {
+            this.stopUpdate();
+            if (this.title) {
+                if (this.height)
+                    this.title.removeChild(this.height);
+                if (this.selectAppChain)
+                    this.title.removeChild(this.selectAppChain);
+            }
+        }
+        showTitle(title) {
+            var asset = document.createElement("button");
+            title.appendChild(asset);
+            asset.style.cssFloat = "left";
+            asset.style.width = "10%";
+            asset.textContent = "资产";
+            asset.onclick = () => {
+                WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.Asset);
+                this.addSelect();
+            };
+            asset.click();
+            var charge = document.createElement("button");
+            title.appendChild(charge);
+            charge.style.cssFloat = "left";
+            charge.style.width = "10%";
+            charge.textContent = "转账";
+            charge.onclick = () => {
+                WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.Charge);
+            };
+            var appChain = document.createElement("button");
+            title.appendChild(appChain);
+            appChain.style.cssFloat = "left";
+            appChain.style.width = "10%";
+            appChain.textContent = "应用链";
+            appChain.onclick = () => {
+                WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.AppChain);
+            };
+            var contract = document.createElement("button");
+            title.appendChild(contract);
+            contract.style.cssFloat = "left";
+            contract.style.width = "10%";
+            contract.textContent = "发布合约";
+            contract.onclick = () => {
+                WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.Contract);
+            };
+            var transaction = document.createElement("button");
+            title.appendChild(transaction);
+            transaction.style.cssFloat = "left";
+            transaction.style.width = "10%";
+            transaction.textContent = "交易记录";
+            transaction.onclick = () => {
+                WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.TxMessage);
+            };
+            var message = document.createElement("button");
+            title.appendChild(message);
+            message.style.cssFloat = "left";
+            message.style.width = "10%";
+            message.textContent = "信息";
+            message.onclick = () => {
+            };
+        }
+        addSelect() {
+            this.initAppChain();
+            this.update();
+            this.selectAppChain = document.createElement("select");
+            this.selectAppChain.style.cssFloat = "right";
+            this.selectAppChain.style.width = "15%";
+            this.title.appendChild(this.selectAppChain);
+            this.height = document.createElement("span");
+            this.height.style.color = "#eeeeee";
+            this.title.appendChild(this.height);
+            this.height.style.cssFloat = "right";
+            this.height.style.width = "6%";
+            this.height.textContent = "0";
         }
         update() {
             return __awaiter(this, void 0, void 0, function* () {
-                if (this.chainHash) {
-                    var height = yield WebBrowser.WWW.api_getZoroHeight(this.chainHash);
+                if (WebBrowser.GUITool.chainHash) {
+                    var height = yield WebBrowser.WWW.api_getZoroHeight(WebBrowser.GUITool.chainHash);
                     this.height.textContent = isNaN(height) ? "N/A" : height.toString();
                 }
                 else {
-                    this.chainHash = "0000000000000000000000000000000000000000";
-                    var height = yield WebBrowser.WWW.api_getZoroHeight(this.chainHash);
+                    WebBrowser.GUITool.chainHash = "NEO";
+                    if (WebBrowser.GUITool.chainHash == "NEO") {
+                        var height = yield WebBrowser.WWW.api_getNEOHeight();
+                    }
+                    else {
+                        var height = yield WebBrowser.WWW.api_getZoroHeight(WebBrowser.GUITool.chainHash);
+                    }
                     this.height.textContent = isNaN(height) ? "N/A" : height.toString();
                 }
                 if (height > WebBrowser.WWW.blockHeight) {
@@ -4308,7 +4515,7 @@ var WebBrowser;
                 this.selectAppChain.selectedIndex = this.selectIndex;
             });
         }
-        initAppChain(title) {
+        initAppChain() {
             return __awaiter(this, void 0, void 0, function* () {
                 var name2Hash = yield WebBrowser.AppChainTool.initAllAppChain();
                 for (var chainName in name2Hash) {
@@ -4319,26 +4526,96 @@ var WebBrowser;
                 }
                 this.selectAppChain.onchange = (ev) => {
                     this.updateHeight();
-                    this.mainAsset(title);
+                    WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.Asset);
                 };
             });
         }
         updateHeight() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.selectIndex = this.selectAppChain.selectedIndex;
-                this.chainHash = this.selectAppChain.childNodes[this.selectIndex].value;
-                var height = yield WebBrowser.WWW.api_getZoroHeight(this.chainHash);
+                WebBrowser.GUITool.chainHash = this.selectAppChain.childNodes[this.selectIndex].value;
+                if (WebBrowser.GUITool.chainHash == "NEO") {
+                    var height = yield WebBrowser.WWW.api_getNEOHeight();
+                }
+                else {
+                    var height = yield WebBrowser.WWW.api_getZoroHeight(WebBrowser.GUITool.chainHash);
+                }
                 this.height.textContent = isNaN(height) ? "N/A" : height.toString();
             });
         }
+    }
+    WebBrowser.GUI_Title = GUI_Title;
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="./Base.ts"/>
+/// <reference path="./Title.ts"/>
+var WebBrowser;
+/// <reference path="./Base.ts"/>
+/// <reference path="./Title.ts"/>
+(function (WebBrowser) {
+    class GUI_Main {
+        constructor(div) {
+            this.div = div;
+        }
+        showUI() {
+            this.mainMenu();
+        }
+        hideUI() {
+        }
+        mainMenu() {
+            this.div.removeChild(this.div.firstChild);
+            var background = document.createElement('div');
+            this.div.appendChild(background);
+            WebBrowser.GUI_Route.instance.pushUI(WebBrowser.PageName.Title, new WebBrowser.GUI_Title(background));
+            WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.Title);
+        }
+    }
+    WebBrowser.GUI_Main = GUI_Main;
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="../app.ts"/>
+/// <reference path="../tools/AppChainTool.ts"/> 
+/// <reference path="../tools/wwwtool.ts"/> 
+/// <reference path="../gui/Base.ts"/>
+/// <reference path="../gui/Login.ts"/>
+/// <reference path="../gui/Wallet.ts"/>
+/// <reference path="../gui/MainView.ts"/>
+/// <reference path="../gui/GUIRoute.ts"/>
+var WebBrowser;
+/// <reference path="../app.ts"/>
+/// <reference path="../tools/AppChainTool.ts"/> 
+/// <reference path="../tools/wwwtool.ts"/> 
+/// <reference path="../gui/Base.ts"/>
+/// <reference path="../gui/Login.ts"/>
+/// <reference path="../gui/Wallet.ts"/>
+/// <reference path="../gui/MainView.ts"/>
+/// <reference path="../gui/GUIRoute.ts"/>
+(function (WebBrowser) {
+    class GUI {
+        constructor(app = null) {
+            this.div = document.getElementById('gui-info');
+            this.footer = document.getElementById('footer-box');
+            this.app = app;
+            Neo.Cryptography.RandomNumberGenerator.startCollectors();
+            WebBrowser.AppChainTool.initAppChainSelectList();
+            this.initPage();
+        }
+        getLangs() {
+            if (this.langType != this.app.langmgr.type) {
+                this.langType = this.app.langmgr.type;
+            }
+        }
+        initPage() {
+            WebBrowser.GUI_Route.instance.pushUI(WebBrowser.PageName.Login, new WebBrowser.GUI_Login(this.div));
+            WebBrowser.GUI_Route.instance.pushUI(WebBrowser.PageName.Wallet, new WebBrowser.GUI_Wallet(this.div));
+            WebBrowser.GUI_Route.instance.pushUI(WebBrowser.PageName.MainView, new WebBrowser.GUI_Main(this.div));
+        }
         start() {
             this.getLangs();
-            this.login();
+            WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.Login);
             this.div.hidden = false;
             this.footer.hidden = false;
         }
         close() {
-            this.stopUpdate();
+            WebBrowser.GUI_Route.instance.hideUI(WebBrowser.PageName.Title);
             this.div.hidden = true;
             this.footer.hidden = true;
         }
