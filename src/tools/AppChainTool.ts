@@ -13,6 +13,8 @@ namespace WebBrowser
         static Neotransfer = "0x04e31cee0443bb916534dad2adf508458920e66d";
         static Zorotransfer = "0x67147557c0b6431e9b9297de26b46d9889434e49";
 
+        static RootChain = "0000000000000000000000000000000000000000";
+
         static readonly id_GAS: string = "0x602c79718b16e442de58778e148d0b1084e3b2dffd5de6b7b16cee7969282de7";
         static readonly id_NEO: string = "0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b";
 
@@ -26,7 +28,7 @@ namespace WebBrowser
         static async initAllAppChain(){
             var allChainHash = await WWW.api_getAllAppChain();
             this.chainName2Hash["NEO"] = "NEO";
-            this.chainName2Hash["AppRoot"] = "0000000000000000000000000000000000000000";
+            this.chainName2Hash["AppRoot"] = AppChainTool.RootChain;
             this.appChainLength = 2; 
             for (var a in allChainHash){
                 var chainHash = allChainHash[a];
@@ -41,7 +43,7 @@ namespace WebBrowser
         static async updateAllAppChain(){
             var allChainHash = await WWW.api_getAllAppChain();
             this.chainName2Hash["NEO"] = "NEO";
-            this.chainName2Hash["AppRoot"] = "0000000000000000000000000000000000000000";
+            this.chainName2Hash["AppRoot"] = AppChainTool.RootChain;
             this.appChainLength = 2; 
             for (var a in allChainHash){
                 var chainHash = allChainHash[a];
@@ -64,7 +66,17 @@ namespace WebBrowser
               sb.EmitPushString(seedList[i]);
             }
             sb.EmitPushNumber(new Neo.BigInteger(seedList.length));
-            var time = Math.floor(Date.now() / 1000);
+            
+            {//获取UTC时间
+              var date = new Date();
+              var y = date.getUTCFullYear();
+              var M = date.getUTCMonth();
+              var d = date.getUTCDay();
+              var h = date.getUTCHours();
+              var m = date.getUTCMinutes();
+              var s = date.getUTCSeconds();
+            }
+            var time = Math.floor(Date.UTC(y,M,d,h,m,s) / 1000);
             sb.EmitPushNumber(new Neo.BigInteger(time));
             sb.EmitPushBytes(Neo.Cryptography.ECPoint.fromUint8Array(pubkey, Neo.Cryptography.ECCurve.secp256r1).encodePoint(true));
             sb.EmitPushString(name);

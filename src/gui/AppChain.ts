@@ -39,87 +39,119 @@ namespace WebBrowser
             var name = document.createElement('input') as HTMLInputElement;
             appChainBackGround.appendChild(name);
 
-            var pkey1 = document.createElement('span') as HTMLSpanElement;
-            pkey1.style.color = "#eeeeee";
-            pkey1.textContent = "选择公钥1";
-            appChainBackGround.appendChild(pkey1);
 
-            var pubkey1 = AppChainTool.createSelect(appChainBackGround, "pubkey", 6);
+                var pubkeyList = document.createElement('span') as HTMLSpanElement;
+                pubkeyList.style.color = "#eeeeee";
+                pubkeyList.textContent = "共识节点数量";
+                appChainBackGround.appendChild(pubkeyList);
+                
+                var pubkeyListNumber = document.createElement('input') as HTMLInputElement;
+                pubkeyListNumber.type = "number";
+                appChainBackGround.appendChild(pubkeyListNumber);
 
-            var pkey2= document.createElement('span') as HTMLSpanElement;
-            pkey2.style.color = "#eeeeee";
-            pkey2.textContent = "选择公钥2";
-            appChainBackGround.appendChild(pkey2);
+                var pbutton = document.createElement("button") as HTMLButtonElement;
+                appChainBackGround.appendChild(pbutton);
+                pbutton.textContent = "确认";
+                pbutton.onkeyup = () => {
+                    if (pbutton.value.length == 1){
+                        pbutton.value = pbutton.value.replace(/[^1-9]/g,'')
+                    }else{
+                        pbutton.value = pbutton.value.replace(/\D/g,'');
+                    }
+                }
+                pbutton.onpaste = () => {
+                    if (pbutton.value.length == 1){
+                        pbutton.value = pbutton.value.replace(/[^1-9]/g,'')
+                    }else{
+                        pbutton.value = pbutton.value.replace(/\D/g,'');
+                    }
+                }
+                var back = document.createElement("div");
+                appChainBackGround.appendChild(back);
+                var pubkey = [];
+                pbutton.onclick = () => {
+                    if (parseInt(pubkeyListNumber.value) < 4){
+                        alert("it must be >= 4");
+                        return;
+                    }
+                    while(back.children.length>0){
+                        back.removeChild(back.firstChild);
+                    }
+                    for (let i = 0; i < parseInt(pubkeyListNumber.value); i++){
+                        var pkey1 = document.createElement('span') as HTMLSpanElement;
+                        pkey1.style.color = "#eeeeee";
+                        pkey1.textContent = "选择公钥" + (i+1);
+                        back.appendChild(pkey1);
+            
+                        pubkey.push(AppChainTool.createSelect(back, "pubkey", i + 1));
+                    }
+                }
 
-            var pubkey2 = AppChainTool.createSelect(appChainBackGround, "pubkey", 7);
+                var ipList = document.createElement('span') as HTMLSpanElement;
+                ipList.style.color = "#eeeeee";
+                ipList.textContent = "种子节点数量";
+                appChainBackGround.appendChild(ipList);
+                
+                var ipListNumber = document.createElement('input') as HTMLInputElement;
+                ipListNumber.type = "number";
+                appChainBackGround.appendChild(ipListNumber);
 
-            var pkey3 = document.createElement('span') as HTMLSpanElement;
-            pkey3.style.color = "#eeeeee";
-            pkey3.textContent = "选择公钥3";
-            appChainBackGround.appendChild(pkey3);
+                var ipbutton = document.createElement("button") as HTMLButtonElement;
+                appChainBackGround.appendChild(ipbutton);
+                ipbutton.textContent = "确认";
+                ipbutton.onkeyup = () => {
+                    if (ipbutton.value.length == 1){
+                        ipbutton.value = ipbutton.value.replace(/[^1-9]/g,'')
+                    }else{
+                        ipbutton.value = ipbutton.value.replace(/\D/g,'');
+                    }
+                }
+                ipbutton.onpaste = () => {
+                    if (ipbutton.value.length == 1){
+                        ipbutton.value = ipbutton.value.replace(/[^1-9]/g,'')
+                    }else{
+                        ipbutton.value = ipbutton.value.replace(/\D/g,'');
+                    }
+                }
+                var backip = document.createElement("div");
+                appChainBackGround.appendChild(backip);
+                var ip = [];
+                var port = [];
+                ipbutton.onclick = () => {
+                    if (parseInt(ipListNumber.value) < 1){
+                        alert("it must be >= 1");
+                        return;
+                    }
+                    while(backip.children.length>0){
+                        backip.removeChild(backip.firstChild);
+                    }
+                    for (let i = 0; i < parseInt(ipListNumber.value); i++){
+                        var seed1= document.createElement('span') as HTMLSpanElement;
+                        seed1.style.color = "#eeeeee";
+                        seed1.textContent = "选择种子地址" + (i+1);
+                        backip.appendChild(seed1);
 
-            var pubkey3 = AppChainTool.createSelect(appChainBackGround, "pubkey", 8);
+                        ip.push(AppChainTool.createSelect(backip, "ip", i + 1));
 
-            var pkey4 = document.createElement('span') as HTMLSpanElement;
-            pkey4.style.color = "#eeeeee";
-            pkey4.textContent = "选择公钥4";
-            appChainBackGround.appendChild(pkey4);
-
-            var pubkey4 = AppChainTool.createSelect(appChainBackGround, "pubkey", 9);
-
-            var seed1= document.createElement('span') as HTMLSpanElement;
-            seed1.style.color = "#eeeeee";
-            seed1.textContent = "选择种子地址1";
-            appChainBackGround.appendChild(seed1);
-
-            var ip1 = AppChainTool.createSelect(appChainBackGround, "ip", 6);
-            var port1 = document.createElement('input') as HTMLInputElement;
-            port1.value = "15000";
-            appChainBackGround.appendChild(port1);
-
-            var seed2= document.createElement('span') as HTMLSpanElement;
-            seed2.style.color = "#eeeeee";
-            seed2.textContent = "选择种子地址2";
-            appChainBackGround.appendChild(seed2);
-
-            var ip2 = AppChainTool.createSelect(appChainBackGround, "ip", 7);
-            var port2 = document.createElement('input') as HTMLInputElement;
-            port2.value = "15000";
-            appChainBackGround.appendChild(port2);
-
-            var seed3 = document.createElement('span') as HTMLSpanElement;
-            seed3.style.color = "#eeeeee";
-            seed3.textContent = "选择种子地址3";
-            appChainBackGround.appendChild(seed3);
-
-            var ip3 = AppChainTool.createSelect(appChainBackGround, "ip", 8);
-            var port3 = document.createElement('input') as HTMLInputElement;
-            port3.value = "15000";
-            appChainBackGround.appendChild(port3);
-
-            var seed4= document.createElement('span') as HTMLSpanElement;
-            seed4.style.color = "#eeeeee";
-            seed4.textContent = "选择种子地址4";
-            appChainBackGround.appendChild(seed4);
-
-            var ip4 = AppChainTool.createSelect(appChainBackGround, "ip", 9);
-            var port4 = document.createElement('input') as HTMLInputElement;
-            port4.value = "15000";
-            appChainBackGround.appendChild(port4);
+                        let port1 = document.createElement('input') as HTMLInputElement;
+                        port1.value = "15000";
+                        backip.appendChild(port1);
+                        port.push(port1);
+                    }
+                }          
 
             var btnCreate = document.createElement('button') as HTMLButtonElement;
             btnCreate.textContent = "创建";
             btnCreate.onclick = () => {
-                var pubkey = [(pubkey1.childNodes[pubkey1.selectedIndex] as HTMLOptionElement).value,
-                (pubkey2.childNodes[pubkey2.selectedIndex] as HTMLOptionElement).value,
-                (pubkey3.childNodes[pubkey3.selectedIndex] as HTMLOptionElement).value,
-                (pubkey4.childNodes[pubkey4.selectedIndex] as HTMLOptionElement).value];
-                var ip = [(ip1.childNodes[ip1.selectedIndex] as HTMLOptionElement).value + ":" + port1.value,
-                (ip2.childNodes[ip2.selectedIndex] as HTMLOptionElement).value + ":" + port2.value,
-                (ip3.childNodes[ip3.selectedIndex] as HTMLOptionElement).value + ":" + port3.value,
-                (ip4.childNodes[ip4.selectedIndex] as HTMLOptionElement).value + ":" + port4.value];
-
-                AppChainTool.SendCreateAppChain(name.value, GUITool.pubkey, pubkey, ip, GUITool.prikey, "0000000000000000000000000000000000000000");
+                var listpubkey = [];
+                for (let i = 0; i < parseInt(pubkeyListNumber.value); i++){
+                    listpubkey.push((pubkey[i].childNodes[pubkey[i].selectedIndex] as HTMLOptionElement).value);
+                }
+                var listip = [];
+                for (let i = 0; i < parseInt(ipListNumber.value); i++){
+                    listpubkey.push((ip[i].childNodes[ip[i].selectedIndex] as HTMLOptionElement).value +":" + port[i].value);
+                }
+                AppChainTool.SendCreateAppChain(name.value, GUITool.pubkey, listpubkey, listip, GUITool.prikey, "0000000000000000000000000000000000000000");
             }
             appChainBackGround.appendChild(btnCreate);
         }

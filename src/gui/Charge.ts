@@ -39,20 +39,96 @@ namespace WebBrowser
             var normalcharge = document.createElement("button") as HTMLButtonElement;
             upBackGround.appendChild(normalcharge)
             normalcharge.style.cssFloat = "left";
-            normalcharge.style.width = "50%";
+            normalcharge.style.width = "33%";
             normalcharge.textContent = "普通转账";
             normalcharge.onclick = () => {
                 this.normalCharge(downBackGround);
             }
             normalcharge.click();
 
+            var singlecharge = document.createElement("button") as HTMLButtonElement;
+            upBackGround.appendChild(singlecharge)
+            singlecharge.style.cssFloat = "left";
+            singlecharge.style.width = "33%";
+            singlecharge.textContent = "单链转账";
+            singlecharge.onclick = () => {
+                this.singleCharge(downBackGround);
+            }
+
             var chainCharge = document.createElement("button") as HTMLButtonElement;
             upBackGround.appendChild(chainCharge)
             chainCharge.style.cssFloat = "left";
-            chainCharge.style.width = "50%";
+            chainCharge.style.width = "33%";
             chainCharge.textContent = "跨链转账";
             chainCharge.onclick = () => {
                 this.chainCharge(downBackGround);
+            }
+        }
+
+        async singleCharge(div:HTMLDivElement){
+            if (div.firstChild)div.removeChild(div.firstChild);
+
+            var singlebackground = document.createElement('div') as HTMLDivElement;
+            div.appendChild(singlebackground);
+
+            var asset = document.createElement('span') as HTMLSpanElement;
+            singlebackground.appendChild(asset);
+            asset.style.color = "#eeeeee";
+            asset.textContent = "链名";
+
+            var select = document.createElement("select") as HTMLSelectElement;
+            singlebackground.appendChild(select);
+            this.getChain(select);
+
+            var coin = document.createElement('span') as HTMLSpanElement;
+            singlebackground.appendChild(coin);
+            coin.style.color = "#eeeeee";
+            coin.textContent = "余额";
+
+            var coinNum = document.createElement('span') as HTMLSpanElement;
+            singlebackground.appendChild(coinNum);
+            coinNum.style.color = "#eeeeee";
+            coinNum.textContent = await CoinTool.getGold("default", GUITool.address, "NEO");
+            select.onchange = async (e) => {
+                coinNum.textContent = await CoinTool.getGold("default", GUITool.address, (select.childNodes[select.selectedIndex] as HTMLOptionElement).value);
+            }
+
+            var button = document.createElement("button") as HTMLButtonElement;
+            singlebackground.appendChild(button);
+            button.textContent = "刷新";
+            button.onclick = async () => {
+                coinNum.textContent = await CoinTool.getGold("default", GUITool.address, (select.childNodes[select.selectedIndex] as HTMLOptionElement).value);
+            }
+
+            var addrText = document.createElement('span') as HTMLSpanElement;
+            singlebackground.appendChild(addrText);
+            addrText.style.color = "#eeeeee";
+            addrText.textContent = "地址";
+
+            var addr = document.createElement('input') as HTMLInputElement;
+            singlebackground.appendChild(addr);
+
+            var goldText = document.createElement('span') as HTMLSpanElement;
+            singlebackground.appendChild(goldText);
+            goldText.style.color = "#eeeeee";
+            goldText.textContent = "金额";
+
+            var gold = document.createElement('input') as HTMLInputElement;
+            singlebackground.appendChild(gold);
+
+            var btnSend = document.createElement('button') as HTMLButtonElement;
+            singlebackground.appendChild(btnSend);
+            btnSend.textContent = "发送";
+            btnSend.onclick = async () => {
+                if (coinNum.textContent == "0") return;
+                switch((select.childNodes[select.selectedIndex] as HTMLOptionElement).value){                   
+                    case "NEO":
+                    var utxo = await WWW.rpc_getUTXO(GUITool.address);
+                    return await AppChainTool.MakeInvokeTransaction(CoinTool.getassets(utxo),GUITool.address, addr.value, AppChainTool.neoBCP, parseInt(gold.value), GUITool.prikey, GUITool.pubkey);
+                    default:
+                    return await AppChainTool.MakeZoroTransaction(GUITool.address,addr.value, parseInt(gold.value), 
+                    AppChainTool.zoroBCP, AppChainTool.zoroBCP, GUITool.prikey, GUITool.pubkey, (select.childNodes[select.selectedIndex] as HTMLOptionElement).value);
+                }
             }
         }
 
@@ -73,7 +149,7 @@ namespace WebBrowser
             asset.textContent = "资产";
 
             var select = CoinTool.ZoroAsset();
-            up.appendChild(select);
+            up.appendChild(select);            
 
             var coin = document.createElement('span') as HTMLSpanElement;
             up.appendChild(coin);
@@ -83,11 +159,10 @@ namespace WebBrowser
             var coinNum = document.createElement('span') as HTMLSpanElement;
             up.appendChild(coinNum);
             coinNum.style.color = "#eeeeee";
-            let title = GUI_Route.instance.getUI(PageName.Title) as GUI_Title;
-            if (title.height.textContent == "N/A"){
-                coinNum.textContent = await CoinTool.getGold((select.childNodes[select.selectedIndex] as HTMLOptionElement).value, GUITool.address);
-            }else
-            coinNum.textContent = await CoinTool.getGold((select.childNodes[select.selectedIndex] as HTMLOptionElement).value, GUITool.address, GUITool.chainHash);
+            coinNum.textContent = await CoinTool.getGold((select.childNodes[select.selectedIndex] as HTMLOptionElement).value, GUITool.address, AppChainTool.RootChain);
+            select.onchange = async () => {
+                coinNum.textContent = await CoinTool.getGold((select.childNodes[select.selectedIndex] as HTMLOptionElement).value, GUITool.address, AppChainTool.RootChain);
+            }
 
             var addrText = document.createElement('span') as HTMLSpanElement;
             normalbackground.appendChild(addrText);
@@ -113,7 +188,7 @@ namespace WebBrowser
                 switch((select.childNodes[select.selectedIndex] as HTMLOptionElement).value){
                     case "ZOROBCP":
                     return await AppChainTool.MakeZoroTransaction(GUITool.address,addr.value, parseInt(gold.value), 
-                    GUITool.chainHash == "0000000000000000000000000000000000000000"?AppChainTool.zoroBCP:AppChainTool.appChainBCP, AppChainTool.zoroBCP, GUITool.prikey, GUITool.pubkey, GUITool.chainHash);
+                    AppChainTool.zoroBCP, AppChainTool.zoroBCP, GUITool.prikey, GUITool.pubkey, GUITool.chainHash);
                     case "NEOBCP":
                     var utxo = await WWW.rpc_getUTXO(GUITool.address);
                     return await AppChainTool.MakeInvokeTransaction(CoinTool.getassets(utxo),GUITool.address, addr.value, AppChainTool.neoBCP, parseInt(gold.value), GUITool.prikey, GUITool.pubkey);
@@ -190,5 +265,24 @@ namespace WebBrowser
             }
         }       
 
+        selectClear(select:HTMLSelectElement):void{
+            if (select)
+            while(select.childNodes.length > 0){                
+                select.removeChild(select.options[0]);
+                select.remove(0);   
+                select.options[0] = null;            
+            }
+        }
+
+        async getChain(select:HTMLSelectElement){
+            this.selectClear(select);
+            var name2Hash = await AppChainTool.initAllAppChain();
+            for (var chainName in name2Hash){
+                var sitem = document.createElement("option");
+                sitem.text = chainName;
+                sitem.value = name2Hash[chainName];
+                select.appendChild(sitem);
+            }
+        }
     }
 }

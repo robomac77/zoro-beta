@@ -2147,13 +2147,22 @@ var WebBrowser;
             return __awaiter(this, void 0, void 0, function* () {
                 switch (type) {
                     case "ZOROBCP":
-                        return yield WebBrowser.WWW.rpc_getBalanceOf(chainHash == "0000000000000000000000000000000000000000" ? WebBrowser.AppChainTool.zoroBCP : WebBrowser.AppChainTool.appChainBCP, address, chainHash);
+                        return yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.zoroBCP, address, chainHash);
                     case "NEOBCP":
                         return yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.neoBCP, address);
                     case "NEO":
                         return WebBrowser.AppChainTool.NEO;
                     case "GAS":
                         return WebBrowser.AppChainTool.GAS;
+                    default:
+                        let price = 0;
+                        if (chainHash == "NEO") {
+                            price = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.neoBCP, address);
+                        }
+                        else {
+                            price = yield WebBrowser.WWW.rpc_getBalanceOf(WebBrowser.AppChainTool.zoroBCP, address, chainHash);
+                        }
+                        return price;
                 }
             });
         }
@@ -3270,7 +3279,7 @@ var WebBrowser;
             return __awaiter(this, void 0, void 0, function* () {
                 var allChainHash = yield WebBrowser.WWW.api_getAllAppChain();
                 this.chainName2Hash["NEO"] = "NEO";
-                this.chainName2Hash["AppRoot"] = "0000000000000000000000000000000000000000";
+                this.chainName2Hash["AppRoot"] = AppChainTool.RootChain;
                 this.appChainLength = 2;
                 for (var a in allChainHash) {
                     var chainHash = allChainHash[a];
@@ -3286,7 +3295,7 @@ var WebBrowser;
             return __awaiter(this, void 0, void 0, function* () {
                 var allChainHash = yield WebBrowser.WWW.api_getAllAppChain();
                 this.chainName2Hash["NEO"] = "NEO";
-                this.chainName2Hash["AppRoot"] = "0000000000000000000000000000000000000000";
+                this.chainName2Hash["AppRoot"] = AppChainTool.RootChain;
                 this.appChainLength = 2;
                 for (var a in allChainHash) {
                     var chainHash = allChainHash[a];
@@ -3308,7 +3317,16 @@ var WebBrowser;
                 sb.EmitPushString(seedList[i]);
             }
             sb.EmitPushNumber(new Neo.BigInteger(seedList.length));
-            var time = Math.floor(Date.now() / 1000);
+            { //获取UTC时间
+                var date = new Date();
+                var y = date.getUTCFullYear();
+                var M = date.getUTCMonth();
+                var d = date.getUTCDay();
+                var h = date.getUTCHours();
+                var m = date.getUTCMinutes();
+                var s = date.getUTCSeconds();
+            }
+            var time = Math.floor(Date.UTC(y, M, d, h, m, s) / 1000);
             sb.EmitPushNumber(new Neo.BigInteger(time));
             sb.EmitPushBytes(Neo.Cryptography.ECPoint.fromUint8Array(pubkey, Neo.Cryptography.ECCurve.secp256r1).encodePoint(true));
             sb.EmitPushString(name);
@@ -3526,6 +3544,7 @@ var WebBrowser;
     AppChainTool.appChainBCP = "054df92125ca222b979c8ae8c546c9d4d1c22dc2";
     AppChainTool.Neotransfer = "0x04e31cee0443bb916534dad2adf508458920e66d";
     AppChainTool.Zorotransfer = "0x67147557c0b6431e9b9297de26b46d9889434e49";
+    AppChainTool.RootChain = "0000000000000000000000000000000000000000";
     AppChainTool.id_GAS = "0x602c79718b16e442de58778e148d0b1084e3b2dffd5de6b7b16cee7969282de7";
     AppChainTool.id_NEO = "0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b";
     AppChainTool.GAS = 0;
@@ -3974,20 +3993,86 @@ var WebBrowser;
             var normalcharge = document.createElement("button");
             upBackGround.appendChild(normalcharge);
             normalcharge.style.cssFloat = "left";
-            normalcharge.style.width = "50%";
+            normalcharge.style.width = "33%";
             normalcharge.textContent = "普通转账";
             normalcharge.onclick = () => {
                 this.normalCharge(downBackGround);
             };
             normalcharge.click();
+            var singlecharge = document.createElement("button");
+            upBackGround.appendChild(singlecharge);
+            singlecharge.style.cssFloat = "left";
+            singlecharge.style.width = "33%";
+            singlecharge.textContent = "单链转账";
+            singlecharge.onclick = () => {
+                this.singleCharge(downBackGround);
+            };
             var chainCharge = document.createElement("button");
             upBackGround.appendChild(chainCharge);
             chainCharge.style.cssFloat = "left";
-            chainCharge.style.width = "50%";
+            chainCharge.style.width = "33%";
             chainCharge.textContent = "跨链转账";
             chainCharge.onclick = () => {
                 this.chainCharge(downBackGround);
             };
+        }
+        singleCharge(div) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (div.firstChild)
+                    div.removeChild(div.firstChild);
+                var singlebackground = document.createElement('div');
+                div.appendChild(singlebackground);
+                var asset = document.createElement('span');
+                singlebackground.appendChild(asset);
+                asset.style.color = "#eeeeee";
+                asset.textContent = "链名";
+                var select = document.createElement("select");
+                singlebackground.appendChild(select);
+                this.getChain(select);
+                var coin = document.createElement('span');
+                singlebackground.appendChild(coin);
+                coin.style.color = "#eeeeee";
+                coin.textContent = "余额";
+                var coinNum = document.createElement('span');
+                singlebackground.appendChild(coinNum);
+                coinNum.style.color = "#eeeeee";
+                coinNum.textContent = yield WebBrowser.CoinTool.getGold("default", WebBrowser.GUITool.address, "NEO");
+                select.onchange = (e) => __awaiter(this, void 0, void 0, function* () {
+                    coinNum.textContent = yield WebBrowser.CoinTool.getGold("default", WebBrowser.GUITool.address, select.childNodes[select.selectedIndex].value);
+                });
+                var button = document.createElement("button");
+                singlebackground.appendChild(button);
+                button.textContent = "刷新";
+                button.onclick = () => __awaiter(this, void 0, void 0, function* () {
+                    coinNum.textContent = yield WebBrowser.CoinTool.getGold("default", WebBrowser.GUITool.address, select.childNodes[select.selectedIndex].value);
+                });
+                var addrText = document.createElement('span');
+                singlebackground.appendChild(addrText);
+                addrText.style.color = "#eeeeee";
+                addrText.textContent = "地址";
+                var addr = document.createElement('input');
+                singlebackground.appendChild(addr);
+                var goldText = document.createElement('span');
+                singlebackground.appendChild(goldText);
+                goldText.style.color = "#eeeeee";
+                goldText.textContent = "金额";
+                var gold = document.createElement('input');
+                singlebackground.appendChild(gold);
+                var btnSend = document.createElement('button');
+                singlebackground.appendChild(btnSend);
+                btnSend.textContent = "发送";
+                btnSend.onclick = () => __awaiter(this, void 0, void 0, function* () {
+                    if (coinNum.textContent == "0")
+                        return;
+                    switch (select.childNodes[select.selectedIndex].value) {
+                        case "NEO":
+                            var utxo = yield WebBrowser.WWW.rpc_getUTXO(WebBrowser.GUITool.address);
+                            return yield WebBrowser.AppChainTool.MakeInvokeTransaction(WebBrowser.CoinTool.getassets(utxo), WebBrowser.GUITool.address, addr.value, WebBrowser.AppChainTool.neoBCP, parseInt(gold.value), WebBrowser.GUITool.prikey, WebBrowser.GUITool.pubkey);
+                        default:
+                            return yield WebBrowser.AppChainTool.MakeZoroTransaction(WebBrowser.GUITool.address, addr.value, parseInt(gold.value), WebBrowser.AppChainTool.zoroBCP, WebBrowser.AppChainTool.zoroBCP, WebBrowser.GUITool.prikey, WebBrowser.GUITool.pubkey, select.childNodes[select.selectedIndex].value);
+                    }
+                });
+            });
         }
         normalCharge(div) {
             return __awaiter(this, void 0, void 0, function* () {
@@ -4012,12 +4097,10 @@ var WebBrowser;
                 var coinNum = document.createElement('span');
                 up.appendChild(coinNum);
                 coinNum.style.color = "#eeeeee";
-                let title = WebBrowser.GUI_Route.instance.getUI(WebBrowser.PageName.Title);
-                if (title.height.textContent == "N/A") {
-                    coinNum.textContent = yield WebBrowser.CoinTool.getGold(select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.address);
-                }
-                else
-                    coinNum.textContent = yield WebBrowser.CoinTool.getGold(select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.address, WebBrowser.GUITool.chainHash);
+                coinNum.textContent = yield WebBrowser.CoinTool.getGold(select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.address, WebBrowser.AppChainTool.RootChain);
+                select.onchange = () => __awaiter(this, void 0, void 0, function* () {
+                    coinNum.textContent = yield WebBrowser.CoinTool.getGold(select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.address, WebBrowser.AppChainTool.RootChain);
+                });
                 var addrText = document.createElement('span');
                 normalbackground.appendChild(addrText);
                 addrText.style.color = "#eeeeee";
@@ -4038,7 +4121,7 @@ var WebBrowser;
                         return;
                     switch (select.childNodes[select.selectedIndex].value) {
                         case "ZOROBCP":
-                            return yield WebBrowser.AppChainTool.MakeZoroTransaction(WebBrowser.GUITool.address, addr.value, parseInt(gold.value), WebBrowser.GUITool.chainHash == "0000000000000000000000000000000000000000" ? WebBrowser.AppChainTool.zoroBCP : WebBrowser.AppChainTool.appChainBCP, WebBrowser.AppChainTool.zoroBCP, WebBrowser.GUITool.prikey, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.chainHash);
+                            return yield WebBrowser.AppChainTool.MakeZoroTransaction(WebBrowser.GUITool.address, addr.value, parseInt(gold.value), WebBrowser.AppChainTool.zoroBCP, WebBrowser.AppChainTool.zoroBCP, WebBrowser.GUITool.prikey, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.chainHash);
                         case "NEOBCP":
                             var utxo = yield WebBrowser.WWW.rpc_getUTXO(WebBrowser.GUITool.address);
                             return yield WebBrowser.AppChainTool.MakeInvokeTransaction(WebBrowser.CoinTool.getassets(utxo), WebBrowser.GUITool.address, addr.value, WebBrowser.AppChainTool.neoBCP, parseInt(gold.value), WebBrowser.GUITool.prikey, WebBrowser.GUITool.pubkey);
@@ -4107,6 +4190,26 @@ var WebBrowser;
                 });
             });
         }
+        selectClear(select) {
+            if (select)
+                while (select.childNodes.length > 0) {
+                    select.removeChild(select.options[0]);
+                    select.remove(0);
+                    select.options[0] = null;
+                }
+        }
+        getChain(select) {
+            return __awaiter(this, void 0, void 0, function* () {
+                this.selectClear(select);
+                var name2Hash = yield WebBrowser.AppChainTool.initAllAppChain();
+                for (var chainName in name2Hash) {
+                    var sitem = document.createElement("option");
+                    sitem.text = chainName;
+                    sitem.value = name2Hash[chainName];
+                    select.appendChild(sitem);
+                }
+            });
+        }
     }
     WebBrowser.GUI_Charge = GUI_Charge;
 })(WebBrowser || (WebBrowser = {}));
@@ -4141,70 +4244,113 @@ var WebBrowser;
             appChainBackGround.appendChild(appChainName);
             var name = document.createElement('input');
             appChainBackGround.appendChild(name);
-            var pkey1 = document.createElement('span');
-            pkey1.style.color = "#eeeeee";
-            pkey1.textContent = "选择公钥1";
-            appChainBackGround.appendChild(pkey1);
-            var pubkey1 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 6);
-            var pkey2 = document.createElement('span');
-            pkey2.style.color = "#eeeeee";
-            pkey2.textContent = "选择公钥2";
-            appChainBackGround.appendChild(pkey2);
-            var pubkey2 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 7);
-            var pkey3 = document.createElement('span');
-            pkey3.style.color = "#eeeeee";
-            pkey3.textContent = "选择公钥3";
-            appChainBackGround.appendChild(pkey3);
-            var pubkey3 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 8);
-            var pkey4 = document.createElement('span');
-            pkey4.style.color = "#eeeeee";
-            pkey4.textContent = "选择公钥4";
-            appChainBackGround.appendChild(pkey4);
-            var pubkey4 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "pubkey", 9);
-            var seed1 = document.createElement('span');
-            seed1.style.color = "#eeeeee";
-            seed1.textContent = "选择种子地址1";
-            appChainBackGround.appendChild(seed1);
-            var ip1 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 6);
-            var port1 = document.createElement('input');
-            port1.value = "15000";
-            appChainBackGround.appendChild(port1);
-            var seed2 = document.createElement('span');
-            seed2.style.color = "#eeeeee";
-            seed2.textContent = "选择种子地址2";
-            appChainBackGround.appendChild(seed2);
-            var ip2 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 7);
-            var port2 = document.createElement('input');
-            port2.value = "15000";
-            appChainBackGround.appendChild(port2);
-            var seed3 = document.createElement('span');
-            seed3.style.color = "#eeeeee";
-            seed3.textContent = "选择种子地址3";
-            appChainBackGround.appendChild(seed3);
-            var ip3 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 8);
-            var port3 = document.createElement('input');
-            port3.value = "15000";
-            appChainBackGround.appendChild(port3);
-            var seed4 = document.createElement('span');
-            seed4.style.color = "#eeeeee";
-            seed4.textContent = "选择种子地址4";
-            appChainBackGround.appendChild(seed4);
-            var ip4 = WebBrowser.AppChainTool.createSelect(appChainBackGround, "ip", 9);
-            var port4 = document.createElement('input');
-            port4.value = "15000";
-            appChainBackGround.appendChild(port4);
+            var pubkeyList = document.createElement('span');
+            pubkeyList.style.color = "#eeeeee";
+            pubkeyList.textContent = "共识节点数量";
+            appChainBackGround.appendChild(pubkeyList);
+            var pubkeyListNumber = document.createElement('input');
+            pubkeyListNumber.type = "number";
+            appChainBackGround.appendChild(pubkeyListNumber);
+            var pbutton = document.createElement("button");
+            appChainBackGround.appendChild(pbutton);
+            pbutton.textContent = "确认";
+            pbutton.onkeyup = () => {
+                if (pbutton.value.length == 1) {
+                    pbutton.value = pbutton.value.replace(/[^1-9]/g, '');
+                }
+                else {
+                    pbutton.value = pbutton.value.replace(/\D/g, '');
+                }
+            };
+            pbutton.onpaste = () => {
+                if (pbutton.value.length == 1) {
+                    pbutton.value = pbutton.value.replace(/[^1-9]/g, '');
+                }
+                else {
+                    pbutton.value = pbutton.value.replace(/\D/g, '');
+                }
+            };
+            var back = document.createElement("div");
+            appChainBackGround.appendChild(back);
+            var pubkey = [];
+            pbutton.onclick = () => {
+                if (parseInt(pubkeyListNumber.value) < 4) {
+                    alert("it must be >= 4");
+                    return;
+                }
+                while (back.children.length > 0) {
+                    back.removeChild(back.firstChild);
+                }
+                for (let i = 0; i < parseInt(pubkeyListNumber.value); i++) {
+                    var pkey1 = document.createElement('span');
+                    pkey1.style.color = "#eeeeee";
+                    pkey1.textContent = "选择公钥" + (i + 1);
+                    back.appendChild(pkey1);
+                    pubkey.push(WebBrowser.AppChainTool.createSelect(back, "pubkey", i + 1));
+                }
+            };
+            var ipList = document.createElement('span');
+            ipList.style.color = "#eeeeee";
+            ipList.textContent = "种子节点数量";
+            appChainBackGround.appendChild(ipList);
+            var ipListNumber = document.createElement('input');
+            ipListNumber.type = "number";
+            appChainBackGround.appendChild(ipListNumber);
+            var ipbutton = document.createElement("button");
+            appChainBackGround.appendChild(ipbutton);
+            ipbutton.textContent = "确认";
+            ipbutton.onkeyup = () => {
+                if (ipbutton.value.length == 1) {
+                    ipbutton.value = ipbutton.value.replace(/[^1-9]/g, '');
+                }
+                else {
+                    ipbutton.value = ipbutton.value.replace(/\D/g, '');
+                }
+            };
+            ipbutton.onpaste = () => {
+                if (ipbutton.value.length == 1) {
+                    ipbutton.value = ipbutton.value.replace(/[^1-9]/g, '');
+                }
+                else {
+                    ipbutton.value = ipbutton.value.replace(/\D/g, '');
+                }
+            };
+            var backip = document.createElement("div");
+            appChainBackGround.appendChild(backip);
+            var ip = [];
+            var port = [];
+            ipbutton.onclick = () => {
+                if (parseInt(ipListNumber.value) < 1) {
+                    alert("it must be >= 1");
+                    return;
+                }
+                while (backip.children.length > 0) {
+                    backip.removeChild(backip.firstChild);
+                }
+                for (let i = 0; i < parseInt(ipListNumber.value); i++) {
+                    var seed1 = document.createElement('span');
+                    seed1.style.color = "#eeeeee";
+                    seed1.textContent = "选择种子地址" + (i + 1);
+                    backip.appendChild(seed1);
+                    ip.push(WebBrowser.AppChainTool.createSelect(backip, "ip", i + 1));
+                    let port1 = document.createElement('input');
+                    port1.value = "15000";
+                    backip.appendChild(port1);
+                    port.push(port1);
+                }
+            };
             var btnCreate = document.createElement('button');
             btnCreate.textContent = "创建";
             btnCreate.onclick = () => {
-                var pubkey = [pubkey1.childNodes[pubkey1.selectedIndex].value,
-                    pubkey2.childNodes[pubkey2.selectedIndex].value,
-                    pubkey3.childNodes[pubkey3.selectedIndex].value,
-                    pubkey4.childNodes[pubkey4.selectedIndex].value];
-                var ip = [ip1.childNodes[ip1.selectedIndex].value + ":" + port1.value,
-                    ip2.childNodes[ip2.selectedIndex].value + ":" + port2.value,
-                    ip3.childNodes[ip3.selectedIndex].value + ":" + port3.value,
-                    ip4.childNodes[ip4.selectedIndex].value + ":" + port4.value];
-                WebBrowser.AppChainTool.SendCreateAppChain(name.value, WebBrowser.GUITool.pubkey, pubkey, ip, WebBrowser.GUITool.prikey, "0000000000000000000000000000000000000000");
+                var listpubkey = [];
+                for (let i = 0; i < parseInt(pubkeyListNumber.value); i++) {
+                    listpubkey.push(pubkey[i].childNodes[pubkey[i].selectedIndex].value);
+                }
+                var listip = [];
+                for (let i = 0; i < parseInt(ipListNumber.value); i++) {
+                    listpubkey.push(ip[i].childNodes[ip[i].selectedIndex].value + ":" + port[i].value);
+                }
+                WebBrowser.AppChainTool.SendCreateAppChain(name.value, WebBrowser.GUITool.pubkey, listpubkey, listip, WebBrowser.GUITool.prikey, "0000000000000000000000000000000000000000");
             };
             appChainBackGround.appendChild(btnCreate);
         }
@@ -4393,10 +4539,14 @@ var WebBrowser;
         hideUI() {
             this.stopUpdate();
             if (this.title) {
-                if (this.height)
+                if (this.height) {
                     this.title.removeChild(this.height);
-                if (this.selectAppChain)
+                    this.height = null;
+                }
+                if (this.selectAppChain) {
                     this.title.removeChild(this.selectAppChain);
+                    this.selectAppChain = null;
+                }
             }
         }
         showTitle(title) {
@@ -4467,7 +4617,12 @@ var WebBrowser;
         update() {
             return __awaiter(this, void 0, void 0, function* () {
                 if (WebBrowser.GUITool.chainHash) {
-                    var height = yield WebBrowser.WWW.api_getZoroHeight(WebBrowser.GUITool.chainHash);
+                    if (WebBrowser.GUITool.chainHash == "NEO") {
+                        var height = yield WebBrowser.WWW.api_getNEOHeight();
+                    }
+                    else {
+                        var height = yield WebBrowser.WWW.api_getZoroHeight(WebBrowser.GUITool.chainHash);
+                    }
                     this.height.textContent = isNaN(height) ? "N/A" : height.toString();
                 }
                 else {

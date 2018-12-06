@@ -41,8 +41,8 @@ namespace WebBrowser
         hideUI(){
             this.stopUpdate();
             if (this.title){
-                if (this.height)this.title.removeChild(this.height);
-                if (this.selectAppChain)this.title.removeChild(this.selectAppChain);
+                if (this.height){this.title.removeChild(this.height);this.height = null}
+                if (this.selectAppChain){this.title.removeChild(this.selectAppChain);this.selectAppChain = null}
             }           
         }
 
@@ -125,7 +125,11 @@ namespace WebBrowser
         async update(): Promise<void>
         {                
             if (GUITool.chainHash){
-                var height = await WWW.api_getZoroHeight(GUITool.chainHash);
+                if (GUITool.chainHash == "NEO"){
+                    var height = await WWW.api_getNEOHeight();
+                }else{
+                    var height = await WWW.api_getZoroHeight(GUITool.chainHash);
+                }
                 this.height.textContent = isNaN(height)?"N/A":height.toString();
             }else{
                 GUITool.chainHash = "NEO";

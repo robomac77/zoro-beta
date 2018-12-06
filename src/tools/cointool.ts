@@ -90,13 +90,21 @@ namespace WebBrowser
         static async getGold(type:string, address:string, chainHash = "gold"){
             switch(type){
                 case "ZOROBCP":
-                return await WWW.rpc_getBalanceOf(chainHash == "0000000000000000000000000000000000000000"?AppChainTool.zoroBCP:AppChainTool.appChainBCP, address, chainHash);
+                return await WWW.rpc_getBalanceOf(AppChainTool.zoroBCP, address, chainHash);
                 case "NEOBCP":
                 return await WWW.rpc_getBalanceOf(AppChainTool.neoBCP, address);
                 case "NEO":
                 return AppChainTool.NEO;
                 case "GAS":
                 return AppChainTool.GAS;
+                default:
+                    let price = 0;
+                    if (chainHash == "NEO"){
+                        price = await WWW.rpc_getBalanceOf(AppChainTool.neoBCP, address);
+                    }else{
+                        price = await WWW.rpc_getBalanceOf(AppChainTool.zoroBCP, address, chainHash);
+                    }
+                return price
             }
         }
         static getassets(utxos)
