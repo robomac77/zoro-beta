@@ -40,16 +40,6 @@ namespace WebBrowser
             appChainBackGround.appendChild(name);
 
 
-                var pubkeyFillin = document.createElement("span") as HTMLSpanElement;
-                pubkeyFillin.style.color = "#eeeeee";
-                pubkeyFillin.textContent = "手动输入";
-                appChainBackGround.appendChild(pubkeyFillin);
-
-                var pubkeyCheck = document.createElement("input") as HTMLInputElement;
-                pubkeyCheck.type = "checkbox";
-                pubkeyCheck.checked = false;
-                appChainBackGround.appendChild(pubkeyCheck);
-
                 var pubkeyList = document.createElement('span') as HTMLSpanElement;
                 pubkeyList.style.color = "#eeeeee";
                 pubkeyList.textContent = "共识节点数量";
@@ -92,24 +82,10 @@ namespace WebBrowser
                         pkey1.style.color = "#eeeeee";
                         pkey1.textContent = "选择公钥" + (i+1);
                         back.appendChild(pkey1);
-                        
-                        if (pubkeyCheck.checked){
-                            pubkey.push(AppChainTool.createInput(back));
-                        }else{
-                            pubkey.push(AppChainTool.createSelect(back, "pubkey", i + 1));
-                        }                       
+            
+                        pubkey.push(AppChainTool.createSelect(back, "pubkey", i + 1));
                     }
                 }
-
-                var ipFillin = document.createElement("span") as HTMLSpanElement;
-                ipFillin.style.color = "#eeeeee";
-                ipFillin.textContent = "手动输入";
-                appChainBackGround.appendChild(ipFillin);
-
-                var ipCheck = document.createElement("input") as HTMLInputElement;
-                ipCheck.type = "checkbox";
-                ipCheck.checked = false;
-                appChainBackGround.appendChild(ipCheck);
 
                 var ipList = document.createElement('span') as HTMLSpanElement;
                 ipList.style.color = "#eeeeee";
@@ -118,7 +94,7 @@ namespace WebBrowser
                 
                 var ipListNumber = document.createElement('input') as HTMLInputElement;
                 ipListNumber.type = "number";
-                appChainBackGround.appendChild(ipListNumber);              
+                appChainBackGround.appendChild(ipListNumber);
 
                 var ipbutton = document.createElement("button") as HTMLButtonElement;
                 appChainBackGround.appendChild(ipbutton);
@@ -155,11 +131,7 @@ namespace WebBrowser
                         seed1.textContent = "选择种子地址" + (i+1);
                         backip.appendChild(seed1);
 
-                        if (ipCheck.checked){
-                            ip.push(AppChainTool.createInput(backip));
-                        }else{
-                            ip.push(AppChainTool.createSelect(backip, "ip", i + 1));
-                        }
+                        ip.push(AppChainTool.createSelect(backip, "ip", i + 1));
 
                         let port1 = document.createElement('input') as HTMLInputElement;
                         port1.value = "15000";
@@ -173,21 +145,13 @@ namespace WebBrowser
             btnCreate.onclick = () => {
                 var listpubkey = [];
                 for (let i = 0; i < parseInt(pubkeyListNumber.value); i++){
-                    if (pubkeyCheck.checked){
-                        listpubkey.push(pubkey[i].value);
-                    }else{
-                        listpubkey.push((pubkey[i].childNodes[pubkey[i].selectedIndex] as HTMLOptionElement).value);
-                    }                   
+                    listpubkey.push((pubkey[i].childNodes[pubkey[i].selectedIndex] as HTMLOptionElement).value);
                 }
                 var listip = [];
                 for (let i = 0; i < parseInt(ipListNumber.value); i++){
-                    if (ipCheck.checked){                    
-                        listip.push(ip[i].value + ":" + port[i].value);
-                    }else{
-                        listip.push((ip[i].childNodes[ip[i].selectedIndex] as HTMLOptionElement).value +":" + port[i].value);
-                    }
+                    listpubkey.push((ip[i].childNodes[ip[i].selectedIndex] as HTMLOptionElement).value +":" + port[i].value);
                 }
-                AppChainTool.SendCreateAppChain(name.value, GUITool.pubkey, listpubkey, listip, GUITool.prikey, AppChainTool.RootChain);
+                AppChainTool.SendCreateAppChain(name.value, GUITool.pubkey, listpubkey, listip, GUITool.prikey, "0000000000000000000000000000000000000000");
             }
             appChainBackGround.appendChild(btnCreate);
         }

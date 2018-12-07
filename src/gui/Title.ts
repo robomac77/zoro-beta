@@ -177,8 +177,7 @@ namespace WebBrowser
             this.selectAppChain.selectedIndex = this.selectIndex;
         }
 
-        async initAppChain(){
-            this.selectClear();
+        async initAppChain(){  
             var name2Hash = await AppChainTool.initAllAppChain()
             for (var chainName in name2Hash){
                 var sitem = document.createElement("option");
@@ -186,7 +185,6 @@ namespace WebBrowser
                 sitem.value = name2Hash[chainName];
                 this.selectAppChain.appendChild(sitem);
             }
-            this.selectAppChain.selectedIndex = this.selectIndex;
             this.selectAppChain.onchange = (ev) =>{
                 this.updateHeight();
                 GUI_Route.instance.showUI(PageName.Asset);

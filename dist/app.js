@@ -3379,11 +3379,6 @@ var WebBrowser;
             select.selectedIndex = num - 1;
             return select;
         }
-        static createInput(panel) {
-            var input = document.createElement("input");
-            panel.appendChild(input);
-            return input;
-        }
         static SendContract(need_storage, need_canCharge, description, email, auther, version, name, ContractAvm, chainHash, pubkey, prikey) {
             return __awaiter(this, void 0, void 0, function* () {
                 var parameter__list = "0710".hexToBytes();
@@ -3730,10 +3725,9 @@ var WebBrowser;
                 wallet.fromJsonStr(walletstr);
             };
             file.onchange = (ev) => {
-                if (file.files.length > 0)
-                    if (file.files[0].name.includes(".json")) {
-                        reader.readAsText(file.files[0]);
-                    }
+                if (file.files[0].name.includes(".json")) {
+                    reader.readAsText(file.files[0]);
+                }
             };
         }
     }
@@ -4250,14 +4244,6 @@ var WebBrowser;
             appChainBackGround.appendChild(appChainName);
             var name = document.createElement('input');
             appChainBackGround.appendChild(name);
-            var pubkeyFillin = document.createElement("span");
-            pubkeyFillin.style.color = "#eeeeee";
-            pubkeyFillin.textContent = "手动输入";
-            appChainBackGround.appendChild(pubkeyFillin);
-            var pubkeyCheck = document.createElement("input");
-            pubkeyCheck.type = "checkbox";
-            pubkeyCheck.checked = false;
-            appChainBackGround.appendChild(pubkeyCheck);
             var pubkeyList = document.createElement('span');
             pubkeyList.style.color = "#eeeeee";
             pubkeyList.textContent = "共识节点数量";
@@ -4300,22 +4286,9 @@ var WebBrowser;
                     pkey1.style.color = "#eeeeee";
                     pkey1.textContent = "选择公钥" + (i + 1);
                     back.appendChild(pkey1);
-                    if (pubkeyCheck.checked) {
-                        pubkey.push(WebBrowser.AppChainTool.createInput(back));
-                    }
-                    else {
-                        pubkey.push(WebBrowser.AppChainTool.createSelect(back, "pubkey", i + 1));
-                    }
+                    pubkey.push(WebBrowser.AppChainTool.createSelect(back, "pubkey", i + 1));
                 }
             };
-            var ipFillin = document.createElement("span");
-            ipFillin.style.color = "#eeeeee";
-            ipFillin.textContent = "手动输入";
-            appChainBackGround.appendChild(ipFillin);
-            var ipCheck = document.createElement("input");
-            ipCheck.type = "checkbox";
-            ipCheck.checked = false;
-            appChainBackGround.appendChild(ipCheck);
             var ipList = document.createElement('span');
             ipList.style.color = "#eeeeee";
             ipList.textContent = "种子节点数量";
@@ -4359,12 +4332,7 @@ var WebBrowser;
                     seed1.style.color = "#eeeeee";
                     seed1.textContent = "选择种子地址" + (i + 1);
                     backip.appendChild(seed1);
-                    if (ipCheck.checked) {
-                        ip.push(WebBrowser.AppChainTool.createInput(backip));
-                    }
-                    else {
-                        ip.push(WebBrowser.AppChainTool.createSelect(backip, "ip", i + 1));
-                    }
+                    ip.push(WebBrowser.AppChainTool.createSelect(backip, "ip", i + 1));
                     let port1 = document.createElement('input');
                     port1.value = "15000";
                     backip.appendChild(port1);
@@ -4376,23 +4344,13 @@ var WebBrowser;
             btnCreate.onclick = () => {
                 var listpubkey = [];
                 for (let i = 0; i < parseInt(pubkeyListNumber.value); i++) {
-                    if (pubkeyCheck.checked) {
-                        listpubkey.push(pubkey[i].value);
-                    }
-                    else {
-                        listpubkey.push(pubkey[i].childNodes[pubkey[i].selectedIndex].value);
-                    }
+                    listpubkey.push(pubkey[i].childNodes[pubkey[i].selectedIndex].value);
                 }
                 var listip = [];
                 for (let i = 0; i < parseInt(ipListNumber.value); i++) {
-                    if (ipCheck.checked) {
-                        listip.push(ip[i].value + ":" + port[i].value);
-                    }
-                    else {
-                        listip.push(ip[i].childNodes[ip[i].selectedIndex].value + ":" + port[i].value);
-                    }
+                    listpubkey.push(ip[i].childNodes[ip[i].selectedIndex].value + ":" + port[i].value);
                 }
-                WebBrowser.AppChainTool.SendCreateAppChain(name.value, WebBrowser.GUITool.pubkey, listpubkey, listip, WebBrowser.GUITool.prikey, WebBrowser.AppChainTool.RootChain);
+                WebBrowser.AppChainTool.SendCreateAppChain(name.value, WebBrowser.GUITool.pubkey, listpubkey, listip, WebBrowser.GUITool.prikey, "0000000000000000000000000000000000000000");
             };
             appChainBackGround.appendChild(btnCreate);
         }
@@ -4414,68 +4372,6 @@ var WebBrowser;
         hideUI() {
         }
         mainContract(div) {
-            if (div.firstChild)
-                div.removeChild(div.firstChild);
-            var contractBackGround = document.createElement('div');
-            contractBackGround.style.width = "100%";
-            contractBackGround.style.cssFloat = "left";
-            div.appendChild(contractBackGround);
-            var upBackGround = document.createElement('div');
-            upBackGround.style.width = "100%";
-            upBackGround.style.cssFloat = "left";
-            contractBackGround.appendChild(upBackGround);
-            var downBackGround = document.createElement('div');
-            downBackGround.style.width = "100%";
-            downBackGround.style.cssFloat = "left";
-            contractBackGround.appendChild(downBackGround);
-            var putContract = document.createElement("button");
-            upBackGround.appendChild(putContract);
-            putContract.style.cssFloat = "left";
-            putContract.style.width = "50%";
-            putContract.textContent = "发布合约";
-            putContract.onclick = () => {
-                this.putContract(downBackGround);
-            };
-            putContract.click();
-            var useContract = document.createElement("button");
-            upBackGround.appendChild(useContract);
-            useContract.style.cssFloat = "left";
-            useContract.style.width = "50%";
-            useContract.textContent = "调用合约";
-            useContract.onclick = () => {
-                this.useContract(downBackGround);
-            };
-        }
-        useContract(div) {
-            if (div.firstChild)
-                div.removeChild(div.firstChild);
-            var contractBackGround = document.createElement('div');
-            contractBackGround.style.width = "100%";
-            contractBackGround.style.cssFloat = "left";
-            div.appendChild(contractBackGround);
-            var contractAVM = document.createElement("span");
-            contractAVM.style.color = "#eeeeee";
-            contractAVM.textContent = "合约地址";
-            contractBackGround.appendChild(contractAVM);
-            var file = document.createElement('input');
-            file.type = "file";
-            contractBackGround.appendChild(file);
-            var ContractAvm = null;
-            var reader = new FileReader();
-            reader.onload = (e) => {
-                ContractAvm = reader.result;
-            };
-            file.onchange = (ev) => {
-                if (file.files.length > 0)
-                    if (file.files[0].name.includes(".avm")) {
-                        reader.readAsArrayBuffer(file.files[0]);
-                    }
-            };
-            // setTimeout(() => {
-            //     AppChainTool.SendContractMethod(GUITool.chainHash, GUITool.pubkey, GUITool.prikey);
-            // }, 15000);
-        }
-        putContract(div) {
             if (div.firstChild)
                 div.removeChild(div.firstChild);
             var contractBackGround = document.createElement('div');
@@ -4554,16 +4450,18 @@ var WebBrowser;
                     return;
                 }
                 WebBrowser.AppChainTool.SendContract(need_storage.checked, need_canCharge.checked, description.value, email.value, auther.value, version.value, name.value, ContractAvm, WebBrowser.GUITool.chainHash, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
+                setTimeout(() => {
+                    WebBrowser.AppChainTool.SendContractMethod(WebBrowser.GUITool.chainHash, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
+                }, 15000);
             });
             var reader = new FileReader();
             reader.onload = (e) => {
                 ContractAvm = reader.result;
             };
             file.onchange = (ev) => {
-                if (file.files.length > 0)
-                    if (file.files[0].name.includes(".avm")) {
-                        reader.readAsArrayBuffer(file.files[0]);
-                    }
+                if (file.files[0].name.includes(".avm")) {
+                    reader.readAsArrayBuffer(file.files[0]);
+                }
             };
         }
     }
@@ -4774,7 +4672,6 @@ var WebBrowser;
         }
         initAppChain() {
             return __awaiter(this, void 0, void 0, function* () {
-                this.selectClear();
                 var name2Hash = yield WebBrowser.AppChainTool.initAllAppChain();
                 for (var chainName in name2Hash) {
                     var sitem = document.createElement("option");
@@ -4782,7 +4679,6 @@ var WebBrowser;
                     sitem.value = name2Hash[chainName];
                     this.selectAppChain.appendChild(sitem);
                 }
-                this.selectAppChain.selectedIndex = this.selectIndex;
                 this.selectAppChain.onchange = (ev) => {
                     this.updateHeight();
                     WebBrowser.GUI_Route.instance.showUI(WebBrowser.PageName.Asset);
