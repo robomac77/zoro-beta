@@ -63,7 +63,7 @@ namespace WebBrowser
             this.footer.hidden = true;
         }
         public async updateBlocks(pageUtil: PageUtil) {
-            let blocks: Block[] = await WWW.getblocks( pageUtil.pageSize, pageUtil.currentPage ); //limit this to the 15 by 15 splitting
+            let blocks: Block[] = await WWW.getblocks( pageUtil.pageSize, pageUtil.currentPage ); 
             $("#blocks-page").children("table").children("tbody").empty();  
             if (pageUtil.totalPage - pageUtil.currentPage) {
                 $("#blocks-page-next").removeClass('disabled');

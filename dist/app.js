@@ -340,7 +340,7 @@ var WebBrowser;
         }
         updateBlocks(pageUtil) {
             return __awaiter(this, void 0, void 0, function* () {
-                let blocks = yield WebBrowser.WWW.getblocks(pageUtil.pageSize, pageUtil.currentPage); //limit this to the 15 by 15 splitting
+                let blocks = yield WebBrowser.WWW.getblocks(pageUtil.pageSize, pageUtil.currentPage);
                 $("#blocks-page").children("table").children("tbody").empty();
                 if (pageUtil.totalPage - pageUtil.currentPage) {
                     $("#blocks-page-next").removeClass('disabled');
