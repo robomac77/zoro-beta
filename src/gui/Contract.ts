@@ -26,6 +26,83 @@ namespace WebBrowser
             contractBackGround.style.cssFloat = "left";
             div.appendChild(contractBackGround);
 
+            var upBackGround = document.createElement('div') as HTMLDivElement;
+            upBackGround.style.width = "100%";
+            upBackGround.style.cssFloat = "left";
+            contractBackGround.appendChild(upBackGround);
+
+            var downBackGround = document.createElement('div') as HTMLDivElement;
+            downBackGround.style.width = "100%";
+            downBackGround.style.cssFloat = "left";
+            contractBackGround.appendChild(downBackGround);
+
+            var putContract = document.createElement("button") as HTMLButtonElement;
+            upBackGround.appendChild(putContract)
+            putContract.style.cssFloat = "left";
+            putContract.style.width = "50%";
+            putContract.textContent = "发布合约";
+            putContract.onclick = () => {
+                this.putContract(downBackGround);
+            }
+            putContract.click();
+
+            var useContract = document.createElement("button") as HTMLButtonElement;
+            upBackGround.appendChild(useContract)
+            useContract.style.cssFloat = "left";
+            useContract.style.width = "50%";
+            useContract.textContent = "调用合约";
+            useContract.onclick = () => {
+                this.useContract(downBackGround);
+            }            
+        }
+
+        useContract(div:HTMLDivElement){
+            if (div.firstChild)
+            div.removeChild(div.firstChild);
+
+            var contractBackGround = document.createElement('div') as HTMLDivElement;
+            contractBackGround.style.width = "100%";
+            contractBackGround.style.cssFloat = "left";
+            div.appendChild(contractBackGround);
+
+            var contractAVM = document.createElement("span") as HTMLSpanElement;
+            contractAVM.style.color = "#eeeeee";
+            contractAVM.textContent = "合约地址";
+            contractBackGround.appendChild(contractAVM);
+
+            var file = document.createElement('input') as HTMLInputElement;
+            file.type = "file";
+            contractBackGround.appendChild(file);
+
+            var ContractAvm = null;
+            var reader = new FileReader();
+            reader.onload = (e: Event) =>
+            {                
+                ContractAvm = reader.result as ArrayBuffer;                                                           
+            }   
+            file.onchange = (ev: Event) =>
+            {
+                if (file.files.length > 0)
+                if (file.files[0].name.includes(".avm"))
+                {
+                    reader.readAsArrayBuffer(file.files[0]);
+                }
+            }      
+
+            // setTimeout(() => {
+            //     AppChainTool.SendContractMethod(GUITool.chainHash, GUITool.pubkey, GUITool.prikey);
+            // }, 15000);
+        }
+
+        putContract(div:HTMLDivElement){
+            if (div.firstChild)
+            div.removeChild(div.firstChild);
+
+            var contractBackGround = document.createElement('div') as HTMLDivElement;
+            contractBackGround.style.width = "100%";
+            contractBackGround.style.cssFloat = "left";
+            div.appendChild(contractBackGround);
+
             var ContractText = document.createElement('span') as HTMLSpanElement;
             ContractText.style.color = "#eeeeee";
             ContractText.textContent = "合约";
@@ -116,11 +193,7 @@ namespace WebBrowser
                     return;
                 }
                 AppChainTool.SendContract(need_storage.checked,need_canCharge.checked,description.value,email.value,auther.value,version.value,
-                    name.value, ContractAvm, GUITool.chainHash, GUITool.pubkey, GUITool.prikey);
-
-                setTimeout(() => {
-                    AppChainTool.SendContractMethod(GUITool.chainHash, GUITool.pubkey, GUITool.prikey);
-                }, 15000);
+                    name.value, ContractAvm, GUITool.chainHash, GUITool.pubkey, GUITool.prikey);                
             }
 
             var reader = new FileReader();
@@ -130,11 +203,12 @@ namespace WebBrowser
             }   
             file.onchange = (ev: Event) =>
             {
+                if (file.files.length > 0)
                 if (file.files[0].name.includes(".avm"))
                 {
                     reader.readAsArrayBuffer(file.files[0]);
                 }
             }      
-        }
+        } 
     }
 }

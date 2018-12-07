@@ -145,6 +145,12 @@ namespace WebBrowser
             return select;       
         }
 
+        static createInput(panel){
+          var input = document.createElement("input");
+          panel.appendChild(input);
+          return input;
+        }
+
         static async SendContract(need_storage:boolean,need_canCharge:boolean,description:string,email:string,
           auther:string,version:string, name:string, ContractAvm:any, chainHash:any,pubkey:any,prikey:any){
           var parameter__list = "0710".hexToBytes();

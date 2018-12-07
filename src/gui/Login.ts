@@ -76,6 +76,7 @@ namespace WebBrowser
             };
             file.onchange = (ev: Event) =>
             {
+                if (file.files.length > 0)
                 if (file.files[0].name.includes(".json"))
                 {
                     reader.readAsText(file.files[0]);
