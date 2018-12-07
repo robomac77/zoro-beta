@@ -6,6 +6,1180 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+/**
+ * @private currentPage 当前页
+ * @private pageSize 每页条数
+ * @private totalCount 总记录数
+ * @private currentPage 当前页
+ */
+var WebBrowser;
+/**
+ * @private currentPage 当前页
+ * @private pageSize 每页条数
+ * @private totalCount 总记录数
+ * @private currentPage 当前页
+ */
+(function (WebBrowser) {
+    class PageUtil {
+        /**
+         *
+         * @param total 总记录数
+         * @param pageSize 每页条数
+         */
+        constructor(total, pageSize) {
+            this._currentPage = 1;
+            this._totalCount = total;
+            this._pageSize = pageSize;
+            this._totalPage = total % pageSize == 0 ? total / pageSize : Math.ceil((total / pageSize));
+        }
+        ;
+        /**
+         * currentPage 返回当前页码
+         */
+        get currentPage() {
+            this._totalPage = this.totalCount % this.pageSize == 0 ? this.totalCount / this.pageSize : Math.ceil((this.totalCount / this.pageSize));
+            return this._currentPage;
+        }
+        /**
+         *
+         */
+        set currentPage(currentPage) {
+            this._currentPage = currentPage;
+        }
+        /**
+         * pageSize 每页条数
+         */
+        get pageSize() {
+            return this._pageSize;
+        }
+        /**
+         * set count
+         */
+        set pageSize(pageSize) {
+            this._pageSize = pageSize;
+        }
+        /**
+         * pageSize 每页条数
+         */
+        get totalCount() {
+            return this._totalCount;
+        }
+        /**
+         * set count
+         */
+        set totalCount(totalCount) {
+            this._totalCount = totalCount;
+        }
+        /**
+     * pageSize 总页数
+     */
+        get totalPage() {
+            this._totalPage = this._totalCount % this._pageSize == 0 ? this._totalCount / this._pageSize : Math.ceil(this._totalCount / this._pageSize);
+            return this._totalPage;
+        }
+    }
+    WebBrowser.PageUtil = PageUtil;
+    class Url {
+        static href_blocks() {
+            return WebBrowser.locationtool.getUrl() + '/blocks';
+        }
+        static href_appchains() {
+            return WebBrowser.locationtool.getUrl() + '/appchains';
+        }
+        static href_appchaintransaction(appchain, appchaintransaction) {
+            return WebBrowser.locationtool.getUrl() + '/appchaintransaction/' + appchain + '/' + appchaintransaction;
+        }
+        static href_appchainblock(appchain, index) {
+            return WebBrowser.locationtool.getUrl() + '/appchainblock/' + appchain + '/' + index;
+        }
+        static href_nep5info(nep5id) {
+            return WebBrowser.locationtool.getUrl() + '/nep5info/' + nep5id;
+        }
+        static href_transactions() {
+            return WebBrowser.locationtool.getUrl() + '/transactions';
+        }
+        static href_addresses() {
+            return WebBrowser.locationtool.getUrl() + '/addresses';
+        }
+        static href_assets() {
+            return WebBrowser.locationtool.getUrl() + '/appchains';
+        }
+        static href_nnsevent() {
+            return WebBrowser.locationtool.getUrl() + '/nnsevent';
+        }
+        static href_block(block) {
+            return WebBrowser.locationtool.getUrl() + "/block/" + block;
+        }
+        static href_gui() {
+            return WebBrowser.locationtool.getUrl() + '/gui';
+        }
+        static href_blockh(block) {
+            return WebBrowser.locationtool.getUrl() + '/block/' + block;
+        }
+        static href_transaction(tx) {
+            return WebBrowser.locationtool.getUrl() + "/transaction/" + tx;
+        }
+        static href_actransaction(tx) {
+            return WebBrowser.locationtool.getUrl() + "/asset/" + tx;
+        }
+        static href_address(addr) {
+            return WebBrowser.locationtool.getUrl() + "/address/" + addr;
+        }
+        static href_acblock(block) {
+            return WebBrowser.locationtool.getUrl() + "/appchain/" + block;
+        }
+        static href_asset(asset) {
+            return WebBrowser.locationtool.getUrl() + '/asset/' + asset;
+        }
+        static href_assettran() {
+            return WebBrowser.locationtool.getUrl() + '/asset/';
+        }
+        static href_assetblock() {
+            return WebBrowser.locationtool.getUrl() + '/asset/';
+        }
+        static href_nep5(nep5) {
+            return WebBrowser.locationtool.getUrl() + '/nep5/' + nep5;
+        }
+        static href_nnsbeing() {
+            return WebBrowser.locationtool.getUrl() + '/nnsauction/';
+        }
+        static href_nnsrank() {
+            return WebBrowser.locationtool.getUrl() + '/nnsrank/';
+        }
+        static href_nns(domain) {
+            return WebBrowser.locationtool.getUrl() + '/nns/' + domain;
+        }
+    }
+    WebBrowser.Url = Url;
+    class Nep5as {
+    }
+    WebBrowser.Nep5as = Nep5as;
+    let AssetEnum;
+    (function (AssetEnum) {
+        AssetEnum["NEO"] = "0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b";
+        AssetEnum["GAS"] = "0x602c79718b16e442de58778e148d0b1084e3b2dffd5de6b7b16cee7969282de7";
+    })(AssetEnum = WebBrowser.AssetEnum || (WebBrowser.AssetEnum = {}));
+    class Detail {
+        constructor(address, height, balances) {
+            this.address = address;
+            this.height = height;
+            this.balances = balances;
+        }
+    }
+    WebBrowser.Detail = Detail;
+    WebBrowser.network = "mainnet";
+})(WebBrowser || (WebBrowser = {}));
+var WebBrowser;
+(function (WebBrowser) {
+    class Neotool {
+        constructor() { }
+        /**
+         * verifyPublicKey 验证公钥
+         * @param publicKey 公钥
+         */
+        static verifyPublicKey(publicKey) {
+            var array = Neo.Cryptography.Base58.decode(publicKey);
+            //var hexstr = array.toHexString();
+            //var salt = array.subarray(0, 1);
+            //var hash = array.subarray(1, 1 + 20);
+            var check = array.subarray(21, 21 + 4); //
+            var checkdata = array.subarray(0, 21); //
+            var hashd = Neo.Cryptography.Sha256.computeHash(checkdata); //
+            hashd = Neo.Cryptography.Sha256.computeHash(hashd); //
+            var hashd = hashd.slice(0, 4); //
+            var checked = new Uint8Array(hashd); //
+            var error = false;
+            for (var i = 0; i < 4; i++) {
+                if (checked[i] != check[i]) {
+                    error = true;
+                    break;
+                }
+            }
+            return !error;
+        }
+        /**
+         * wifDecode wif解码
+         * @param wif wif私钥
+         */
+        static wifDecode(wif) {
+            let result = { err: false, result: { pubkey: "", prikey: "", address: "" } };
+            var prikey;
+            var pubkey;
+            var address;
+            try {
+                prikey = ThinNeo.Helper.GetPrivateKeyFromWIF(wif);
+                var hexstr = prikey.toHexString();
+                result.result.prikey = hexstr;
+            }
+            catch (e) {
+                result.err = true;
+                result.result = e.message;
+                return result;
+            }
+            try {
+                pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
+                var hexstr = pubkey.toHexString();
+                result.result.pubkey = hexstr;
+            }
+            catch (e) {
+                result.err = true;
+                result.result = e.message;
+                return result;
+            }
+            try {
+                address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
+                result.result.address = address;
+            }
+            catch (e) {
+                result.err = true;
+                result.result = e.message;
+                return result;
+            }
+            return result;
+        }
+        /**
+         * nep2FromWif
+         */
+        static nep2FromWif(wif, password) {
+            var prikey;
+            var pubkey;
+            var address;
+            let res = { err: false, result: { address: "", nep2: "" } };
+            try {
+                prikey = ThinNeo.Helper.GetPrivateKeyFromWIF(wif);
+                var n = 16384;
+                var r = 8;
+                var p = 8;
+                ThinNeo.Helper.GetNep2FromPrivateKey(prikey, password, n, r, p, (info, result) => {
+                    res.err = false;
+                    res.result.nep2 = result;
+                    pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
+                    var hexstr = pubkey.toHexString();
+                    address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
+                    res.result.address = address;
+                    return res;
+                });
+            }
+            catch (e) {
+                res.err = true;
+                res.result = e.message;
+                return res;
+            }
+        }
+        /**
+         * nep2TOWif
+         */
+        static nep2ToWif(nep2, password) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var prikey;
+                var pubkey;
+                var address;
+                let promise = new Promise((resolve, reject) => {
+                    let n = 16384;
+                    var r = 8;
+                    var p = 8;
+                    ThinNeo.Helper.GetPrivateKeyFromNep2(nep2, password, n, r, p, (info, result) => {
+                        //spanNep2.textContent = "info=" + info + " result=" + result;
+                        prikey = result;
+                        if (prikey != null) {
+                            var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
+                            var address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
+                            var wif = ThinNeo.Helper.GetWifFromPrivateKey(prikey);
+                            resolve({ err: false, result: { pubkey, address, prikey } });
+                        }
+                        else {
+                            // spanWif.textContent = "result=" + "info=" + info + " result=" + result;
+                            reject({ err: false, result: result });
+                        }
+                    });
+                });
+                return promise;
+            });
+        }
+        /**
+         * nep6Load
+         */
+        static nep6Load(wallet, password) {
+            return __awaiter(this, void 0, void 0, function* () {
+                // let promise:Promise<result> = new Promise((resolve,reject)=>{
+                try {
+                    //getPrivateKey 是异步方法，且同时只能执行一个
+                    var istart = 0;
+                    let res = new Array();
+                    var getkey = null;
+                    // getkey = async (keyindex: number) => {
+                    for (let keyindex = 0; keyindex < wallet.accounts.length; keyindex++) {
+                        let account = wallet.accounts[keyindex];
+                        try {
+                            let result = yield this.getPriKeyfromAccount(wallet.scrypt, password, account);
+                            res.push(result.result);
+                        }
+                        catch (error) {
+                            console.error(error);
+                            return { err: true, result: error };
+                        }
+                    }
+                    return { err: false, result: res };
+                }
+                catch (e) {
+                }
+                // });
+                // return promise;
+            });
+        }
+        /**
+         * getPriKeyform
+         */
+        static getPriKeyfromAccount(scrypt, password, account) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let promise = new Promise((resolve, reject) => {
+                    account.getPrivateKey(scrypt, password, (info, result) => {
+                        if (info == "finish") {
+                            var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(result);
+                            var address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
+                            var wif = ThinNeo.Helper.GetWifFromPrivateKey(result);
+                            var hexkey = result.toHexString();
+                            resolve({ err: false, result: { pubkey: pubkey, address: address, prikey: result } });
+                        }
+                        else {
+                            // info2.textContent += info + "|" + result;
+                            reject({ err: true, result: result });
+                        }
+                    });
+                });
+                return promise;
+            });
+        }
+    }
+    WebBrowser.Neotool = Neotool;
+})(WebBrowser || (WebBrowser = {}));
+/// <reference path="./tools/neotool.ts" />
+var WebBrowser;
+/// <reference path="./tools/neotool.ts" />
+(function (WebBrowser) {
+    class Navbar {
+        constructor(app) {
+            this.indexBtn = document.getElementById("index-btn");
+            this.indexa = document.getElementById("indexa");
+            this.browBtn = document.getElementById("brow-btn");
+            this.browsea = document.getElementById("browsea");
+            this.blockBtn = document.getElementById("blocks-btn");
+            this.blocka = document.getElementById("blocksa");
+            this.txlistBtn = document.getElementById("txlist-btn");
+            this.txlista = document.getElementById("txlista");
+            this.addrsBtn = document.getElementById("addrs-btn");
+            this.addrsa = document.getElementById("addrsa");
+            this.assetBtn = document.getElementById("asset-btn");
+            this.asseta = document.getElementById("assetsa");
+            this.guiBtn = document.getElementById("gui-btn");
+            this.guia = document.getElementById("guia");
+            // walletBtn: HTMLLIElement = document.getElementById("wallet-btn") as HTMLLIElement;
+            // walleta: HTMLAnchorElement = document.getElementById("walleta") as HTMLAnchorElement;
+            // nnsBtn: HTMLLIElement = document.getElementById("nns-btn") as HTMLLIElement;
+            // nnsa: HTMLAnchorElement = document.getElementById("nnssa") as HTMLAnchorElement;
+            this.searchBtn = document.getElementById("searchBtn");
+            this.searchText = document.getElementById("searchText");
+            this.searchList = document.getElementById("seach_list");
+            this.cpLock = false;
+            this.currentLine = 0;
+            this.app = app;
+        }
+        getLangs() {
+            let page_lang = ["indexa", "browsea", "blocka", "txlista", "addrsa", "asseta", "guia"];
+            page_lang.forEach(lang => {
+                this[lang].textContent = this.app.langmgr.get("nav_" + lang);
+            });
+        }
+        start() {
+            this.getLangs();
+            this.indexa.onclick = () => {
+                this.skip("");
+            };
+            this.blocka.onclick = () => {
+                this.skip("/blocks");
+            };
+            this.txlista.onclick = () => {
+                this.skip("/transactions");
+            };
+            this.addrsa.onclick = () => {
+                this.skip("/addresses");
+            };
+            this.asseta.onclick = () => {
+                this.skip("/assets");
+            };
+            this.guia.onclick = () => {
+                this.skip("/gui");
+            };
+            // this.nnsa.onclick = () => {
+            //     this.skip("/nnsevent");
+            // }
+            this.searchBtn.onclick = () => {
+                this.jump();
+            };
+            this.searchText.addEventListener('compositionstart', () => {
+                this.cpLock = true;
+            });
+            this.searchText.addEventListener('compositionend', () => {
+                this.cpLock = false;
+                if (!this.cpLock)
+                    this.fuzzyseach();
+            });
+            this.searchText.addEventListener('input', () => {
+                if (!this.cpLock)
+                    this.fuzzyseach();
+            });
+            this.searchText.onkeydown = (e) => {
+                if (e.keyCode == 13) {
+                    this.jump();
+                }
+                else if (e.keyCode == 38) {
+                    this.changeItem();
+                    this.currentLine--;
+                }
+                else if (e.keyCode == 40) {
+                    this.changeItem();
+                    this.currentLine++;
+                }
+            };
+            this.searchList.onclick = (e) => {
+                let event = e || window.event;
+                let target = event.target || event.srcElement;
+                if (target.nodeName.toLowerCase() == 'li') {
+                    this.searchText.value = target.innerHTML;
+                    let data = target.getAttribute("data");
+                    window.open(WebBrowser.locationtool.getUrl() + '/asset/' + data);
+                }
+                $("#seach_list").empty();
+            };
+            // this.walletBtn.onclick = () =>
+            // {
+            //     if ( locationtool.getNetWork() == 'testnet' )
+            //         window.open( "https://testwallet.nel.group/" );
+            //     else
+            //         window.open( "https://wallet.nel.group/" );
+            // }
+            document.onclick = (ev) => {
+                let event = ev || window.event;
+                let target = event.target || event.srcElement;
+                if (target.nodeName.toLowerCase() != 'li') {
+                    $("#seach_list").empty();
+                }
+            };
+        }
+        skip(page) {
+            window.location.href = WebBrowser.locationtool.getUrl() + page;
+        }
+        jump() {
+            let search = this.searchText.value;
+            search = search.trim();
+            if (search) {
+                if (search.length == 34) {
+                    if (WebBrowser.Neotool.verifyPublicKey(search)) {
+                        window.open(WebBrowser.locationtool.getUrl() + '/address/' + search);
+                    }
+                    else {
+                        $("#errContent").text(this.app.langmgr.get('nav_errContent'));
+                        $('#errMsg').modal('show');
+                        return false;
+                    }
+                    return;
+                }
+                else {
+                    search = search.replace('0x', '');
+                    if (search.length == 64) {
+                        window.open(WebBrowser.locationtool.getUrl() + '/transaction/' + search);
+                    }
+                    else if (search.length == 40) {
+                        window.open(WebBrowser.locationtool.getUrl() + '/nep5/' + search);
+                    }
+                    else if (!isNaN(Number(search))) {
+                        window.open(WebBrowser.locationtool.getUrl() + '/block/' + search);
+                    }
+                    else if (search.length > 64) {
+                        let length = this.searchList.children.length;
+                        if (length) {
+                            let data = this.searchList.children[this.currentLine - 1].getAttribute("data");
+                            window.open(WebBrowser.locationtool.getUrl() + '/asset/' + data);
+                            $("#seach_list").empty();
+                        }
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        fuzzyseach() {
+            return __awaiter(this, void 0, void 0, function* () {
+                $("#seach_list").empty();
+                this.currentLine = 0;
+                let search = this.searchText.value;
+                if (search) {
+                    let list = yield WebBrowser.WWW.apiaggr_searchAsset(search);
+                    if (list) {
+                        let length = list.length;
+                        for (let i = 0; i < length; i++) {
+                            let oLi = '<li data="' + list[i]["assetid"] + '">' + list[i]["name"] + '(' + list[i]["assetid"] + ')' + '</li>';
+                            $("#seach_list").append(oLi);
+                        }
+                    }
+                }
+            });
+        }
+        changeItem() {
+            let length = this.searchList.children.length;
+            if (length) {
+                for (let i = 0; i < length; i++) {
+                    this.searchList.children[i].className = "";
+                }
+                if (this.currentLine < 0 || this.currentLine == 0) {
+                    this.currentLine = 0;
+                }
+                if (this.currentLine == length || this.currentLine > length) {
+                    this.currentLine = length - 1;
+                }
+                //调试使用
+                this.searchList.children[this.currentLine].className = "active";
+                this.searchText.value = this.searchList.children[this.currentLine].innerHTML;
+            }
+        }
+    }
+    WebBrowser.Navbar = Navbar;
+})(WebBrowser || (WebBrowser = {}));
+var WebBrowser;
+(function (WebBrowser) {
+    class NetWork {
+        constructor(app) {
+            this.title = document.getElementById("network");
+            this.testbtn = document.getElementById("testnet-btn");
+            this.testa = document.getElementById("testa");
+            this.mainbtn = document.getElementById("mainnet-btn");
+            this.maina = document.getElementById("maina");
+            this.css = document.getElementById("netCss");
+            this.langbtn = document.getElementById("lanuage-btn");
+            this.app = app;
+            this.getLangs();
+        }
+        getLangs() {
+            this.testa.textContent = this.app.langmgr.get("net_testa");
+            this.maina.textContent = this.app.langmgr.get("net_maina");
+            this.langbtn.textContent = this.app.langmgr.get("net_" + this.app.langmgr.type);
+            if (this.app.netmgr.type == 1) {
+                this.title.innerText = this.app.langmgr.get("net_maina");
+            }
+            else if (this.app.netmgr.type == 2) {
+                this.title.innerText = this.app.langmgr.get("net_testa");
+            }
+        }
+        start() {
+            this.testa.onclick = () => {
+                window.location.hash = "#testnet";
+                // var href: string[] = window.location.href.split("#");
+                // var net: string = href[1].replace("mainnet", "");
+                // net = net.replace("testnet", "");
+                // net = "#testnet" + net;
+                // window.location.href = href[0] + net;
+            };
+            this.maina.onclick = () => {
+                window.location.hash = "#mainnet";
+                // var href: string[] = window.location.href.split("#");
+                // var net: string = href[1].replace("mainnet", "");
+                // net = net.replace("testnet", "");
+                // net = "#mainnet" + net;
+                // window.location.href = href[0] + net;
+            };
+        }
+        changeNetWork(net) {
+            if (net == "testnet") {
+                this.testbtn.classList.add("active");
+                this.mainbtn.classList.remove("active");
+                this.title.innerText = this.app.langmgr.get("net_testa");
+                this.css.href = "./css/testnet.css";
+            }
+            else if (net == "mainnet") {
+                this.mainbtn.classList.add("active");
+                this.testbtn.classList.remove("active");
+                this.title.innerText = this.app.langmgr.get("net_maina");
+                this.css.href = "./css/mainnet.css";
+            }
+        }
+    }
+    WebBrowser.NetWork = NetWork;
+})(WebBrowser || (WebBrowser = {}));
+///<reference path="../lib/neo-ts.d.ts"/>
+/// <reference types="jquery" />
+var WebBrowser;
+///<reference path="../lib/neo-ts.d.ts"/>
+/// <reference types="jquery" />
+(function (WebBrowser) {
+    class Ajax {
+        getUrlBase(netType) {
+            switch (netType) {
+                case "testnet":
+                    return "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/";
+                case "mainnet":
+                    return "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/";
+            }
+        }
+        /**
+         * async post
+         */
+        post(method, params) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var href = window.location.href.split("#");
+                var arr = href[1].split("/");
+                let promise = new Promise((resolve, reject) => {
+                    $.ajax({
+                        type: 'POST',
+                        url: "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/" + arr[0],
+                        data: JSON.stringify({
+                            "jsonrpc": "2.0",
+                            "method": method,
+                            "params": params,
+                            "id": 1
+                        }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: (data, status) => {
+                            if ('result' in data) {
+                                // console.log(data['result']);              
+                                resolve(data['result']);
+                            }
+                            else if ('error' in data) {
+                                if (data['error']['code'] == -1) {
+                                    resolve([]);
+                                }
+                                else {
+                                    resolve([]);
+                                    reject("参数出错 code:-100");
+                                }
+                            }
+                        },
+                        error: () => {
+                            reject("请求失败");
+                        }
+                    });
+                });
+                return promise;
+            });
+        }
+        /**
+         * async post
+         */
+        get() {
+            return __awaiter(this, void 0, void 0, function* () {
+                var href = window.location.href.split("#");
+                var arr = href[1].split("/");
+                let promise = new Promise((resolve, reject) => {
+                    $.ajax({
+                        type: 'GET',
+                        url: "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/" + arr[0] + "?jsonrpc=2.0&method=getblock&params=%5b1000%5d&id=1001",
+                        success: (data, status) => {
+                            resolve(data['result']);
+                        },
+                        error: () => {
+                            reject("请求失败");
+                        }
+                    });
+                });
+                return promise;
+            });
+        }
+    }
+    WebBrowser.Ajax = Ajax;
+    // export class LocationUtil
+    // {
+    //     public LocString = String(location.href);
+    //     constructor() { }
+    //     GetQueryString(name: string): string
+    //     {
+    //         let rs = new RegExp("(^|)" + name + "=([^&]*)(&|$)", "gi").exec(this.LocString), tmp;
+    //         if (tmp = rs)
+    //         {
+    //             return decodeURI(tmp[2]);
+    //         }
+    //         // parameter cannot be found
+    //         return "";
+    //     }
+    //     getRootPath_web()
+    //     {
+    //         //获取当前网址，如： http://115.159.53.39   :8083/uimcardprj/share/meun.jsp
+    //         var curWwwPath = window.document.location.href;
+    //         console.log(curWwwPath);
+    //         //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
+    //         var pathName = window.document.location.pathname;
+    //         console.log(pathName);
+    //         var pos = curWwwPath.indexOf(pathName);
+    //         //获取主机地址，如： http://115.159.53.39   :8083
+    //         console.log(pos);
+    //         var 115.159.53.39   Paht = curWwwPath.substring(0, pos);
+    //         //获取带"/"的项目名，如：/uimcardprj
+    //         console.log(115.159.53.39   Paht);
+    //         var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
+    //         console.log(projectName);
+    //         return (115.159.53.39   Paht + projectName);
+    //     }
+    //     getRootPath()
+    //     {
+    //         var pathName = window.location.pathname.substring(1);
+    //         var webName = pathName == '' ? '' : pathName.substring(0, pathName.indexOf('/'));
+    //         if (webName == "")
+    //         {
+    //             return window.location.protocol + '//' + window.location.host;
+    //         }
+    //         else
+    //         {
+    //             return window.location.protocol + '//' + window.location.host + '/' + webName;
+    //         }
+    //     }
+    // }
+    // export class NeoUtil
+    // {
+    //     constructor() { }
+    //     /**
+    //      * verifyPublicKey 验证公钥
+    //      * @param publicKey 公钥
+    //      */
+    //     public verifyPublicKey(publicKey: string)
+    //     {
+    //         var array: Uint8Array = Neo.Cryptography.Base58.decode(publicKey);
+    //         //var hexstr = array.toHexString();
+    //         //var salt = array.subarray(0, 1);
+    //         //var hash = array.subarray(1, 1 + 20);
+    //         var check = array.subarray(21, 21 + 4); //
+    //         var checkdata = array.subarray(0, 21);//
+    //         var hashd = Neo.Cryptography.Sha256.computeHash(checkdata);//
+    //         hashd = Neo.Cryptography.Sha256.computeHash(hashd);//
+    //         var hashd = hashd.slice(0, 4);//
+    //         var checked = new Uint8Array(hashd);//
+    //         var error = false;
+    //         for (var i = 0; i < 4; i++)
+    //         {
+    //             if (checked[i] != check[i])
+    //             {
+    //                 error = true;
+    //                 break;
+    //             }
+    //         }
+    //         return !error;
+    //     }
+    //     /**
+    //      * wifDecode wif解码
+    //      * @param wif wif私钥
+    //      */
+    //     public wifDecode(wif: string)
+    //     {
+    //         let result: result = { err: false, result: { pubkey: "", prikey: "", address: "" } };
+    //         var prikey: Uint8Array;
+    //         var pubkey: Uint8Array;
+    //         var address: string;
+    //         try
+    //         {
+    //             prikey = ThinNeo.Helper.GetPrivateKeyFromWIF(wif);
+    //             var hexstr = prikey.toHexString();
+    //             result.result.prikey = hexstr;
+    //         }
+    //         catch (e)
+    //         {
+    //             result.err = true;
+    //             result.result = e.message;
+    //             return result
+    //         }
+    //         try
+    //         {
+    //             pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
+    //             var hexstr = pubkey.toHexString();
+    //             result.result.pubkey = hexstr;
+    //         }
+    //         catch (e)
+    //         {
+    //             result.err = true;
+    //             result.result = e.message;
+    //             return result
+    //         }
+    //         try
+    //         {
+    //             address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
+    //             result.result.address = address;
+    //         }
+    //         catch (e)
+    //         {
+    //             result.err = true;
+    //             result.result = e.message;
+    //             return result
+    //         }
+    //         return result;
+    //     }
+    //     /**
+    //      * nep2FromWif
+    //      */
+    //     public nep2FromWif(wif: string, password: string): result
+    //     {
+    //         var prikey: Uint8Array;
+    //         var pubkey: Uint8Array;
+    //         var address: string;
+    //         let res: result = { err: false, result: { address: "", nep2: "" } };
+    //         try
+    //         {
+    //             prikey = ThinNeo.Helper.GetPrivateKeyFromWIF(wif);
+    //             var n = 16384;
+    //             var r = 8;
+    //             var p = 8
+    //             ThinNeo.Helper.GetNep2FromPrivateKey(prikey, password, n, r, p, (info, result) =>
+    //             {
+    //                 res.err = false;
+    //                 res.result.nep2 = result;
+    //                 pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
+    //                 var hexstr = pubkey.toHexString();
+    //                 address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
+    //                 res.result.address = address
+    //                 return res;
+    //             });
+    //         }
+    //         catch (e)
+    //         {
+    //             res.err = true;
+    //             res.result = e.message;
+    //             return res;
+    //         }
+    //     }
+    //     /**
+    //      * nep2TOWif
+    //      */
+    //     public async nep2ToWif(nep2: string, password: string): Promise<result>
+    //     {
+    //         var prikey: Uint8Array;
+    //         var pubkey: Uint8Array;
+    //         var address: string;
+    //         let promise: Promise<result> = new Promise((resolve, reject) =>
+    //         {
+    //             let n: number = 16384;
+    //             var r: number = 8;
+    //             var p: number = 8
+    //             ThinNeo.Helper.GetPrivateKeyFromNep2(nep2, password, n, r, p, (info, result) =>
+    //             {
+    //                 //spanNep2.textContent = "info=" + info + " result=" + result;
+    //                 console.log("result=" + "info=" + info + " result=" + result);
+    //                 prikey = result as Uint8Array;
+    //                 if (prikey != null)
+    //                 {
+    //                     var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
+    //                     var address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
+    //                     var wif = ThinNeo.Helper.GetWifFromPrivateKey(prikey);
+    //                     console.log('1:' + address);
+    //                     resolve({ err: false, result: { pubkey, address, prikey } });
+    //                 }
+    //                 else
+    //                 {
+    //                     // spanWif.textContent = "result=" + "info=" + info + " result=" + result;
+    //                     reject({ err: false, result: result });
+    //                 }
+    //             });
+    //         });
+    //         return promise;
+    //     }
+    //     /**
+    //      * nep6Load
+    //      */
+    //     public async nep6Load(wallet: ThinNeo.nep6wallet, password: string)
+    //     {
+    //         // let promise:Promise<result> = new Promise((resolve,reject)=>{
+    //         try
+    //         {
+    //             //getPrivateKey 是异步方法，且同时只能执行一个
+    //             var istart = 0;
+    //             let res: any[] = new Array<any>();
+    //             var getkey: (n: number) => void = null;
+    //             // getkey = async (keyindex: number) => {
+    //             for (let keyindex = 0; keyindex < wallet.accounts.length; keyindex++)
+    //             {
+    //                 let account = wallet.accounts[keyindex];
+    //                 try
+    //                 {
+    //                     let result: result = await this.getPriKeyfromAccount(wallet.scrypt, password, account);
+    //                     res.push(result.result);
+    //                 } catch (error)
+    //                 {
+    //                     console.error(error);
+    //                     return { err: true, result: error }
+    //                 }
+    //             }
+    //             return { err: false, result: res }
+    //         }
+    //         catch (e)
+    //         {
+    //         }
+    //         // });
+    //         // return promise;
+    //     }
+    //     /**
+    //      * getPriKeyform
+    //      */
+    //     public async getPriKeyfromAccount(scrypt: ThinNeo.nep6ScryptParameters, password: string, account: ThinNeo.nep6account): Promise<result>
+    //     {
+    //         let promise: Promise<result> =
+    //             new Promise((resolve, reject) =>
+    //             {
+    //                 account.getPrivateKey(scrypt, password, (info, result) =>
+    //                 {
+    //                     if (info == "finish")
+    //                     {
+    //                         var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(result as Uint8Array);
+    //                         var address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
+    //                         var wif = ThinNeo.Helper.GetWifFromPrivateKey(result as Uint8Array);
+    //                         var hexkey = (result as Uint8Array).toHexString();
+    //                         console.log(info + "|" + address + " wif=" + wif);
+    //                         resolve({ err: false, result: { pubkey: pubkey, address: address, prikey: result as Uint8Array } });
+    //                     }
+    //                     else
+    //                     {
+    //                         // info2.textContent += info + "|" + result;
+    //                         reject({ err: true, result: result });
+    //                     }
+    //                 });
+    //             })
+    //         return promise;
+    //     }
+    // }
+    // export function pageCut(pageUtil: PageUtil)
+    // {
+    //     if (pageUtil.totalPage - pageUtil.currentPage)
+    //     {
+    //         $("#next").removeClass('disabled');
+    //     } else
+    //     {
+    //         $("#next").addClass('disabled');
+    //     }
+    //     if (pageUtil.currentPage - 1)
+    //     {
+    //         $("#previous").removeClass('disabled');
+    //     } else
+    //     {
+    //         $("#previous").addClass('disabled');
+    //     }
+    // }
+    // export class walletStorage
+    // {
+    //     public wallets = localStorage.getItem("Nel_wallets");
+    //     /**
+    //      * setWallet
+    //      */
+    //     public setWallet(address, nep2)
+    //     {
+    //         let json = { address, nep2 };
+    //         let wallets: any[] = JSON.parse(this.wallets);
+    //     }
+    // }
+    // export class GetNep5Info
+    // {
+    //     constructor()
+    //     {
+    //     }
+    //     //http://47.96.168.8:20332/?jsonrpc=2.0&id=1&method=invokescript&params=[%2200c1046e616d6567056bd94ecab6fe9607014624ef66bbc991dbcc3f%22]
+    //     makeRpcUrl(url: string, method: string, ..._params: any[])
+    //     {
+    //         if (url[url.length - 1] != '/')
+    //             url = url + "/";
+    //         var urlout = url + "?jsonrpc=2.0&id=1&method=" + method + "&params=[";
+    //         for (var i = 0; i < _params.length; i++)
+    //         {
+    //             urlout += JSON.stringify(_params[i]);
+    //             if (i != _params.length - 1)
+    //                 urlout += ",";
+    //         }
+    //         urlout += "]";
+    //         return urlout;
+    //     }
+    //     nep5decimals: number = 0;
+    //     async getInfo(sid: string): Promise<result>
+    //     {
+    //         let res: result = { err: false, result: { name: "", symbol: "", decimals: 0, totalsupply: 0 } };
+    //         try
+    //         {
+    //             //拼接三次调用
+    //             var sb = new ThinNeo.ScriptBuilder();
+    //             sb.EmitParamJson(JSON.parse("[]"));//参数倒序入
+    //             sb.EmitParamJson("(str)name");//参数倒序入
+    //             var shash = sid.hexToBytes();
+    //             sb.EmitAppCall(shash.reverse());//nep5脚本
+    //             sb.EmitParamJson(JSON.parse("[]"));
+    //             sb.EmitParamJson("(str)symbol");
+    //             var shash = sid.hexToBytes();
+    //             sb.EmitAppCall(shash.reverse());
+    //             sb.EmitParamJson(JSON.parse("[]"));
+    //             sb.EmitParamJson("(str)decimals");
+    //             var shash = sid.hexToBytes();
+    //             sb.EmitAppCall(shash.reverse());
+    //             sb.EmitParamJson(JSON.parse("[]"));
+    //             sb.EmitParamJson("(str)totalSupply");
+    //             var shash = sid.hexToBytes();
+    //             sb.EmitAppCall(shash.reverse());
+    //             var data = sb.ToArray();
+    //             var url = this.makeRpcUrl("http://47.96.168.8:20332", "invokescript", data.toHexString());
+    //             let response = await fetch(url, { "method": "get" });
+    //             let json = await response.json();
+    //             // info1.textContent = JSON.stringify(r);
+    //             try
+    //             {
+    //                 var state = json.result.state as string;
+    //                 // info2.textContent = "";
+    //                 if (state.includes("HALT"))
+    //                 {
+    //                     // info2.textContent += "Succ\n";
+    //                     res.err = false;
+    //                 }
+    //                 var stack = json.result.stack as any[];
+    //                 //find name 他的type 有可能是string 或者ByteArray
+    //                 if (stack[0].type == "String")
+    //                 {
+    //                     // info2.textContent += "name=" + stack[0].value + "\n";
+    //                     res.result.name = stack[0].value;
+    //                 }
+    //                 else if (stack[0].type == "ByteArray")
+    //                 {
+    //                     var bs = (stack[0].value as string).hexToBytes();
+    //                     var str = ThinNeo.Helper.Bytes2String(bs);
+    //                     // info2.textContent += "name=" + str + "\n";
+    //                     res.result.name = str
+    //                 }
+    //                 //find symbol 他的type 有可能是string 或者ByteArray
+    //                 if (stack[1].type == "String")
+    //                 {
+    //                     // info2.textContent += "symbol=" + stack[1].value + "\n";
+    //                     res.result.symbol = stack[1].value;
+    //                 }
+    //                 else if (stack[1].type == "ByteArray")
+    //                 {
+    //                     var bs = (stack[1].value as string).hexToBytes();
+    //                     var str = ThinNeo.Helper.Bytes2String(bs);
+    //                     // info2.textContent += "symbol=" + str + "\n";
+    //                     res.result.symbol = str;
+    //                 }
+    //                 //find decimals 他的type 有可能是 Integer 或者ByteArray
+    //                 if (stack[2].type == "Integer")
+    //                 {
+    //                     this.nep5decimals = (new Neo.BigInteger(stack[2].value as string)).toInt32();
+    //                 }
+    //                 else if (stack[2].type == "ByteArray")
+    //                 {
+    //                     var bs = (stack[2].value as string).hexToBytes();
+    //                     var num = new Neo.BigInteger(bs);
+    //                     this.nep5decimals = num.toInt32();
+    //                 }
+    //                 //find decimals 他的type 有可能是 Integer 或者ByteArray
+    //                 if (stack[3].type == "Integer")
+    //                 {
+    //                     var totalsupply = (new Neo.BigInteger(stack[3].value as string)).toInt32();
+    //                 }
+    //                 else if (stack[3].type == "ByteArray")
+    //                 {
+    //                     var bs = (stack[3].value as string).hexToBytes();
+    //                     var num = new Neo.BigInteger(bs);
+    //                     totalsupply = num.toInt32();
+    //                 }
+    //                 // info2.textContent += "decimals=" + this.nep5decimals + "\n";
+    //                 res.result.totalsupply = totalsupply;
+    //                 res.result.decimals = this.nep5decimals;
+    //                 return res;
+    //             }
+    //             catch (e)
+    //             {
+    //                 return e.message;
+    //             }
+    //         }
+    //         catch (e)
+    //         {
+    //             return e.message;
+    //         }
+    //     }
+    //     async getBalance(sid: string, addr: string): Promise<result>
+    //     {
+    //         let res: result = { err: false, result: 0 };
+    //         var sb = new ThinNeo.ScriptBuilder();
+    //         sb.EmitParamJson(["(addr)" + addr]);//参数倒序入
+    //         sb.EmitParamJson("(str)balanceOf");//参数倒序入 //name//totalSupply//symbol//decimals
+    //         var shash = sid.hexToBytes();
+    //         sb.EmitAppCall(shash.reverse());//nep5脚本
+    //         var data = sb.ToArray();
+    //         // info1.textContent = data.toHexString();        
+    //         try
+    //         {
+    //             var url = this.makeRpcUrl("http://47.96.168.8:20332", "invokescript", data.toHexString());
+    //             let response = await fetch(url, { "method": "get" })
+    //             let json = await response.json();
+    //             var state = json.result.state as string;
+    //             // info2.textContent = "";
+    //             if (state.includes("HALT"))
+    //             {
+    //                 // info2.textContent += "Succ\n";
+    //             }
+    //             var stack = json.result.stack as any[];
+    //             var bnum = new Neo.BigInteger(0);
+    //             //find decimals 他的type 有可能是 Integer 或者ByteArray
+    //             if (stack[0].type == "Integer")
+    //             {
+    //                 bnum = new Neo.BigInteger(stack[0].value);
+    //             }
+    //             else if (stack[0].type == "ByteArray")
+    //             {
+    //                 var bs = (stack[0].value as string).hexToBytes();
+    //                 bnum = new Neo.BigInteger(bs);
+    //             }
+    //             var v = 1;
+    //             for (var i = 0; i < this.nep5decimals; i++)
+    //             {
+    //                 v *= 10;
+    //             }
+    //             var intv = bnum.divide(v).toInt32();
+    //             var smallv = bnum.mod(v).toInt32() / v;
+    //             // info2.textContent += "count=" + (intv + smallv);
+    //             res.result = intv + smallv;
+    //             return res;
+    //         }
+    //         catch (e)
+    //         {
+    //             return { err: true, result: "^_^ 请尝试输入正确的地址" };
+    //         }
+    //     }
+    // }
+    // export class StorageUtil
+    // {
+    //     /**
+    //      * setStorage
+    //      */
+    //     public setStorage(name: string, str: string)
+    //     {
+    //         localStorage.setItem(name, str);
+    //     }
+    //     /**
+    //      * getStorage
+    //      */
+    //     public getStorage(name: string, decoder: string): any
+    //     {
+    //         let res = localStorage.getItem(name)
+    //         if (!res)
+    //         {
+    //             localStorage.setItem(name, "");
+    //         }
+    //         if (decoder)
+    //         {
+    //             if (!res)
+    //             {
+    //                 return [];
+    //             }
+    //             let item = localStorage.getItem(name).split(decoder);
+    //             return item;
+    //         } else
+    //         {
+    //             let item = JSON.parse(localStorage.getItem(name));
+    //             return item;
+    //         }
+    //     }
+    // }
+})(WebBrowser || (WebBrowser = {}));
 var WebBrowser;
 (function (WebBrowser) {
     class Block {
@@ -3335,12 +4509,18 @@ var WebBrowser;
             contractBackGround.appendChild(fillinText);
             var HashFilein = document.createElement("input");
             HashFilein.type = "checkbox";
-            HashFilein.checked = false;
+            HashFilein.checked = true;
             contractBackGround.appendChild(HashFilein);
             var hashBackGround = document.createElement("div");
             contractBackGround.appendChild(hashBackGround);
             var ContractAvm = null;
             var contractHash = null;
+            var fileText = document.createElement("span");
+            fileText.style.color = "#eeeeee";
+            fileText.textContent = "合约hash";
+            hashBackGround.appendChild(fileText);
+            ContractAvm = document.createElement("input");
+            hashBackGround.appendChild(ContractAvm);
             HashFilein.onchange = () => {
                 while (hashBackGround.children.length > 0) {
                     hashBackGround.removeChild(hashBackGround.firstChild);
@@ -3350,7 +4530,7 @@ var WebBrowser;
                     fileText.style.color = "#eeeeee";
                     fileText.textContent = "合约hash";
                     hashBackGround.appendChild(fileText);
-                    var ContractAvm = document.createElement("input");
+                    ContractAvm = document.createElement("input");
                     hashBackGround.appendChild(ContractAvm);
                 }
                 else {
@@ -3385,7 +4565,6 @@ var WebBrowser;
                     alert("hash not available!");
                     return;
                 }
-                alert(contractHash.toString());
                 WebBrowser.AppChainTool.SendContractMethod(WebBrowser.GUITool.chainHash, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
             });
         }
@@ -3826,169 +5005,6 @@ var WebBrowser;
         }
     }
     WebBrowser.Index = Index;
-})(WebBrowser || (WebBrowser = {}));
-/**
- * @private currentPage 当前页
- * @private pageSize 每页条数
- * @private totalCount 总记录数
- * @private currentPage 当前页
- */
-var WebBrowser;
-/**
- * @private currentPage 当前页
- * @private pageSize 每页条数
- * @private totalCount 总记录数
- * @private currentPage 当前页
- */
-(function (WebBrowser) {
-    class PageUtil {
-        /**
-         *
-         * @param total 总记录数
-         * @param pageSize 每页条数
-         */
-        constructor(total, pageSize) {
-            this._currentPage = 1;
-            this._totalCount = total;
-            this._pageSize = pageSize;
-            this._totalPage = total % pageSize == 0 ? total / pageSize : Math.ceil((total / pageSize));
-        }
-        ;
-        /**
-         * currentPage 返回当前页码
-         */
-        get currentPage() {
-            this._totalPage = this.totalCount % this.pageSize == 0 ? this.totalCount / this.pageSize : Math.ceil((this.totalCount / this.pageSize));
-            return this._currentPage;
-        }
-        /**
-         *
-         */
-        set currentPage(currentPage) {
-            this._currentPage = currentPage;
-        }
-        /**
-         * pageSize 每页条数
-         */
-        get pageSize() {
-            return this._pageSize;
-        }
-        /**
-         * set count
-         */
-        set pageSize(pageSize) {
-            this._pageSize = pageSize;
-        }
-        /**
-         * pageSize 每页条数
-         */
-        get totalCount() {
-            return this._totalCount;
-        }
-        /**
-         * set count
-         */
-        set totalCount(totalCount) {
-            this._totalCount = totalCount;
-        }
-        /**
-     * pageSize 总页数
-     */
-        get totalPage() {
-            this._totalPage = this._totalCount % this._pageSize == 0 ? this._totalCount / this._pageSize : Math.ceil(this._totalCount / this._pageSize);
-            return this._totalPage;
-        }
-    }
-    WebBrowser.PageUtil = PageUtil;
-    class Url {
-        static href_blocks() {
-            return WebBrowser.locationtool.getUrl() + '/blocks';
-        }
-        static href_appchains() {
-            return WebBrowser.locationtool.getUrl() + '/appchains';
-        }
-        static href_appchaintransaction(appchain, appchaintransaction) {
-            return WebBrowser.locationtool.getUrl() + '/appchaintransaction/' + appchain + '/' + appchaintransaction;
-        }
-        static href_appchainblock(appchain, index) {
-            return WebBrowser.locationtool.getUrl() + '/appchainblock/' + appchain + '/' + index;
-        }
-        static href_nep5info(nep5id) {
-            return WebBrowser.locationtool.getUrl() + '/nep5info/' + nep5id;
-        }
-        static href_transactions() {
-            return WebBrowser.locationtool.getUrl() + '/transactions';
-        }
-        static href_addresses() {
-            return WebBrowser.locationtool.getUrl() + '/addresses';
-        }
-        static href_assets() {
-            return WebBrowser.locationtool.getUrl() + '/appchains';
-        }
-        static href_nnsevent() {
-            return WebBrowser.locationtool.getUrl() + '/nnsevent';
-        }
-        static href_block(block) {
-            return WebBrowser.locationtool.getUrl() + "/block/" + block;
-        }
-        static href_gui() {
-            return WebBrowser.locationtool.getUrl() + '/gui';
-        }
-        static href_blockh(block) {
-            return WebBrowser.locationtool.getUrl() + '/block/' + block;
-        }
-        static href_transaction(tx) {
-            return WebBrowser.locationtool.getUrl() + "/transaction/" + tx;
-        }
-        static href_actransaction(tx) {
-            return WebBrowser.locationtool.getUrl() + "/asset/" + tx;
-        }
-        static href_address(addr) {
-            return WebBrowser.locationtool.getUrl() + "/address/" + addr;
-        }
-        static href_acblock(block) {
-            return WebBrowser.locationtool.getUrl() + "/appchain/" + block;
-        }
-        static href_asset(asset) {
-            return WebBrowser.locationtool.getUrl() + '/asset/' + asset;
-        }
-        static href_assettran() {
-            return WebBrowser.locationtool.getUrl() + '/asset/';
-        }
-        static href_assetblock() {
-            return WebBrowser.locationtool.getUrl() + '/asset/';
-        }
-        static href_nep5(nep5) {
-            return WebBrowser.locationtool.getUrl() + '/nep5/' + nep5;
-        }
-        static href_nnsbeing() {
-            return WebBrowser.locationtool.getUrl() + '/nnsauction/';
-        }
-        static href_nnsrank() {
-            return WebBrowser.locationtool.getUrl() + '/nnsrank/';
-        }
-        static href_nns(domain) {
-            return WebBrowser.locationtool.getUrl() + '/nns/' + domain;
-        }
-    }
-    WebBrowser.Url = Url;
-    class Nep5as {
-    }
-    WebBrowser.Nep5as = Nep5as;
-    let AssetEnum;
-    (function (AssetEnum) {
-        AssetEnum["NEO"] = "0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b";
-        AssetEnum["GAS"] = "0x602c79718b16e442de58778e148d0b1084e3b2dffd5de6b7b16cee7969282de7";
-    })(AssetEnum = WebBrowser.AssetEnum || (WebBrowser.AssetEnum = {}));
-    class Detail {
-        constructor(address, height, balances) {
-            this.address = address;
-            this.height = height;
-            this.balances = balances;
-        }
-    }
-    WebBrowser.Detail = Detail;
-    WebBrowser.network = "mainnet";
 })(WebBrowser || (WebBrowser = {}));
 /// <reference path="../app.ts"/>
 /// <reference path="../Entitys.ts"/>
@@ -5258,1017 +6274,6 @@ var WebBrowser;
         }
     }
     WebBrowser.Route = Route;
-})(WebBrowser || (WebBrowser = {}));
-///<reference path="../lib/neo-ts.d.ts"/>
-/// <reference types="jquery" />
-var WebBrowser;
-///<reference path="../lib/neo-ts.d.ts"/>
-/// <reference types="jquery" />
-(function (WebBrowser) {
-    class Ajax {
-        getUrlBase(netType) {
-            switch (netType) {
-                case "testnet":
-                    return "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/";
-                case "mainnet":
-                    return "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/";
-            }
-        }
-        /**
-         * async post
-         */
-        post(method, params) {
-            return __awaiter(this, void 0, void 0, function* () {
-                var href = window.location.href.split("#");
-                var arr = href[1].split("/");
-                let promise = new Promise((resolve, reject) => {
-                    $.ajax({
-                        type: 'POST',
-                        url: "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/" + arr[0],
-                        data: JSON.stringify({
-                            "jsonrpc": "2.0",
-                            "method": method,
-                            "params": params,
-                            "id": 1
-                        }),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: (data, status) => {
-                            if ('result' in data) {
-                                // console.log(data['result']);              
-                                resolve(data['result']);
-                            }
-                            else if ('error' in data) {
-                                if (data['error']['code'] == -1) {
-                                    resolve([]);
-                                }
-                                else {
-                                    resolve([]);
-                                    reject("参数出错 code:-100");
-                                }
-                            }
-                        },
-                        error: () => {
-                            reject("请求失败");
-                        }
-                    });
-                });
-                return promise;
-            });
-        }
-        /**
-         * async post
-         */
-        get() {
-            return __awaiter(this, void 0, void 0, function* () {
-                var href = window.location.href.split("#");
-                var arr = href[1].split("/");
-                let promise = new Promise((resolve, reject) => {
-                    $.ajax({
-                        type: 'GET',
-                        url: "http://" + WebBrowser.NetMgr.url + ":59908/api/testnet/" + arr[0] + "?jsonrpc=2.0&method=getblock&params=%5b1000%5d&id=1001",
-                        success: (data, status) => {
-                            resolve(data['result']);
-                        },
-                        error: () => {
-                            reject("请求失败");
-                        }
-                    });
-                });
-                return promise;
-            });
-        }
-    }
-    WebBrowser.Ajax = Ajax;
-    // export class LocationUtil
-    // {
-    //     public LocString = String(location.href);
-    //     constructor() { }
-    //     GetQueryString(name: string): string
-    //     {
-    //         let rs = new RegExp("(^|)" + name + "=([^&]*)(&|$)", "gi").exec(this.LocString), tmp;
-    //         if (tmp = rs)
-    //         {
-    //             return decodeURI(tmp[2]);
-    //         }
-    //         // parameter cannot be found
-    //         return "";
-    //     }
-    //     getRootPath_web()
-    //     {
-    //         //获取当前网址，如： http://115.159.53.39   :8083/uimcardprj/share/meun.jsp
-    //         var curWwwPath = window.document.location.href;
-    //         console.log(curWwwPath);
-    //         //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
-    //         var pathName = window.document.location.pathname;
-    //         console.log(pathName);
-    //         var pos = curWwwPath.indexOf(pathName);
-    //         //获取主机地址，如： http://115.159.53.39   :8083
-    //         console.log(pos);
-    //         var 115.159.53.39   Paht = curWwwPath.substring(0, pos);
-    //         //获取带"/"的项目名，如：/uimcardprj
-    //         console.log(115.159.53.39   Paht);
-    //         var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
-    //         console.log(projectName);
-    //         return (115.159.53.39   Paht + projectName);
-    //     }
-    //     getRootPath()
-    //     {
-    //         var pathName = window.location.pathname.substring(1);
-    //         var webName = pathName == '' ? '' : pathName.substring(0, pathName.indexOf('/'));
-    //         if (webName == "")
-    //         {
-    //             return window.location.protocol + '//' + window.location.host;
-    //         }
-    //         else
-    //         {
-    //             return window.location.protocol + '//' + window.location.host + '/' + webName;
-    //         }
-    //     }
-    // }
-    // export class NeoUtil
-    // {
-    //     constructor() { }
-    //     /**
-    //      * verifyPublicKey 验证公钥
-    //      * @param publicKey 公钥
-    //      */
-    //     public verifyPublicKey(publicKey: string)
-    //     {
-    //         var array: Uint8Array = Neo.Cryptography.Base58.decode(publicKey);
-    //         //var hexstr = array.toHexString();
-    //         //var salt = array.subarray(0, 1);
-    //         //var hash = array.subarray(1, 1 + 20);
-    //         var check = array.subarray(21, 21 + 4); //
-    //         var checkdata = array.subarray(0, 21);//
-    //         var hashd = Neo.Cryptography.Sha256.computeHash(checkdata);//
-    //         hashd = Neo.Cryptography.Sha256.computeHash(hashd);//
-    //         var hashd = hashd.slice(0, 4);//
-    //         var checked = new Uint8Array(hashd);//
-    //         var error = false;
-    //         for (var i = 0; i < 4; i++)
-    //         {
-    //             if (checked[i] != check[i])
-    //             {
-    //                 error = true;
-    //                 break;
-    //             }
-    //         }
-    //         return !error;
-    //     }
-    //     /**
-    //      * wifDecode wif解码
-    //      * @param wif wif私钥
-    //      */
-    //     public wifDecode(wif: string)
-    //     {
-    //         let result: result = { err: false, result: { pubkey: "", prikey: "", address: "" } };
-    //         var prikey: Uint8Array;
-    //         var pubkey: Uint8Array;
-    //         var address: string;
-    //         try
-    //         {
-    //             prikey = ThinNeo.Helper.GetPrivateKeyFromWIF(wif);
-    //             var hexstr = prikey.toHexString();
-    //             result.result.prikey = hexstr;
-    //         }
-    //         catch (e)
-    //         {
-    //             result.err = true;
-    //             result.result = e.message;
-    //             return result
-    //         }
-    //         try
-    //         {
-    //             pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
-    //             var hexstr = pubkey.toHexString();
-    //             result.result.pubkey = hexstr;
-    //         }
-    //         catch (e)
-    //         {
-    //             result.err = true;
-    //             result.result = e.message;
-    //             return result
-    //         }
-    //         try
-    //         {
-    //             address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
-    //             result.result.address = address;
-    //         }
-    //         catch (e)
-    //         {
-    //             result.err = true;
-    //             result.result = e.message;
-    //             return result
-    //         }
-    //         return result;
-    //     }
-    //     /**
-    //      * nep2FromWif
-    //      */
-    //     public nep2FromWif(wif: string, password: string): result
-    //     {
-    //         var prikey: Uint8Array;
-    //         var pubkey: Uint8Array;
-    //         var address: string;
-    //         let res: result = { err: false, result: { address: "", nep2: "" } };
-    //         try
-    //         {
-    //             prikey = ThinNeo.Helper.GetPrivateKeyFromWIF(wif);
-    //             var n = 16384;
-    //             var r = 8;
-    //             var p = 8
-    //             ThinNeo.Helper.GetNep2FromPrivateKey(prikey, password, n, r, p, (info, result) =>
-    //             {
-    //                 res.err = false;
-    //                 res.result.nep2 = result;
-    //                 pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
-    //                 var hexstr = pubkey.toHexString();
-    //                 address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
-    //                 res.result.address = address
-    //                 return res;
-    //             });
-    //         }
-    //         catch (e)
-    //         {
-    //             res.err = true;
-    //             res.result = e.message;
-    //             return res;
-    //         }
-    //     }
-    //     /**
-    //      * nep2TOWif
-    //      */
-    //     public async nep2ToWif(nep2: string, password: string): Promise<result>
-    //     {
-    //         var prikey: Uint8Array;
-    //         var pubkey: Uint8Array;
-    //         var address: string;
-    //         let promise: Promise<result> = new Promise((resolve, reject) =>
-    //         {
-    //             let n: number = 16384;
-    //             var r: number = 8;
-    //             var p: number = 8
-    //             ThinNeo.Helper.GetPrivateKeyFromNep2(nep2, password, n, r, p, (info, result) =>
-    //             {
-    //                 //spanNep2.textContent = "info=" + info + " result=" + result;
-    //                 console.log("result=" + "info=" + info + " result=" + result);
-    //                 prikey = result as Uint8Array;
-    //                 if (prikey != null)
-    //                 {
-    //                     var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
-    //                     var address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
-    //                     var wif = ThinNeo.Helper.GetWifFromPrivateKey(prikey);
-    //                     console.log('1:' + address);
-    //                     resolve({ err: false, result: { pubkey, address, prikey } });
-    //                 }
-    //                 else
-    //                 {
-    //                     // spanWif.textContent = "result=" + "info=" + info + " result=" + result;
-    //                     reject({ err: false, result: result });
-    //                 }
-    //             });
-    //         });
-    //         return promise;
-    //     }
-    //     /**
-    //      * nep6Load
-    //      */
-    //     public async nep6Load(wallet: ThinNeo.nep6wallet, password: string)
-    //     {
-    //         // let promise:Promise<result> = new Promise((resolve,reject)=>{
-    //         try
-    //         {
-    //             //getPrivateKey 是异步方法，且同时只能执行一个
-    //             var istart = 0;
-    //             let res: any[] = new Array<any>();
-    //             var getkey: (n: number) => void = null;
-    //             // getkey = async (keyindex: number) => {
-    //             for (let keyindex = 0; keyindex < wallet.accounts.length; keyindex++)
-    //             {
-    //                 let account = wallet.accounts[keyindex];
-    //                 try
-    //                 {
-    //                     let result: result = await this.getPriKeyfromAccount(wallet.scrypt, password, account);
-    //                     res.push(result.result);
-    //                 } catch (error)
-    //                 {
-    //                     console.error(error);
-    //                     return { err: true, result: error }
-    //                 }
-    //             }
-    //             return { err: false, result: res }
-    //         }
-    //         catch (e)
-    //         {
-    //         }
-    //         // });
-    //         // return promise;
-    //     }
-    //     /**
-    //      * getPriKeyform
-    //      */
-    //     public async getPriKeyfromAccount(scrypt: ThinNeo.nep6ScryptParameters, password: string, account: ThinNeo.nep6account): Promise<result>
-    //     {
-    //         let promise: Promise<result> =
-    //             new Promise((resolve, reject) =>
-    //             {
-    //                 account.getPrivateKey(scrypt, password, (info, result) =>
-    //                 {
-    //                     if (info == "finish")
-    //                     {
-    //                         var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(result as Uint8Array);
-    //                         var address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
-    //                         var wif = ThinNeo.Helper.GetWifFromPrivateKey(result as Uint8Array);
-    //                         var hexkey = (result as Uint8Array).toHexString();
-    //                         console.log(info + "|" + address + " wif=" + wif);
-    //                         resolve({ err: false, result: { pubkey: pubkey, address: address, prikey: result as Uint8Array } });
-    //                     }
-    //                     else
-    //                     {
-    //                         // info2.textContent += info + "|" + result;
-    //                         reject({ err: true, result: result });
-    //                     }
-    //                 });
-    //             })
-    //         return promise;
-    //     }
-    // }
-    // export function pageCut(pageUtil: PageUtil)
-    // {
-    //     if (pageUtil.totalPage - pageUtil.currentPage)
-    //     {
-    //         $("#next").removeClass('disabled');
-    //     } else
-    //     {
-    //         $("#next").addClass('disabled');
-    //     }
-    //     if (pageUtil.currentPage - 1)
-    //     {
-    //         $("#previous").removeClass('disabled');
-    //     } else
-    //     {
-    //         $("#previous").addClass('disabled');
-    //     }
-    // }
-    // export class walletStorage
-    // {
-    //     public wallets = localStorage.getItem("Nel_wallets");
-    //     /**
-    //      * setWallet
-    //      */
-    //     public setWallet(address, nep2)
-    //     {
-    //         let json = { address, nep2 };
-    //         let wallets: any[] = JSON.parse(this.wallets);
-    //     }
-    // }
-    // export class GetNep5Info
-    // {
-    //     constructor()
-    //     {
-    //     }
-    //     //http://47.96.168.8:20332/?jsonrpc=2.0&id=1&method=invokescript&params=[%2200c1046e616d6567056bd94ecab6fe9607014624ef66bbc991dbcc3f%22]
-    //     makeRpcUrl(url: string, method: string, ..._params: any[])
-    //     {
-    //         if (url[url.length - 1] != '/')
-    //             url = url + "/";
-    //         var urlout = url + "?jsonrpc=2.0&id=1&method=" + method + "&params=[";
-    //         for (var i = 0; i < _params.length; i++)
-    //         {
-    //             urlout += JSON.stringify(_params[i]);
-    //             if (i != _params.length - 1)
-    //                 urlout += ",";
-    //         }
-    //         urlout += "]";
-    //         return urlout;
-    //     }
-    //     nep5decimals: number = 0;
-    //     async getInfo(sid: string): Promise<result>
-    //     {
-    //         let res: result = { err: false, result: { name: "", symbol: "", decimals: 0, totalsupply: 0 } };
-    //         try
-    //         {
-    //             //拼接三次调用
-    //             var sb = new ThinNeo.ScriptBuilder();
-    //             sb.EmitParamJson(JSON.parse("[]"));//参数倒序入
-    //             sb.EmitParamJson("(str)name");//参数倒序入
-    //             var shash = sid.hexToBytes();
-    //             sb.EmitAppCall(shash.reverse());//nep5脚本
-    //             sb.EmitParamJson(JSON.parse("[]"));
-    //             sb.EmitParamJson("(str)symbol");
-    //             var shash = sid.hexToBytes();
-    //             sb.EmitAppCall(shash.reverse());
-    //             sb.EmitParamJson(JSON.parse("[]"));
-    //             sb.EmitParamJson("(str)decimals");
-    //             var shash = sid.hexToBytes();
-    //             sb.EmitAppCall(shash.reverse());
-    //             sb.EmitParamJson(JSON.parse("[]"));
-    //             sb.EmitParamJson("(str)totalSupply");
-    //             var shash = sid.hexToBytes();
-    //             sb.EmitAppCall(shash.reverse());
-    //             var data = sb.ToArray();
-    //             var url = this.makeRpcUrl("http://47.96.168.8:20332", "invokescript", data.toHexString());
-    //             let response = await fetch(url, { "method": "get" });
-    //             let json = await response.json();
-    //             // info1.textContent = JSON.stringify(r);
-    //             try
-    //             {
-    //                 var state = json.result.state as string;
-    //                 // info2.textContent = "";
-    //                 if (state.includes("HALT"))
-    //                 {
-    //                     // info2.textContent += "Succ\n";
-    //                     res.err = false;
-    //                 }
-    //                 var stack = json.result.stack as any[];
-    //                 //find name 他的type 有可能是string 或者ByteArray
-    //                 if (stack[0].type == "String")
-    //                 {
-    //                     // info2.textContent += "name=" + stack[0].value + "\n";
-    //                     res.result.name = stack[0].value;
-    //                 }
-    //                 else if (stack[0].type == "ByteArray")
-    //                 {
-    //                     var bs = (stack[0].value as string).hexToBytes();
-    //                     var str = ThinNeo.Helper.Bytes2String(bs);
-    //                     // info2.textContent += "name=" + str + "\n";
-    //                     res.result.name = str
-    //                 }
-    //                 //find symbol 他的type 有可能是string 或者ByteArray
-    //                 if (stack[1].type == "String")
-    //                 {
-    //                     // info2.textContent += "symbol=" + stack[1].value + "\n";
-    //                     res.result.symbol = stack[1].value;
-    //                 }
-    //                 else if (stack[1].type == "ByteArray")
-    //                 {
-    //                     var bs = (stack[1].value as string).hexToBytes();
-    //                     var str = ThinNeo.Helper.Bytes2String(bs);
-    //                     // info2.textContent += "symbol=" + str + "\n";
-    //                     res.result.symbol = str;
-    //                 }
-    //                 //find decimals 他的type 有可能是 Integer 或者ByteArray
-    //                 if (stack[2].type == "Integer")
-    //                 {
-    //                     this.nep5decimals = (new Neo.BigInteger(stack[2].value as string)).toInt32();
-    //                 }
-    //                 else if (stack[2].type == "ByteArray")
-    //                 {
-    //                     var bs = (stack[2].value as string).hexToBytes();
-    //                     var num = new Neo.BigInteger(bs);
-    //                     this.nep5decimals = num.toInt32();
-    //                 }
-    //                 //find decimals 他的type 有可能是 Integer 或者ByteArray
-    //                 if (stack[3].type == "Integer")
-    //                 {
-    //                     var totalsupply = (new Neo.BigInteger(stack[3].value as string)).toInt32();
-    //                 }
-    //                 else if (stack[3].type == "ByteArray")
-    //                 {
-    //                     var bs = (stack[3].value as string).hexToBytes();
-    //                     var num = new Neo.BigInteger(bs);
-    //                     totalsupply = num.toInt32();
-    //                 }
-    //                 // info2.textContent += "decimals=" + this.nep5decimals + "\n";
-    //                 res.result.totalsupply = totalsupply;
-    //                 res.result.decimals = this.nep5decimals;
-    //                 return res;
-    //             }
-    //             catch (e)
-    //             {
-    //                 return e.message;
-    //             }
-    //         }
-    //         catch (e)
-    //         {
-    //             return e.message;
-    //         }
-    //     }
-    //     async getBalance(sid: string, addr: string): Promise<result>
-    //     {
-    //         let res: result = { err: false, result: 0 };
-    //         var sb = new ThinNeo.ScriptBuilder();
-    //         sb.EmitParamJson(["(addr)" + addr]);//参数倒序入
-    //         sb.EmitParamJson("(str)balanceOf");//参数倒序入 //name//totalSupply//symbol//decimals
-    //         var shash = sid.hexToBytes();
-    //         sb.EmitAppCall(shash.reverse());//nep5脚本
-    //         var data = sb.ToArray();
-    //         // info1.textContent = data.toHexString();        
-    //         try
-    //         {
-    //             var url = this.makeRpcUrl("http://47.96.168.8:20332", "invokescript", data.toHexString());
-    //             let response = await fetch(url, { "method": "get" })
-    //             let json = await response.json();
-    //             var state = json.result.state as string;
-    //             // info2.textContent = "";
-    //             if (state.includes("HALT"))
-    //             {
-    //                 // info2.textContent += "Succ\n";
-    //             }
-    //             var stack = json.result.stack as any[];
-    //             var bnum = new Neo.BigInteger(0);
-    //             //find decimals 他的type 有可能是 Integer 或者ByteArray
-    //             if (stack[0].type == "Integer")
-    //             {
-    //                 bnum = new Neo.BigInteger(stack[0].value);
-    //             }
-    //             else if (stack[0].type == "ByteArray")
-    //             {
-    //                 var bs = (stack[0].value as string).hexToBytes();
-    //                 bnum = new Neo.BigInteger(bs);
-    //             }
-    //             var v = 1;
-    //             for (var i = 0; i < this.nep5decimals; i++)
-    //             {
-    //                 v *= 10;
-    //             }
-    //             var intv = bnum.divide(v).toInt32();
-    //             var smallv = bnum.mod(v).toInt32() / v;
-    //             // info2.textContent += "count=" + (intv + smallv);
-    //             res.result = intv + smallv;
-    //             return res;
-    //         }
-    //         catch (e)
-    //         {
-    //             return { err: true, result: "^_^ 请尝试输入正确的地址" };
-    //         }
-    //     }
-    // }
-    // export class StorageUtil
-    // {
-    //     /**
-    //      * setStorage
-    //      */
-    //     public setStorage(name: string, str: string)
-    //     {
-    //         localStorage.setItem(name, str);
-    //     }
-    //     /**
-    //      * getStorage
-    //      */
-    //     public getStorage(name: string, decoder: string): any
-    //     {
-    //         let res = localStorage.getItem(name)
-    //         if (!res)
-    //         {
-    //             localStorage.setItem(name, "");
-    //         }
-    //         if (decoder)
-    //         {
-    //             if (!res)
-    //             {
-    //                 return [];
-    //             }
-    //             let item = localStorage.getItem(name).split(decoder);
-    //             return item;
-    //         } else
-    //         {
-    //             let item = JSON.parse(localStorage.getItem(name));
-    //             return item;
-    //         }
-    //     }
-    // }
-})(WebBrowser || (WebBrowser = {}));
-var WebBrowser;
-(function (WebBrowser) {
-    class Neotool {
-        constructor() { }
-        /**
-         * verifyPublicKey 验证公钥
-         * @param publicKey 公钥
-         */
-        static verifyPublicKey(publicKey) {
-            var array = Neo.Cryptography.Base58.decode(publicKey);
-            //var hexstr = array.toHexString();
-            //var salt = array.subarray(0, 1);
-            //var hash = array.subarray(1, 1 + 20);
-            var check = array.subarray(21, 21 + 4); //
-            var checkdata = array.subarray(0, 21); //
-            var hashd = Neo.Cryptography.Sha256.computeHash(checkdata); //
-            hashd = Neo.Cryptography.Sha256.computeHash(hashd); //
-            var hashd = hashd.slice(0, 4); //
-            var checked = new Uint8Array(hashd); //
-            var error = false;
-            for (var i = 0; i < 4; i++) {
-                if (checked[i] != check[i]) {
-                    error = true;
-                    break;
-                }
-            }
-            return !error;
-        }
-        /**
-         * wifDecode wif解码
-         * @param wif wif私钥
-         */
-        static wifDecode(wif) {
-            let result = { err: false, result: { pubkey: "", prikey: "", address: "" } };
-            var prikey;
-            var pubkey;
-            var address;
-            try {
-                prikey = ThinNeo.Helper.GetPrivateKeyFromWIF(wif);
-                var hexstr = prikey.toHexString();
-                result.result.prikey = hexstr;
-            }
-            catch (e) {
-                result.err = true;
-                result.result = e.message;
-                return result;
-            }
-            try {
-                pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
-                var hexstr = pubkey.toHexString();
-                result.result.pubkey = hexstr;
-            }
-            catch (e) {
-                result.err = true;
-                result.result = e.message;
-                return result;
-            }
-            try {
-                address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
-                result.result.address = address;
-            }
-            catch (e) {
-                result.err = true;
-                result.result = e.message;
-                return result;
-            }
-            return result;
-        }
-        /**
-         * nep2FromWif
-         */
-        static nep2FromWif(wif, password) {
-            var prikey;
-            var pubkey;
-            var address;
-            let res = { err: false, result: { address: "", nep2: "" } };
-            try {
-                prikey = ThinNeo.Helper.GetPrivateKeyFromWIF(wif);
-                var n = 16384;
-                var r = 8;
-                var p = 8;
-                ThinNeo.Helper.GetNep2FromPrivateKey(prikey, password, n, r, p, (info, result) => {
-                    res.err = false;
-                    res.result.nep2 = result;
-                    pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
-                    var hexstr = pubkey.toHexString();
-                    address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
-                    res.result.address = address;
-                    return res;
-                });
-            }
-            catch (e) {
-                res.err = true;
-                res.result = e.message;
-                return res;
-            }
-        }
-        /**
-         * nep2TOWif
-         */
-        static nep2ToWif(nep2, password) {
-            return __awaiter(this, void 0, void 0, function* () {
-                var prikey;
-                var pubkey;
-                var address;
-                let promise = new Promise((resolve, reject) => {
-                    let n = 16384;
-                    var r = 8;
-                    var p = 8;
-                    ThinNeo.Helper.GetPrivateKeyFromNep2(nep2, password, n, r, p, (info, result) => {
-                        //spanNep2.textContent = "info=" + info + " result=" + result;
-                        prikey = result;
-                        if (prikey != null) {
-                            var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
-                            var address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
-                            var wif = ThinNeo.Helper.GetWifFromPrivateKey(prikey);
-                            resolve({ err: false, result: { pubkey, address, prikey } });
-                        }
-                        else {
-                            // spanWif.textContent = "result=" + "info=" + info + " result=" + result;
-                            reject({ err: false, result: result });
-                        }
-                    });
-                });
-                return promise;
-            });
-        }
-        /**
-         * nep6Load
-         */
-        static nep6Load(wallet, password) {
-            return __awaiter(this, void 0, void 0, function* () {
-                // let promise:Promise<result> = new Promise((resolve,reject)=>{
-                try {
-                    //getPrivateKey 是异步方法，且同时只能执行一个
-                    var istart = 0;
-                    let res = new Array();
-                    var getkey = null;
-                    // getkey = async (keyindex: number) => {
-                    for (let keyindex = 0; keyindex < wallet.accounts.length; keyindex++) {
-                        let account = wallet.accounts[keyindex];
-                        try {
-                            let result = yield this.getPriKeyfromAccount(wallet.scrypt, password, account);
-                            res.push(result.result);
-                        }
-                        catch (error) {
-                            console.error(error);
-                            return { err: true, result: error };
-                        }
-                    }
-                    return { err: false, result: res };
-                }
-                catch (e) {
-                }
-                // });
-                // return promise;
-            });
-        }
-        /**
-         * getPriKeyform
-         */
-        static getPriKeyfromAccount(scrypt, password, account) {
-            return __awaiter(this, void 0, void 0, function* () {
-                let promise = new Promise((resolve, reject) => {
-                    account.getPrivateKey(scrypt, password, (info, result) => {
-                        if (info == "finish") {
-                            var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(result);
-                            var address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
-                            var wif = ThinNeo.Helper.GetWifFromPrivateKey(result);
-                            var hexkey = result.toHexString();
-                            resolve({ err: false, result: { pubkey: pubkey, address: address, prikey: result } });
-                        }
-                        else {
-                            // info2.textContent += info + "|" + result;
-                            reject({ err: true, result: result });
-                        }
-                    });
-                });
-                return promise;
-            });
-        }
-    }
-    WebBrowser.Neotool = Neotool;
-})(WebBrowser || (WebBrowser = {}));
-/// <reference path="./tools/neotool.ts" />
-var WebBrowser;
-/// <reference path="./tools/neotool.ts" />
-(function (WebBrowser) {
-    class Navbar {
-        constructor(app) {
-            this.indexBtn = document.getElementById("index-btn");
-            this.indexa = document.getElementById("indexa");
-            this.browBtn = document.getElementById("brow-btn");
-            this.browsea = document.getElementById("browsea");
-            this.blockBtn = document.getElementById("blocks-btn");
-            this.blocka = document.getElementById("blocksa");
-            this.txlistBtn = document.getElementById("txlist-btn");
-            this.txlista = document.getElementById("txlista");
-            this.addrsBtn = document.getElementById("addrs-btn");
-            this.addrsa = document.getElementById("addrsa");
-            this.assetBtn = document.getElementById("asset-btn");
-            this.asseta = document.getElementById("assetsa");
-            this.guiBtn = document.getElementById("gui-btn");
-            this.guia = document.getElementById("guia");
-            // walletBtn: HTMLLIElement = document.getElementById("wallet-btn") as HTMLLIElement;
-            // walleta: HTMLAnchorElement = document.getElementById("walleta") as HTMLAnchorElement;
-            // nnsBtn: HTMLLIElement = document.getElementById("nns-btn") as HTMLLIElement;
-            // nnsa: HTMLAnchorElement = document.getElementById("nnssa") as HTMLAnchorElement;
-            this.searchBtn = document.getElementById("searchBtn");
-            this.searchText = document.getElementById("searchText");
-            this.searchList = document.getElementById("seach_list");
-            this.cpLock = false;
-            this.currentLine = 0;
-            this.app = app;
-        }
-        getLangs() {
-            let page_lang = ["indexa", "browsea", "blocka", "txlista", "addrsa", "asseta", "guia"];
-            page_lang.forEach(lang => {
-                this[lang].textContent = this.app.langmgr.get("nav_" + lang);
-            });
-        }
-        start() {
-            this.getLangs();
-            this.indexa.onclick = () => {
-                this.skip("");
-            };
-            this.blocka.onclick = () => {
-                this.skip("/blocks");
-            };
-            this.txlista.onclick = () => {
-                this.skip("/transactions");
-            };
-            this.addrsa.onclick = () => {
-                this.skip("/addresses");
-            };
-            this.asseta.onclick = () => {
-                this.skip("/assets");
-            };
-            this.guia.onclick = () => {
-                this.skip("/gui");
-            };
-            // this.nnsa.onclick = () => {
-            //     this.skip("/nnsevent");
-            // }
-            this.searchBtn.onclick = () => {
-                this.jump();
-            };
-            this.searchText.addEventListener('compositionstart', () => {
-                this.cpLock = true;
-            });
-            this.searchText.addEventListener('compositionend', () => {
-                this.cpLock = false;
-                if (!this.cpLock)
-                    this.fuzzyseach();
-            });
-            this.searchText.addEventListener('input', () => {
-                if (!this.cpLock)
-                    this.fuzzyseach();
-            });
-            this.searchText.onkeydown = (e) => {
-                if (e.keyCode == 13) {
-                    this.jump();
-                }
-                else if (e.keyCode == 38) {
-                    this.changeItem();
-                    this.currentLine--;
-                }
-                else if (e.keyCode == 40) {
-                    this.changeItem();
-                    this.currentLine++;
-                }
-            };
-            this.searchList.onclick = (e) => {
-                let event = e || window.event;
-                let target = event.target || event.srcElement;
-                if (target.nodeName.toLowerCase() == 'li') {
-                    this.searchText.value = target.innerHTML;
-                    let data = target.getAttribute("data");
-                    window.open(WebBrowser.locationtool.getUrl() + '/asset/' + data);
-                }
-                $("#seach_list").empty();
-            };
-            // this.walletBtn.onclick = () =>
-            // {
-            //     if ( locationtool.getNetWork() == 'testnet' )
-            //         window.open( "https://testwallet.nel.group/" );
-            //     else
-            //         window.open( "https://wallet.nel.group/" );
-            // }
-            document.onclick = (ev) => {
-                let event = ev || window.event;
-                let target = event.target || event.srcElement;
-                if (target.nodeName.toLowerCase() != 'li') {
-                    $("#seach_list").empty();
-                }
-            };
-        }
-        skip(page) {
-            window.location.href = WebBrowser.locationtool.getUrl() + page;
-        }
-        jump() {
-            let search = this.searchText.value;
-            search = search.trim();
-            if (search) {
-                if (search.length == 34) {
-                    if (WebBrowser.Neotool.verifyPublicKey(search)) {
-                        window.open(WebBrowser.locationtool.getUrl() + '/address/' + search);
-                    }
-                    else {
-                        $("#errContent").text(this.app.langmgr.get('nav_errContent'));
-                        $('#errMsg').modal('show');
-                        return false;
-                    }
-                    return;
-                }
-                else {
-                    search = search.replace('0x', '');
-                    if (search.length == 64) {
-                        window.open(WebBrowser.locationtool.getUrl() + '/transaction/' + search);
-                    }
-                    else if (search.length == 40) {
-                        window.open(WebBrowser.locationtool.getUrl() + '/nep5/' + search);
-                    }
-                    else if (!isNaN(Number(search))) {
-                        window.open(WebBrowser.locationtool.getUrl() + '/block/' + search);
-                    }
-                    else if (search.length > 64) {
-                        let length = this.searchList.children.length;
-                        if (length) {
-                            let data = this.searchList.children[this.currentLine - 1].getAttribute("data");
-                            window.open(WebBrowser.locationtool.getUrl() + '/asset/' + data);
-                            $("#seach_list").empty();
-                        }
-                    }
-                    else {
-                        return false;
-                    }
-                }
-            }
-            else {
-                return false;
-            }
-        }
-        fuzzyseach() {
-            return __awaiter(this, void 0, void 0, function* () {
-                $("#seach_list").empty();
-                this.currentLine = 0;
-                let search = this.searchText.value;
-                if (search) {
-                    let list = yield WebBrowser.WWW.apiaggr_searchAsset(search);
-                    if (list) {
-                        let length = list.length;
-                        for (let i = 0; i < length; i++) {
-                            let oLi = '<li data="' + list[i]["assetid"] + '">' + list[i]["name"] + '(' + list[i]["assetid"] + ')' + '</li>';
-                            $("#seach_list").append(oLi);
-                        }
-                    }
-                }
-            });
-        }
-        changeItem() {
-            let length = this.searchList.children.length;
-            if (length) {
-                for (let i = 0; i < length; i++) {
-                    this.searchList.children[i].className = "";
-                }
-                if (this.currentLine < 0 || this.currentLine == 0) {
-                    this.currentLine = 0;
-                }
-                if (this.currentLine == length || this.currentLine > length) {
-                    this.currentLine = length - 1;
-                }
-                //调试使用
-                this.searchList.children[this.currentLine].className = "active";
-                this.searchText.value = this.searchList.children[this.currentLine].innerHTML;
-            }
-        }
-    }
-    WebBrowser.Navbar = Navbar;
-})(WebBrowser || (WebBrowser = {}));
-var WebBrowser;
-(function (WebBrowser) {
-    class NetWork {
-        constructor(app) {
-            this.title = document.getElementById("network");
-            this.testbtn = document.getElementById("testnet-btn");
-            this.testa = document.getElementById("testa");
-            this.mainbtn = document.getElementById("mainnet-btn");
-            this.maina = document.getElementById("maina");
-            this.css = document.getElementById("netCss");
-            this.langbtn = document.getElementById("lanuage-btn");
-            this.app = app;
-            this.getLangs();
-        }
-        getLangs() {
-            this.testa.textContent = this.app.langmgr.get("net_testa");
-            this.maina.textContent = this.app.langmgr.get("net_maina");
-            this.langbtn.textContent = this.app.langmgr.get("net_" + this.app.langmgr.type);
-            if (this.app.netmgr.type == 1) {
-                this.title.innerText = this.app.langmgr.get("net_maina");
-            }
-            else if (this.app.netmgr.type == 2) {
-                this.title.innerText = this.app.langmgr.get("net_testa");
-            }
-        }
-        start() {
-            this.testa.onclick = () => {
-                window.location.hash = "#testnet";
-                // var href: string[] = window.location.href.split("#");
-                // var net: string = href[1].replace("mainnet", "");
-                // net = net.replace("testnet", "");
-                // net = "#testnet" + net;
-                // window.location.href = href[0] + net;
-            };
-            this.maina.onclick = () => {
-                window.location.hash = "#mainnet";
-                // var href: string[] = window.location.href.split("#");
-                // var net: string = href[1].replace("mainnet", "");
-                // net = net.replace("testnet", "");
-                // net = "#mainnet" + net;
-                // window.location.href = href[0] + net;
-            };
-        }
-        changeNetWork(net) {
-            if (net == "testnet") {
-                this.testbtn.classList.add("active");
-                this.mainbtn.classList.remove("active");
-                this.title.innerText = this.app.langmgr.get("net_testa");
-                this.css.href = "./css/testnet.css";
-            }
-            else if (net == "mainnet") {
-                this.mainbtn.classList.add("active");
-                this.testbtn.classList.remove("active");
-                this.title.innerText = this.app.langmgr.get("net_maina");
-                this.css.href = "./css/mainnet.css";
-            }
-        }
-    }
-    WebBrowser.NetWork = NetWork;
 })(WebBrowser || (WebBrowser = {}));
 var WebBrowser;
 (function (WebBrowser) {

@@ -189,14 +189,21 @@ namespace WebBrowser
 
             var HashFilein = document.createElement("input") as HTMLInputElement;
             HashFilein.type = "checkbox";
-            HashFilein.checked = false;
+            HashFilein.checked = true;
             contractBackGround.appendChild(HashFilein);
 
             var hashBackGround = document.createElement("div") as HTMLDivElement;
             contractBackGround.appendChild(hashBackGround);
-
+           
             var ContractAvm = null;
             var contractHash = null;
+            var fileText = document.createElement("span") as HTMLSpanElement;
+            fileText.style.color = "#eeeeee";
+            fileText.textContent = "合约hash";
+            hashBackGround.appendChild(fileText);
+
+            ContractAvm = document.createElement("input") as HTMLInputElement;
+            hashBackGround.appendChild(ContractAvm);
             HashFilein.onchange = () => {
                 while(hashBackGround.children.length > 0){
                     hashBackGround.removeChild(hashBackGround.firstChild);
@@ -207,7 +214,7 @@ namespace WebBrowser
                     fileText.textContent = "合约hash";
                     hashBackGround.appendChild(fileText);
 
-                    var ContractAvm = document.createElement("input") as HTMLInputElement;
+                    ContractAvm = document.createElement("input") as HTMLInputElement;
                     hashBackGround.appendChild(ContractAvm);
                 }else{
                     var fileText = document.createElement("span") as HTMLSpanElement;
