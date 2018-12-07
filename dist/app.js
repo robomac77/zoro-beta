@@ -3725,9 +3725,10 @@ var WebBrowser;
                 wallet.fromJsonStr(walletstr);
             };
             file.onchange = (ev) => {
-                if (file.files[0].name.includes(".json")) {
-                    reader.readAsText(file.files[0]);
-                }
+                if (file.files.length > 0)
+                    if (file.files[0].name.includes(".json")) {
+                        reader.readAsText(file.files[0]);
+                    }
             };
         }
     }
@@ -4378,6 +4379,39 @@ var WebBrowser;
             contractBackGround.style.width = "100%";
             contractBackGround.style.cssFloat = "left";
             div.appendChild(contractBackGround);
+            var upBackGround = document.createElement('div');
+            upBackGround.style.width = "100%";
+            upBackGround.style.cssFloat = "left";
+            contractBackGround.appendChild(upBackGround);
+            var downBackGround = document.createElement('div');
+            downBackGround.style.width = "100%";
+            downBackGround.style.cssFloat = "left";
+            contractBackGround.appendChild(downBackGround);
+            var putContract = document.createElement("button");
+            upBackGround.appendChild(putContract);
+            putContract.style.cssFloat = "left";
+            putContract.style.width = "50%";
+            putContract.textContent = "发布合约";
+            putContract.onclick = () => {
+                this.putContract(downBackGround);
+            };
+            putContract.click();
+            var useContract = document.createElement("button");
+            upBackGround.appendChild(useContract);
+            useContract.style.cssFloat = "left";
+            useContract.style.width = "50%";
+            useContract.textContent = "调用合约";
+            useContract.onclick = () => {
+                this.useContract(downBackGround);
+            };
+        }
+        putContract(div) {
+            if (div.firstChild)
+                div.removeChild(div.firstChild);
+            var contractBackGround = document.createElement('div');
+            contractBackGround.style.width = "100%";
+            contractBackGround.style.cssFloat = "left";
+            div.appendChild(contractBackGround);
             var ContractText = document.createElement('span');
             ContractText.style.color = "#eeeeee";
             ContractText.textContent = "合约";
@@ -4450,19 +4484,84 @@ var WebBrowser;
                     return;
                 }
                 WebBrowser.AppChainTool.SendContract(need_storage.checked, need_canCharge.checked, description.value, email.value, auther.value, version.value, name.value, ContractAvm, WebBrowser.GUITool.chainHash, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
-                setTimeout(() => {
-                    WebBrowser.AppChainTool.SendContractMethod(WebBrowser.GUITool.chainHash, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
-                }, 15000);
             });
             var reader = new FileReader();
             reader.onload = (e) => {
                 ContractAvm = reader.result;
             };
             file.onchange = (ev) => {
-                if (file.files[0].name.includes(".avm")) {
-                    reader.readAsArrayBuffer(file.files[0]);
+                if (file.files.length > 0)
+                    if (file.files[0].name.includes(".avm")) {
+                        reader.readAsArrayBuffer(file.files[0]);
+                    }
+            };
+        }
+        useContract(div) {
+            if (div.firstChild)
+                div.removeChild(div.firstChild);
+            var contractBackGround = document.createElement('div');
+            contractBackGround.style.width = "100%";
+            contractBackGround.style.cssFloat = "left";
+            div.appendChild(contractBackGround);
+            var fillinText = document.createElement("span");
+            fillinText.style.color = "#eeeeee";
+            fillinText.textContent = "手动输入合约hash";
+            contractBackGround.appendChild(fillinText);
+            var HashFilein = document.createElement("input");
+            HashFilein.type = "checkbox";
+            HashFilein.checked = false;
+            contractBackGround.appendChild(HashFilein);
+            var hashBackGround = document.createElement("div");
+            contractBackGround.appendChild(hashBackGround);
+            var ContractAvm = null;
+            var contractHash = null;
+            HashFilein.onchange = () => {
+                while (hashBackGround.children.length > 0) {
+                    hashBackGround.removeChild(hashBackGround.firstChild);
+                }
+                if (HashFilein.checked) {
+                    var fileText = document.createElement("span");
+                    fileText.style.color = "#eeeeee";
+                    fileText.textContent = "合约hash";
+                    hashBackGround.appendChild(fileText);
+                    var ContractAvm = document.createElement("input");
+                    hashBackGround.appendChild(ContractAvm);
+                }
+                else {
+                    var fileText = document.createElement("span");
+                    fileText.style.color = "#eeeeee";
+                    fileText.textContent = "选择.avm文件";
+                    hashBackGround.appendChild(fileText);
+                    var file = document.createElement('input');
+                    file.type = "file";
+                    hashBackGround.appendChild(file);
+                    var reader = new FileReader();
+                    reader.onload = (e) => {
+                        contractHash = reader.result;
+                        contractHash = (new Neo.Uint160(Neo.Cryptography.RIPEMD160.computeHash(Neo.Cryptography.Sha256.computeHash(contractHash)))).toString();
+                    };
+                    file.onchange = (ev) => {
+                        if (file.files.length > 0)
+                            if (file.files[0].name.includes(".avm")) {
+                                reader.readAsArrayBuffer(file.files[0]);
+                            }
+                    };
                 }
             };
+            var btnSend = document.createElement('button');
+            btnSend.textContent = "send";
+            contractBackGround.appendChild(btnSend);
+            btnSend.onclick = () => __awaiter(this, void 0, void 0, function* () {
+                if (ContractAvm) {
+                    contractHash = ContractAvm.value;
+                }
+                else if (!contractHash) {
+                    alert("hash not available!");
+                    return;
+                }
+                alert(contractHash.toString());
+                WebBrowser.AppChainTool.SendContractMethod(WebBrowser.GUITool.chainHash, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
+            });
         }
     }
     WebBrowser.GUI_Contract = GUI_Contract;
@@ -4672,6 +4771,7 @@ var WebBrowser;
         }
         initAppChain() {
             return __awaiter(this, void 0, void 0, function* () {
+                this.selectClear();
                 var name2Hash = yield WebBrowser.AppChainTool.initAllAppChain();
                 for (var chainName in name2Hash) {
                     var sitem = document.createElement("option");

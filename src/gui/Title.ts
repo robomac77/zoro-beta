@@ -178,6 +178,7 @@ namespace WebBrowser
         }
 
         async initAppChain(){  
+            this.selectClear();
             var name2Hash = await AppChainTool.initAllAppChain()
             for (var chainName in name2Hash){
                 var sitem = document.createElement("option");

@@ -26,6 +26,45 @@ namespace WebBrowser
             contractBackGround.style.cssFloat = "left";
             div.appendChild(contractBackGround);
 
+            var upBackGround = document.createElement('div') as HTMLDivElement;
+            upBackGround.style.width = "100%";
+            upBackGround.style.cssFloat = "left";
+            contractBackGround.appendChild(upBackGround);
+
+            var downBackGround = document.createElement('div') as HTMLDivElement;
+            downBackGround.style.width = "100%";
+            downBackGround.style.cssFloat = "left";
+            contractBackGround.appendChild(downBackGround);
+
+            var putContract = document.createElement("button") as HTMLButtonElement;
+            upBackGround.appendChild(putContract)
+            putContract.style.cssFloat = "left";
+            putContract.style.width = "50%";
+            putContract.textContent = "发布合约";
+            putContract.onclick = () => {
+                this.putContract(downBackGround);
+            }
+            putContract.click();
+
+            var useContract = document.createElement("button") as HTMLButtonElement;
+            upBackGround.appendChild(useContract)
+            useContract.style.cssFloat = "left";
+            useContract.style.width = "50%";
+            useContract.textContent = "调用合约";
+            useContract.onclick = () => {
+                this.useContract(downBackGround);
+            }           
+        }
+
+        putContract(div:HTMLDivElement){
+            if (div.firstChild)
+            div.removeChild(div.firstChild);
+
+            var contractBackGround = document.createElement('div') as HTMLDivElement;
+            contractBackGround.style.width = "100%";
+            contractBackGround.style.cssFloat = "left";
+            div.appendChild(contractBackGround);
+
             var ContractText = document.createElement('span') as HTMLSpanElement;
             ContractText.style.color = "#eeeeee";
             ContractText.textContent = "合约";
@@ -116,11 +155,7 @@ namespace WebBrowser
                     return;
                 }
                 AppChainTool.SendContract(need_storage.checked,need_canCharge.checked,description.value,email.value,auther.value,version.value,
-                    name.value, ContractAvm, GUITool.chainHash, GUITool.pubkey, GUITool.prikey);
-
-                setTimeout(() => {
-                    AppChainTool.SendContractMethod(GUITool.chainHash, GUITool.pubkey, GUITool.prikey);
-                }, 15000);
+                    name.value, ContractAvm, GUITool.chainHash, GUITool.pubkey, GUITool.prikey);               
             }
 
             var reader = new FileReader();
@@ -130,11 +165,91 @@ namespace WebBrowser
             }   
             file.onchange = (ev: Event) =>
             {
+                if (file.files.length > 0)
                 if (file.files[0].name.includes(".avm"))
                 {
                     reader.readAsArrayBuffer(file.files[0]);
                 }
             }      
+        }
+
+        useContract(div:HTMLDivElement){
+            if (div.firstChild)
+            div.removeChild(div.firstChild);
+
+            var contractBackGround = document.createElement('div') as HTMLDivElement;
+            contractBackGround.style.width = "100%";
+            contractBackGround.style.cssFloat = "left";
+            div.appendChild(contractBackGround);
+
+            var fillinText = document.createElement("span") as HTMLSpanElement;
+            fillinText.style.color = "#eeeeee";
+            fillinText.textContent = "手动输入合约hash";
+            contractBackGround.appendChild(fillinText);
+
+            var HashFilein = document.createElement("input") as HTMLInputElement;
+            HashFilein.type = "checkbox";
+            HashFilein.checked = false;
+            contractBackGround.appendChild(HashFilein);
+
+            var hashBackGround = document.createElement("div") as HTMLDivElement;
+            contractBackGround.appendChild(hashBackGround);
+
+            var ContractAvm = null;
+            var contractHash = null;
+            HashFilein.onchange = () => {
+                while(hashBackGround.children.length > 0){
+                    hashBackGround.removeChild(hashBackGround.firstChild);
+                }
+                if (HashFilein.checked){
+                    var fileText = document.createElement("span") as HTMLSpanElement;
+                    fileText.style.color = "#eeeeee";
+                    fileText.textContent = "合约hash";
+                    hashBackGround.appendChild(fileText);
+
+                    var ContractAvm = document.createElement("input") as HTMLInputElement;
+                    hashBackGround.appendChild(ContractAvm);
+                }else{
+                    var fileText = document.createElement("span") as HTMLSpanElement;
+                    fileText.style.color = "#eeeeee";
+                    fileText.textContent = "选择.avm文件";
+                    hashBackGround.appendChild(fileText);
+        
+                    var file = document.createElement('input') as HTMLInputElement;
+                    file.type = "file";
+                    hashBackGround.appendChild(file);
+
+                    var reader = new FileReader();
+                    reader.onload = (e: Event) =>
+                    {                
+                        contractHash = reader.result as ArrayBuffer;      
+                        contractHash = (new Neo.Uint160(Neo.Cryptography.RIPEMD160.computeHash(Neo.Cryptography.Sha256.computeHash(contractHash)))).toString();                                                
+                    }   
+                    file.onchange = (ev: Event) =>
+                    {
+                        if (file.files.length > 0)
+                        if (file.files[0].name.includes(".avm"))
+                        {
+                            reader.readAsArrayBuffer(file.files[0]);
+                        }
+                    }      
+                }
+            }
+
+            var btnSend = document.createElement('button') as HTMLButtonElement;
+            btnSend.textContent = "send";
+            contractBackGround.appendChild(btnSend);
+
+            
+            btnSend.onclick = async () => {     
+                if (ContractAvm){
+                    contractHash = ContractAvm.value;
+                } else if (!contractHash){        
+                    alert("hash not available!");
+                    return;
+                }
+                AppChainTool.SendContractMethod(GUITool.chainHash, GUITool.pubkey, GUITool.prikey);
+            }                       
         }
     }
 }
