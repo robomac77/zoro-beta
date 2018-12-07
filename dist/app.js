@@ -6354,6 +6354,7 @@ var WebBrowser;
                 asset_pre4: "共识节点4",
                 asset_adm: "创建者",
                 asset_title2: "应用链区块",
+                asset_rank: "哈希",
                 asset_addr: "大小",
                 asset_balance: "时间",
                 asset_blockheight: "高度",
