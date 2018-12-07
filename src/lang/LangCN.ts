@@ -74,7 +74,23 @@ namespace WebBrowser
             block_info_type: "类型",
             block_info_txsize: "大小",
             block_info_ver: "版本",
-            block_goallblock: "返回",
+			block_goallblock: "返回",
+
+			// app chain block
+			acblock_info_title: "应用链区块列表",
+			acblock_info_block: "区块",
+			acblock_info_hash: "哈希",
+			//block_info_chainhash: "App Chain Hash",
+			acblock_info_time: "时间",
+			acblock_info_size: "大小",
+			acblock_info_pre: "上一个块",
+			acblock_info_next: "下一个快",
+			acblock_info_tran: "交易",
+			acblock_info_txid: "交易ID",
+			acblock_info_type: "类型",
+			acblock_info_txsize: "大小",
+			acblock_info_ver: "版本",
+			acblock_goallblock: "返回",
 
             // transactions
             trans_title: "交易列表",
@@ -102,7 +118,28 @@ namespace WebBrowser
             tran_nep5_to: "转入",
             tran_nep5_value: "交易数",
 
-            tran_goalltran: "返回",
+			tran_goalltran: "返回",
+
+			// appchain transaction
+			actran_title: "应用链交易列表",
+			actran_title_1: "交易",
+			actran_txid: "交易ID",
+			actran_type: "类型",
+			actran_netfee: "网络费用",
+			actran_sysfee: "系统费用",
+			actran_size: "大小",
+			actran_height: "区块高度",
+			actran_time: "时间",
+			actran_input: "输入",
+			actran_output: "输出",
+
+			actran_nep5: "Nep5",
+			actran_nep5_asset: "资产",
+			actran_nep5_from: "从",
+			actran_nep5_to: "到",
+			actran_nep5_value: "价值",
+
+			actran_goalltran: "返回",
 
 
             // addresses
@@ -167,7 +204,7 @@ namespace WebBrowser
 			asset_pre2: "共识节点2",
 			asset_pre3: "共识节点3",
 			asset_pre4: "共识节点4",
-            asset_adm: "连上地址数",
+			asset_adm: "创建者",
 			asset_title2: "应用链区块",
 
             asset_addr: "大小",
