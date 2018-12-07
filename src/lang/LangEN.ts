@@ -136,7 +136,10 @@ namespace WebBrowser
             actran_nep5_to: "To",
             actran_nep5_value: "Value",
 
-            actran_goalltran: "Back to all app chain transactions",
+			actran_goalltran: "Back to all app chain transactions",
+
+			
+
 
 
             // addresses
