@@ -105,6 +105,7 @@ namespace WebBrowser
         }
 
         addSelect(){
+            this.hideUI();
             this.initAppChain();
             this.update();
 

@@ -195,31 +195,71 @@ namespace WebBrowser
                 postRawArray.push(chainHash);
                 postRawArray.push(rawdata);
                 var postResult = await WWW.rpc_sendrawtransaction(postRawArray);
-                alert(tran.GetHash().toString());
+                {
+                  alert("txid=" + tran.GetHash().toHexString());
+              }
         }    
         
-        static async SendContractMethod(chainHash, pubkey, prikey){
+        static async SendInvokeContractMethod(chainHash, pubkey, prikey, method, contract){
           var sb = new ThinNeo.ScriptBuilder();
-                var array = [];
-                array.push("(int)1");
-                sb.EmitParamJson(array);
-                sb.EmitPushString("deploy");
-                sb.EmitAppCall(this.appChainBCP.hexToBytes().reverse()); 
+                for (var i = 0; i < method.length; i++) {
+                  var array = [];
+                  for (var j = 0; j < method[i]["params"].length; j++){
+                    var s = method[i]["params"][j];
+                    array.push(s);
+                  }
+                  sb.EmitParamJson(array);
+                  sb.EmitPushString(method[i]["methodName"]);
+                  sb.EmitAppCall(contract.hexToBytes().reverse());
+                }                
                 
                 var scriptPublish = sb.ToArray().toHexString();
-                var postArray = [];
-                postArray.push(chainHash);
-                postArray.push(scriptPublish);
-                var result = await WWW.rpc_invokeScript(postArray);
+                if (chainHash == "NEO"){
+                  var str = WWW.makeUrl("invokescript", WWW.neoRpc, scriptPublish);
+                  var r = await fetch(str, {"method":"get"});
+                  var result = await r.json();
+                }else{
+                  var postArray = [];
+                  postArray.push(chainHash);
+                  postArray.push(scriptPublish);
+                  var result = await WWW.rpc_invokeScript(postArray);
+                }                
+                return result;
+        }
 
-                var consume = result["gas_consumed"];
-                var gas_consumed = parseInt(consume);
+        static async SendContractMethod(chainHash, pubkey, prikey, method, contract){
+          var sb = new ThinNeo.ScriptBuilder();
+                for (var i = 0; i < method.length; i++) {
+                  var array = [];
+                  for (var j = 0; j < method[i]["params"].length; j++){
+                    var s = method[i]["params"][j];
+                    array.push(s);
+                  }
+                  sb.EmitParamJson(array);
+                  sb.EmitPushString(method[i]["methodName"]);
+                  sb.EmitAppCall(contract.hexToBytes().reverse());
+                }                
+                
+                var scriptPublish = sb.ToArray().toHexString();
+                // var postArray = [];
+                // postArray.push(chainHash);
+                // postArray.push(scriptPublish);
+                // var result = await WWW.rpc_invokeScript(postArray);
+
+                // var consume = result["gas_consumed"];
+                // var gas_consumed = parseInt(consume);
 
                 var extdata = new ThinNeo.InvokeTransData();
                 extdata.script = sb.ToArray();
                 extdata.gas = Neo.Fixed8.Zero;
 
-                var tran = WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                if (chainHash == "NEO"){
+                  var utxo = await WWW.rpc_getUTXO(GUITool.address);
+                  var tran = CoinTool.makeTran(CoinTool.getassets(utxo), ThinNeo.Helper.GetAddressFromPublicKey(pubkey), this.id_GAS, Neo.Fixed8.Zero);
+                }else{
+                  var tran = WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                }
+                
                 tran.extdata = extdata;
 
                 var msg = tran.GetMessage();
@@ -231,11 +271,16 @@ namespace WebBrowser
                 var postRawArray = [];
                 postRawArray.push(chainHash);
                 postRawArray.push(rawdata);
-                var postResult = await WWW.rpc_sendrawtransaction(postRawArray);
-                if (postResult["result"] as boolean == true)
-            {
-                alert("txid=" + tran.GetHash().toHexString());
-            }
+                if (chainHash == "NEO"){
+                  var postResult = await WWW.rpc_postRawTransaction(data);
+                }else{
+                  var postResult1 = await WWW.rpc_sendrawtransaction(postRawArray);
+                }               
+            //     if (postResult1["result"] as boolean == true)
+            // {
+                //alert("txid=" + tran.GetHash().toHexString());
+            // }
+            return tran.GetHash().toHexString();
         }
 
         static async SendCreateAppChain(name:string, pubkey:Uint8Array, validators:string[], seedList:string[], prikey:any, chainHash:any){
@@ -319,6 +364,26 @@ namespace WebBrowser
             if (postResult["result"])
            alert(tran.GetHash().clone().reverse().toHexString());
         }
+
+      private static selectClear(select:HTMLSelectElement):void{
+          if (select)
+          while(select.childNodes.length > 0){                
+              select.removeChild(select.options[0]);
+              select.remove(0);   
+              select.options[0] = null;            
+          }
+      }
+
+      static async getChain(select:HTMLSelectElement){
+          this.selectClear(select);
+          var name2Hash = await AppChainTool.initAllAppChain();
+          for (var chainName in name2Hash){
+              var sitem = document.createElement("option");
+              sitem.text = chainName;
+              sitem.value = name2Hash[chainName];
+              select.appendChild(sitem);
+          }
+      }
 
         static Node_List = {
             "node1": {

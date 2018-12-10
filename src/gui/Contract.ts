@@ -39,7 +39,7 @@ namespace WebBrowser
             var putContract = document.createElement("button") as HTMLButtonElement;
             upBackGround.appendChild(putContract)
             putContract.style.cssFloat = "left";
-            putContract.style.width = "50%";
+            putContract.style.width = "33%";
             putContract.textContent = "发布合约";
             putContract.onclick = () => {
                 this.putContract(downBackGround);
@@ -49,11 +49,20 @@ namespace WebBrowser
             var useContract = document.createElement("button") as HTMLButtonElement;
             upBackGround.appendChild(useContract)
             useContract.style.cssFloat = "left";
-            useContract.style.width = "50%";
+            useContract.style.width = "33%";
             useContract.textContent = "调用合约";
             useContract.onclick = () => {
-                this.useContract(downBackGround);
-            }           
+                this.useContract(downBackGround, true);
+            }
+            
+            var invokeContract = document.createElement("button") as HTMLButtonElement;
+            upBackGround.appendChild(invokeContract)
+            invokeContract.style.cssFloat = "left";
+            invokeContract.style.width = "33%";
+            invokeContract.textContent = "预调用合约";
+            invokeContract.onclick = () => {
+                this.useContract(downBackGround, false);
+            }          
         }
 
         putContract(div:HTMLDivElement){
@@ -64,6 +73,15 @@ namespace WebBrowser
             contractBackGround.style.width = "100%";
             contractBackGround.style.cssFloat = "left";
             div.appendChild(contractBackGround);
+
+            var asset = document.createElement('span') as HTMLSpanElement;
+            contractBackGround.appendChild(asset);
+            asset.style.color = "#eeeeee";
+            asset.textContent = "链名";
+
+            var select = document.createElement("select") as HTMLSelectElement;
+            contractBackGround.appendChild(select);
+            AppChainTool.getChain(select);
 
             var ContractText = document.createElement('span') as HTMLSpanElement;
             ContractText.style.color = "#eeeeee";
@@ -155,7 +173,7 @@ namespace WebBrowser
                     return;
                 }
                 AppChainTool.SendContract(need_storage.checked,need_canCharge.checked,description.value,email.value,auther.value,version.value,
-                    name.value, ContractAvm, GUITool.chainHash, GUITool.pubkey, GUITool.prikey);               
+                    name.value, ContractAvm, (select.childNodes[select.selectedIndex] as HTMLOptionElement).value, GUITool.pubkey, GUITool.prikey);               
             }
 
             var reader = new FileReader();
@@ -173,7 +191,7 @@ namespace WebBrowser
             }      
         }
 
-        useContract(div:HTMLDivElement){
+        useContract(div:HTMLDivElement, use:boolean){
             if (div.firstChild)
             div.removeChild(div.firstChild);
 
@@ -181,6 +199,15 @@ namespace WebBrowser
             contractBackGround.style.width = "100%";
             contractBackGround.style.cssFloat = "left";
             div.appendChild(contractBackGround);
+
+            var asset = document.createElement('span') as HTMLSpanElement;
+            contractBackGround.appendChild(asset);
+            asset.style.color = "#eeeeee";
+            asset.textContent = "链名";
+
+            var select = document.createElement("select") as HTMLSelectElement;
+            contractBackGround.appendChild(select);
+            AppChainTool.getChain(select);
 
             var fillinText = document.createElement("span") as HTMLSpanElement;
             fillinText.style.color = "#eeeeee";
@@ -217,6 +244,7 @@ namespace WebBrowser
                     ContractAvm = document.createElement("input") as HTMLInputElement;
                     hashBackGround.appendChild(ContractAvm);
                 }else{
+                    ContractAvm = null;
                     var fileText = document.createElement("span") as HTMLSpanElement;
                     fileText.style.color = "#eeeeee";
                     fileText.textContent = "选择.avm文件";
@@ -242,21 +270,106 @@ namespace WebBrowser
                     }      
                 }
             }
+            var methodBackGround = document.createElement("div") as HTMLDivElement;
+            contractBackGround.appendChild(methodBackGround);
+
+            var btnAddMethod = document.createElement("button") as HTMLButtonElement;
+            btnAddMethod.textContent = "AddMethod";
+            contractBackGround.appendChild(btnAddMethod);
+            var JsonMethod = [];          
+            btnAddMethod.onclick = () => {
+                var json = {};
+                JsonMethod.push(json);
+                var params = [];
+                var singleMethodBackGround = document.createElement("div") as HTMLDivElement;
+                methodBackGround.appendChild(singleMethodBackGround); 
+
+                var methodText = document.createElement("span") as HTMLSpanElement;
+                methodText.style.color = "#eeeeee";
+                methodText.textContent = "方法名";
+                singleMethodBackGround.appendChild(methodText);
+
+                var methodInput = document.createElement("input") as HTMLInputElement; 
+                singleMethodBackGround.appendChild(methodInput);
+                json["methodName"] = methodInput;
+                json["params"] = params;               
+
+                var paramsBackGround = document.createElement("div") as HTMLDivElement;
+                singleMethodBackGround.appendChild(paramsBackGround);    
+                
+                var btnAddParams = document.createElement("button") as HTMLButtonElement;
+                btnAddParams.textContent = "AddParams";
+                singleMethodBackGround.appendChild(btnAddParams);
+                
+                btnAddParams.onclick = () => {
+                    var singleParamsBackGround = document.createElement("div") as HTMLDivElement;
+                    paramsBackGround.appendChild(singleParamsBackGround); 
+
+                    var paramsText = document.createElement("span") as HTMLSpanElement;
+                    paramsText.style.color = "#eeeeee";
+                    paramsText.textContent = "参数";
+                    singleParamsBackGround.appendChild(paramsText);
+    
+                    var paramsInput = document.createElement("input") as HTMLInputElement;
+                    singleParamsBackGround.appendChild(paramsInput);
+                    params.push(paramsInput);
+                }
+                
+                var btnSubParams = document.createElement("button") as HTMLButtonElement;
+                btnSubParams.textContent = "SubParams";
+                singleMethodBackGround.appendChild(btnSubParams);
+                btnSubParams.onclick = () => {
+                    paramsBackGround.removeChild(paramsBackGround.lastChild);
+                    params.pop();
+                }
+            }
+            var btnSubMethod = document.createElement("button") as HTMLButtonElement;
+            btnSubMethod.textContent = "SubMethod";
+            contractBackGround.appendChild(btnSubMethod);
+            btnSubMethod.onclick = () => {
+                methodBackGround.removeChild(methodBackGround.lastChild);
+                JsonMethod.pop();
+            }
 
             var btnSend = document.createElement('button') as HTMLButtonElement;
             btnSend.textContent = "send";
             contractBackGround.appendChild(btnSend);
 
-            
-            btnSend.onclick = async () => {     
+            var txText = document.createElement("span") as HTMLSpanElement;
+            txText.style.color = "#eeeeee";            
+            contractBackGround.appendChild(txText); 
+
+            var txMessage = null;
+            btnSend.onclick = async () => {    
                 if (ContractAvm){
                     contractHash = ContractAvm.value;
-                } else if (!contractHash){        
+                } 
+                else if (!contractHash){        
                     alert("hash not available!");
                     return;
                 }
-                AppChainTool.SendContractMethod(GUITool.chainHash, GUITool.pubkey, GUITool.prikey);
-            }                       
+                var json = [];
+                for (var i = 0; i < JsonMethod.length; i++) {
+                    var singleJson = {};
+                    var array = [];
+                    for (var j = 0; j < JsonMethod[i]["params"].length; j++){
+                      var s = JsonMethod[i]["params"][j].value;
+                      array.push(s);
+                    }
+                    singleJson["params"] = array;
+                    singleJson["methodName"] = JsonMethod[i]["methodName"].value;
+                    json.push(singleJson);
+                }
+                if (use){
+                    txMessage = await AppChainTool.SendContractMethod((select.childNodes[select.selectedIndex] as HTMLOptionElement).value, GUITool.pubkey, GUITool.prikey, json, contractHash);
+                }else{
+                    txMessage = await AppChainTool.SendInvokeContractMethod((select.childNodes[select.selectedIndex] as HTMLOptionElement).value, GUITool.pubkey, GUITool.prikey, json, contractHash);
+                    txMessage = JSON.stringify(txMessage);
+                }
+                txText.textContent = (use?"txid = ":"invokeMessage = ") + (txMessage as string);
+            }       
+            
+            
         }
     }
 }

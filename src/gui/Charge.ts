@@ -78,7 +78,7 @@ namespace WebBrowser
 
             var select = document.createElement("select") as HTMLSelectElement;
             singlebackground.appendChild(select);
-            this.getChain(select);
+            AppChainTool.getChain(select);
 
             var coin = document.createElement('span') as HTMLSpanElement;
             singlebackground.appendChild(coin);
@@ -265,24 +265,6 @@ namespace WebBrowser
             }
         }       
 
-        selectClear(select:HTMLSelectElement):void{
-            if (select)
-            while(select.childNodes.length > 0){                
-                select.removeChild(select.options[0]);
-                select.remove(0);   
-                select.options[0] = null;            
-            }
-        }
-
-        async getChain(select:HTMLSelectElement){
-            this.selectClear(select);
-            var name2Hash = await AppChainTool.initAllAppChain();
-            for (var chainName in name2Hash){
-                var sitem = document.createElement("option");
-                sitem.text = chainName;
-                sitem.value = name2Hash[chainName];
-                select.appendChild(sitem);
-            }
-        }
+        
     }
 }

@@ -3423,28 +3423,69 @@ var WebBrowser;
                 postRawArray.push(chainHash);
                 postRawArray.push(rawdata);
                 var postResult = yield WebBrowser.WWW.rpc_sendrawtransaction(postRawArray);
-                alert(tran.GetHash().toString());
+                {
+                    alert("txid=" + tran.GetHash().toHexString());
+                }
             });
         }
-        static SendContractMethod(chainHash, pubkey, prikey) {
+        static SendInvokeContractMethod(chainHash, pubkey, prikey, method, contract) {
             return __awaiter(this, void 0, void 0, function* () {
                 var sb = new ThinNeo.ScriptBuilder();
-                var array = [];
-                array.push("(int)1");
-                sb.EmitParamJson(array);
-                sb.EmitPushString("deploy");
-                sb.EmitAppCall(this.appChainBCP.hexToBytes().reverse());
+                for (var i = 0; i < method.length; i++) {
+                    var array = [];
+                    for (var j = 0; j < method[i]["params"].length; j++) {
+                        var s = method[i]["params"][j];
+                        array.push(s);
+                    }
+                    sb.EmitParamJson(array);
+                    sb.EmitPushString(method[i]["methodName"]);
+                    sb.EmitAppCall(contract.hexToBytes().reverse());
+                }
                 var scriptPublish = sb.ToArray().toHexString();
-                var postArray = [];
-                postArray.push(chainHash);
-                postArray.push(scriptPublish);
-                var result = yield WebBrowser.WWW.rpc_invokeScript(postArray);
-                var consume = result["gas_consumed"];
-                var gas_consumed = parseInt(consume);
+                if (chainHash == "NEO") {
+                    var str = WebBrowser.WWW.makeUrl("invokescript", WebBrowser.WWW.neoRpc, scriptPublish);
+                    var r = yield fetch(str, { "method": "get" });
+                    var result = yield r.json();
+                }
+                else {
+                    var postArray = [];
+                    postArray.push(chainHash);
+                    postArray.push(scriptPublish);
+                    var result = yield WebBrowser.WWW.rpc_invokeScript(postArray);
+                }
+                return result;
+            });
+        }
+        static SendContractMethod(chainHash, pubkey, prikey, method, contract) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var sb = new ThinNeo.ScriptBuilder();
+                for (var i = 0; i < method.length; i++) {
+                    var array = [];
+                    for (var j = 0; j < method[i]["params"].length; j++) {
+                        var s = method[i]["params"][j];
+                        array.push(s);
+                    }
+                    sb.EmitParamJson(array);
+                    sb.EmitPushString(method[i]["methodName"]);
+                    sb.EmitAppCall(contract.hexToBytes().reverse());
+                }
+                var scriptPublish = sb.ToArray().toHexString();
+                // var postArray = [];
+                // postArray.push(chainHash);
+                // postArray.push(scriptPublish);
+                // var result = await WWW.rpc_invokeScript(postArray);
+                // var consume = result["gas_consumed"];
+                // var gas_consumed = parseInt(consume);
                 var extdata = new ThinNeo.InvokeTransData();
                 extdata.script = sb.ToArray();
                 extdata.gas = Neo.Fixed8.Zero;
-                var tran = WebBrowser.WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                if (chainHash == "NEO") {
+                    var utxo = yield WebBrowser.WWW.rpc_getUTXO(WebBrowser.GUITool.address);
+                    var tran = WebBrowser.CoinTool.makeTran(WebBrowser.CoinTool.getassets(utxo), ThinNeo.Helper.GetAddressFromPublicKey(pubkey), this.id_GAS, Neo.Fixed8.Zero);
+                }
+                else {
+                    var tran = WebBrowser.WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                }
                 tran.extdata = extdata;
                 var msg = tran.GetMessage();
                 var signdata = ThinNeo.Helper.Sign(msg, prikey);
@@ -3454,10 +3495,17 @@ var WebBrowser;
                 var postRawArray = [];
                 postRawArray.push(chainHash);
                 postRawArray.push(rawdata);
-                var postResult = yield WebBrowser.WWW.rpc_sendrawtransaction(postRawArray);
-                if (postResult["result"] == true) {
-                    alert("txid=" + tran.GetHash().toHexString());
+                if (chainHash == "NEO") {
+                    var postResult = yield WebBrowser.WWW.rpc_postRawTransaction(data);
                 }
+                else {
+                    var postResult1 = yield WebBrowser.WWW.rpc_sendrawtransaction(postRawArray);
+                }
+                //     if (postResult1["result"] as boolean == true)
+                // {
+                //alert("txid=" + tran.GetHash().toHexString());
+                // }
+                return tran.GetHash().toHexString();
             });
         }
         static SendCreateAppChain(name, pubkey, validators, seedList, prikey, chainHash) {
@@ -3534,6 +3582,26 @@ var WebBrowser;
                 var postResult = yield WebBrowser.WWW.rpc_postRawTransaction(data);
                 if (postResult["result"])
                     alert(tran.GetHash().clone().reverse().toHexString());
+            });
+        }
+        static selectClear(select) {
+            if (select)
+                while (select.childNodes.length > 0) {
+                    select.removeChild(select.options[0]);
+                    select.remove(0);
+                    select.options[0] = null;
+                }
+        }
+        static getChain(select) {
+            return __awaiter(this, void 0, void 0, function* () {
+                this.selectClear(select);
+                var name2Hash = yield AppChainTool.initAllAppChain();
+                for (var chainName in name2Hash) {
+                    var sitem = document.createElement("option");
+                    sitem.text = chainName;
+                    sitem.value = name2Hash[chainName];
+                    select.appendChild(sitem);
+                }
             });
         }
     }
@@ -4029,7 +4097,7 @@ var WebBrowser;
                 asset.textContent = "链名";
                 var select = document.createElement("select");
                 singlebackground.appendChild(select);
-                this.getChain(select);
+                WebBrowser.AppChainTool.getChain(select);
                 var coin = document.createElement('span');
                 singlebackground.appendChild(coin);
                 coin.style.color = "#eeeeee";
@@ -4189,26 +4257,6 @@ var WebBrowser;
                 funcSelect.onchange = () => __awaiter(this, void 0, void 0, function* () {
                     coinNum.textContent = yield WebBrowser.CoinTool.getGold(funcSelect.childNodes[funcSelect.selectedIndex].value, WebBrowser.GUITool.address, WebBrowser.GUITool.chainHash);
                 });
-            });
-        }
-        selectClear(select) {
-            if (select)
-                while (select.childNodes.length > 0) {
-                    select.removeChild(select.options[0]);
-                    select.remove(0);
-                    select.options[0] = null;
-                }
-        }
-        getChain(select) {
-            return __awaiter(this, void 0, void 0, function* () {
-                this.selectClear(select);
-                var name2Hash = yield WebBrowser.AppChainTool.initAllAppChain();
-                for (var chainName in name2Hash) {
-                    var sitem = document.createElement("option");
-                    sitem.text = chainName;
-                    sitem.value = name2Hash[chainName];
-                    select.appendChild(sitem);
-                }
             });
         }
     }
@@ -4390,7 +4438,7 @@ var WebBrowser;
             var putContract = document.createElement("button");
             upBackGround.appendChild(putContract);
             putContract.style.cssFloat = "left";
-            putContract.style.width = "50%";
+            putContract.style.width = "33%";
             putContract.textContent = "发布合约";
             putContract.onclick = () => {
                 this.putContract(downBackGround);
@@ -4399,10 +4447,18 @@ var WebBrowser;
             var useContract = document.createElement("button");
             upBackGround.appendChild(useContract);
             useContract.style.cssFloat = "left";
-            useContract.style.width = "50%";
+            useContract.style.width = "33%";
             useContract.textContent = "调用合约";
             useContract.onclick = () => {
-                this.useContract(downBackGround);
+                this.useContract(downBackGround, true);
+            };
+            var invokeContract = document.createElement("button");
+            upBackGround.appendChild(invokeContract);
+            invokeContract.style.cssFloat = "left";
+            invokeContract.style.width = "33%";
+            invokeContract.textContent = "预调用合约";
+            invokeContract.onclick = () => {
+                this.useContract(downBackGround, false);
             };
         }
         putContract(div) {
@@ -4412,6 +4468,13 @@ var WebBrowser;
             contractBackGround.style.width = "100%";
             contractBackGround.style.cssFloat = "left";
             div.appendChild(contractBackGround);
+            var asset = document.createElement('span');
+            contractBackGround.appendChild(asset);
+            asset.style.color = "#eeeeee";
+            asset.textContent = "链名";
+            var select = document.createElement("select");
+            contractBackGround.appendChild(select);
+            WebBrowser.AppChainTool.getChain(select);
             var ContractText = document.createElement('span');
             ContractText.style.color = "#eeeeee";
             ContractText.textContent = "合约";
@@ -4483,7 +4546,7 @@ var WebBrowser;
                     alert("it can be .avm file.");
                     return;
                 }
-                WebBrowser.AppChainTool.SendContract(need_storage.checked, need_canCharge.checked, description.value, email.value, auther.value, version.value, name.value, ContractAvm, WebBrowser.GUITool.chainHash, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
+                WebBrowser.AppChainTool.SendContract(need_storage.checked, need_canCharge.checked, description.value, email.value, auther.value, version.value, name.value, ContractAvm, select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
             });
             var reader = new FileReader();
             reader.onload = (e) => {
@@ -4496,13 +4559,20 @@ var WebBrowser;
                     }
             };
         }
-        useContract(div) {
+        useContract(div, use) {
             if (div.firstChild)
                 div.removeChild(div.firstChild);
             var contractBackGround = document.createElement('div');
             contractBackGround.style.width = "100%";
             contractBackGround.style.cssFloat = "left";
             div.appendChild(contractBackGround);
+            var asset = document.createElement('span');
+            contractBackGround.appendChild(asset);
+            asset.style.color = "#eeeeee";
+            asset.textContent = "链名";
+            var select = document.createElement("select");
+            contractBackGround.appendChild(select);
+            WebBrowser.AppChainTool.getChain(select);
             var fillinText = document.createElement("span");
             fillinText.style.color = "#eeeeee";
             fillinText.textContent = "手动输入合约hash";
@@ -4534,6 +4604,7 @@ var WebBrowser;
                     hashBackGround.appendChild(ContractAvm);
                 }
                 else {
+                    ContractAvm = null;
                     var fileText = document.createElement("span");
                     fileText.style.color = "#eeeeee";
                     fileText.textContent = "选择.avm文件";
@@ -4554,9 +4625,64 @@ var WebBrowser;
                     };
                 }
             };
+            var methodBackGround = document.createElement("div");
+            contractBackGround.appendChild(methodBackGround);
+            var btnAddMethod = document.createElement("button");
+            btnAddMethod.textContent = "AddMethod";
+            contractBackGround.appendChild(btnAddMethod);
+            var JsonMethod = [];
+            btnAddMethod.onclick = () => {
+                var json = {};
+                JsonMethod.push(json);
+                var params = [];
+                var singleMethodBackGround = document.createElement("div");
+                methodBackGround.appendChild(singleMethodBackGround);
+                var methodText = document.createElement("span");
+                methodText.style.color = "#eeeeee";
+                methodText.textContent = "方法名";
+                singleMethodBackGround.appendChild(methodText);
+                var methodInput = document.createElement("input");
+                singleMethodBackGround.appendChild(methodInput);
+                json["methodName"] = methodInput;
+                json["params"] = params;
+                var paramsBackGround = document.createElement("div");
+                singleMethodBackGround.appendChild(paramsBackGround);
+                var btnAddParams = document.createElement("button");
+                btnAddParams.textContent = "AddParams";
+                singleMethodBackGround.appendChild(btnAddParams);
+                btnAddParams.onclick = () => {
+                    var singleParamsBackGround = document.createElement("div");
+                    paramsBackGround.appendChild(singleParamsBackGround);
+                    var paramsText = document.createElement("span");
+                    paramsText.style.color = "#eeeeee";
+                    paramsText.textContent = "参数";
+                    singleParamsBackGround.appendChild(paramsText);
+                    var paramsInput = document.createElement("input");
+                    singleParamsBackGround.appendChild(paramsInput);
+                    params.push(paramsInput);
+                };
+                var btnSubParams = document.createElement("button");
+                btnSubParams.textContent = "SubParams";
+                singleMethodBackGround.appendChild(btnSubParams);
+                btnSubParams.onclick = () => {
+                    paramsBackGround.removeChild(paramsBackGround.lastChild);
+                    params.pop();
+                };
+            };
+            var btnSubMethod = document.createElement("button");
+            btnSubMethod.textContent = "SubMethod";
+            contractBackGround.appendChild(btnSubMethod);
+            btnSubMethod.onclick = () => {
+                methodBackGround.removeChild(methodBackGround.lastChild);
+                JsonMethod.pop();
+            };
             var btnSend = document.createElement('button');
             btnSend.textContent = "send";
             contractBackGround.appendChild(btnSend);
+            var txText = document.createElement("span");
+            txText.style.color = "#eeeeee";
+            contractBackGround.appendChild(txText);
+            var txMessage = null;
             btnSend.onclick = () => __awaiter(this, void 0, void 0, function* () {
                 if (ContractAvm) {
                     contractHash = ContractAvm.value;
@@ -4565,7 +4691,26 @@ var WebBrowser;
                     alert("hash not available!");
                     return;
                 }
-                WebBrowser.AppChainTool.SendContractMethod(WebBrowser.GUITool.chainHash, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
+                var json = [];
+                for (var i = 0; i < JsonMethod.length; i++) {
+                    var singleJson = {};
+                    var array = [];
+                    for (var j = 0; j < JsonMethod[i]["params"].length; j++) {
+                        var s = JsonMethod[i]["params"][j].value;
+                        array.push(s);
+                    }
+                    singleJson["params"] = array;
+                    singleJson["methodName"] = JsonMethod[i]["methodName"].value;
+                    json.push(singleJson);
+                }
+                if (use) {
+                    txMessage = yield WebBrowser.AppChainTool.SendContractMethod(select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey, json, contractHash);
+                }
+                else {
+                    txMessage = yield WebBrowser.AppChainTool.SendInvokeContractMethod(select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey, json, contractHash);
+                    txMessage = JSON.stringify(txMessage);
+                }
+                txText.textContent = (use ? "txid = " : "invokeMessage = ") + txMessage;
             });
         }
     }
@@ -4705,6 +4850,7 @@ var WebBrowser;
             };
         }
         addSelect() {
+            this.hideUI();
             this.initAppChain();
             this.update();
             this.selectAppChain = document.createElement("select");
