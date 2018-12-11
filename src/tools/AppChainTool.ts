@@ -182,7 +182,14 @@ namespace WebBrowser
                 extdata.script = sb.ToArray();
                 extdata.gas = Neo.Fixed8.Zero;
 
-                var tran = WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                if (chainHash == "NEO"){
+                  var utxo = await WWW.rpc_getUTXO(GUITool.address);
+                  var tran = CoinTool.makeTran(CoinTool.getassets(utxo), ThinNeo.Helper.GetAddressFromPublicKey(pubkey), this.id_GAS, Neo.Fixed8.Zero);
+                  tran.type = ThinNeo.TransactionType.InvocationTransaction;
+                  extdata.gas = Neo.Fixed8.parse((gas_consumed - 10).toString());
+                }else{
+                  var tran = WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                }
                 tran.extdata = extdata;
 
                 var msg = tran.GetMessage();
@@ -194,7 +201,11 @@ namespace WebBrowser
                 var postRawArray = [];
                 postRawArray.push(chainHash);
                 postRawArray.push(rawdata);
-                var postResult = await WWW.rpc_sendrawtransaction(postRawArray);
+                if (chainHash == "NEO"){
+                  var postResult = await WWW.rpc_postRawTransaction(data);
+                }else{
+                  var postResult1 = await WWW.rpc_sendrawtransaction(postRawArray);
+                }
                 {
                   alert("txid=" + tran.GetHash().toHexString());
               }
@@ -256,6 +267,7 @@ namespace WebBrowser
                 if (chainHash == "NEO"){
                   var utxo = await WWW.rpc_getUTXO(GUITool.address);
                   var tran = CoinTool.makeTran(CoinTool.getassets(utxo), ThinNeo.Helper.GetAddressFromPublicKey(pubkey), this.id_GAS, Neo.Fixed8.Zero);
+                  tran.type = ThinNeo.TransactionType.InvocationTransaction;
                 }else{
                   var tran = WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
                 }

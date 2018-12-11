@@ -3412,7 +3412,15 @@ var WebBrowser;
                 var extdata = new ThinNeo.InvokeTransData();
                 extdata.script = sb.ToArray();
                 extdata.gas = Neo.Fixed8.Zero;
-                var tran = WebBrowser.WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                if (chainHash == "NEO") {
+                    var utxo = yield WebBrowser.WWW.rpc_getUTXO(WebBrowser.GUITool.address);
+                    var tran = WebBrowser.CoinTool.makeTran(WebBrowser.CoinTool.getassets(utxo), ThinNeo.Helper.GetAddressFromPublicKey(pubkey), this.id_GAS, Neo.Fixed8.Zero);
+                    tran.type = ThinNeo.TransactionType.InvocationTransaction;
+                    extdata.gas = Neo.Fixed8.parse((gas_consumed - 10).toString());
+                }
+                else {
+                    var tran = WebBrowser.WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                }
                 tran.extdata = extdata;
                 var msg = tran.GetMessage();
                 var signdata = ThinNeo.Helper.Sign(msg, prikey);
@@ -3422,7 +3430,12 @@ var WebBrowser;
                 var postRawArray = [];
                 postRawArray.push(chainHash);
                 postRawArray.push(rawdata);
-                var postResult = yield WebBrowser.WWW.rpc_sendrawtransaction(postRawArray);
+                if (chainHash == "NEO") {
+                    var postResult = yield WebBrowser.WWW.rpc_postRawTransaction(data);
+                }
+                else {
+                    var postResult1 = yield WebBrowser.WWW.rpc_sendrawtransaction(postRawArray);
+                }
                 {
                     alert("txid=" + tran.GetHash().toHexString());
                 }
@@ -3482,6 +3495,7 @@ var WebBrowser;
                 if (chainHash == "NEO") {
                     var utxo = yield WebBrowser.WWW.rpc_getUTXO(WebBrowser.GUITool.address);
                     var tran = WebBrowser.CoinTool.makeTran(WebBrowser.CoinTool.getassets(utxo), ThinNeo.Helper.GetAddressFromPublicKey(pubkey), this.id_GAS, Neo.Fixed8.Zero);
+                    tran.type = ThinNeo.TransactionType.InvocationTransaction;
                 }
                 else {
                     var tran = WebBrowser.WWW.makeTran(ThinNeo.Helper.GetAddressFromPublicKey(pubkey));

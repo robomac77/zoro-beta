@@ -263,8 +263,6 @@ namespace WebBrowser
             funcSelect.onchange = async () => {
                 coinNum.textContent = await CoinTool.getGold((funcSelect.childNodes[funcSelect.selectedIndex] as HTMLOptionElement).value, GUITool.address, GUITool.chainHash);
             }
-        }       
-
-        
+        }              
     }
 }
