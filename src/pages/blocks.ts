@@ -70,9 +70,9 @@ namespace WebBrowser
         public async updateBlocks(pageUtil: PageUtil) {
             var appchain = locationtool.getParam2();
             if (appchain && appchain.length == 40){
-                var blocks: Block[] = await WWW.getappchainblocks( appchain, pageUtil.pageSize, pageUtil.currentPage ); //limit this to the 15 by 15 splitting
+                var blocks: Block[] = await WWW.getappchainblocks( appchain, pageUtil.pageSize, pageUtil.currentPage - 1 ); //limit this to the 15 by 15 splitting
             }else{
-                var blocks: Block[] = await WWW.getblocks( pageUtil.pageSize, pageUtil.currentPage ); //limit this to the 15 by 15 splitting
+                var blocks: Block[] = await WWW.getblocks( pageUtil.pageSize, pageUtil.currentPage - 1 ); //limit this to the 15 by 15 splitting
             }
             
             $("#blocks-page").children("table").children("tbody").empty();  

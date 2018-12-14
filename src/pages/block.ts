@@ -46,12 +46,12 @@
         start()
         {
             this.getLangs()
-           
-            this.queryBlock(locationtool.getParam());
-            var appchain = locationtool.getParam2();
+            var appchain = locationtool.getParam2();                       
             if (appchain && appchain.length == 40){
+                this.queryBlock(locationtool.getParam3());
                 var href = locationtool.getUrl() + "/blocks/" + appchain;
             }else{
+                this.queryBlock(locationtool.getParam());
                 var href = locationtool.getUrl() + "/blocks";
             }
             
@@ -112,7 +112,11 @@
             $("#version" ).text( block.version );
             $("#index").text(block.index);
             //`<a href="`+ Url.href_block(item.index) + `" target="_self">`
-            $("#previos-block").html(`<a href="` + Url.href_block(block.index - 1) + `" target="_self">` + (block.index - 1)+`</a>`);
+            if (block.index == 0) {
+                $("#previos-block").html(`<a href="` + Url.href_block(block.index - 1) + `" target="_self"></a>`);
+            }else{
+                $("#previos-block").html(`<a href="` + Url.href_block(block.index - 1) + `" target="_self">` + (block.index - 1)+`</a>`);
+            }            
 			$("#next-block").html(`<a href="` + Url.href_block(parseInt(block.index.toString()) + 1) + `" target="_self">` + (parseInt(block.index.toString()) + 1) + `</a>`);
             this.txs = block.tx;
             let txsLength = this.txs.length;

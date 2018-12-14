@@ -152,7 +152,12 @@ namespace WebBrowser
 		}
         static href_transaction( tx: string )
         {
-            return locationtool.getUrl() +  "/transaction/" + tx;
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                return locationtool.getUrl() +  "/transaction/" + appchain + "/" + tx;
+            }else{
+                return locationtool.getUrl() +  "/transaction/" + tx;
+            }            
 		}
 		static href_actransaction(tx: string) {
 			return locationtool.getUrl() + "/asset/"+ tx;

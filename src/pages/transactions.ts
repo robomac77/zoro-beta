@@ -43,17 +43,17 @@ namespace WebBrowser {
 
 			this.txlist = $("#txlist-page");
 			//监听交易列表选择框
-			$("#TxType").change(() => {
-				this.pageUtil.currentPage = 1;
-				this.updateTransactions(this.pageUtil, <string>$("#TxType").val());// <string>$("#TxType").val()
-			});
+			// $("#TxType").change(() => {
+			// 	this.pageUtil.currentPage = 1;
+			// 	this.updateTransactions(this.pageUtil, <string>$("#TxType").val());// <string>$("#TxType").val()
+			// });
 
 			$("#txlist-page-next").off("click").click(() => {
 				if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
 					this.pageUtil.currentPage = this.pageUtil.totalPage;
 				} else {
 					this.pageUtil.currentPage += 1;
-					this.updateTransactions(this.pageUtil, <string>$("#TxType").val());// <string>$("#TxType").val()
+					this.updateTransactions(this.pageUtil, "");// <string>$("#TxType").val()
 				}
 			});
 			$("#txlist-page-previous").off("click").click(() => {
@@ -61,7 +61,7 @@ namespace WebBrowser {
 					this.pageUtil.currentPage = 1;
 				} else {
 					this.pageUtil.currentPage -= 1;
-					this.updateTransactions(this.pageUtil, <string>$("#TxType").val()); // <string>$("#TxType").val()
+					this.updateTransactions(this.pageUtil, ""); // <string>$("#TxType").val()
 				}
 			});
 
@@ -71,9 +71,15 @@ namespace WebBrowser {
 		public async updateTransactions(pageUtil: PageUtil, txType: string) {
 			this.txlist.find("#txlist-page-transactions").empty();
 			//分页查询交易记录
-
-			let txs: Tx[] = await WWW.getrawtransactions(pageUtil.pageSize, pageUtil.currentPage, txType);
-			let txCount = await WWW.gettxcount(txType);
+			var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+				var txs: Tx[] = await WWW.getappchainrawtransactions(appchain, pageUtil.pageSize, pageUtil.currentPage);
+				var txCount = await WWW.getappchaintxcount(appchain);
+			}else{
+				var txs: Tx[] = await WWW.getrawtransactions(pageUtil.pageSize, pageUtil.currentPage, txType);
+				var txCount = await WWW.gettxcount(txType);
+			}
+			
 			pageUtil.totalCount = txCount;
 
 			let listLength = 0;
@@ -116,8 +122,14 @@ namespace WebBrowser {
 		public async start() {
 			this.getLangs()
 
-			let type = <string>$("#TxType").val();
-			let txCount = await WWW.gettxcount(type);
+			let type = "";
+			var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+				var txCount = await WWW.getappchaintxcount(appchain);
+			}else{
+				var txCount = await WWW.gettxcount(type);
+			}
+			
 			//初始化交易列表
 			this.pageUtil = new PageUtil(txCount, 15); //0
 			this.updateTransactions(this.pageUtil, type);

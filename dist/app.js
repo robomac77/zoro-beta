@@ -121,7 +121,13 @@ var WebBrowser;
             return WebBrowser.locationtool.getUrl() + '/block/' + block;
         }
         static href_transaction(tx) {
-            return WebBrowser.locationtool.getUrl() + "/transaction/" + tx;
+            var appchain = WebBrowser.locationtool.getParam2();
+            if (appchain && appchain.length == 40) {
+                return WebBrowser.locationtool.getUrl() + "/transaction/" + appchain + "/" + tx;
+            }
+            else {
+                return WebBrowser.locationtool.getUrl() + "/transaction/" + tx;
+            }
         }
         static href_actransaction(tx) {
             return WebBrowser.locationtool.getUrl() + "/asset/" + tx;
@@ -1243,12 +1249,13 @@ var WebBrowser;
         }
         start() {
             this.getLangs();
-            this.queryBlock(WebBrowser.locationtool.getParam());
             var appchain = WebBrowser.locationtool.getParam2();
             if (appchain && appchain.length == 40) {
+                this.queryBlock(WebBrowser.locationtool.getParam3());
                 var href = WebBrowser.locationtool.getUrl() + "/blocks/" + appchain;
             }
             else {
+                this.queryBlock(WebBrowser.locationtool.getParam());
                 var href = WebBrowser.locationtool.getUrl() + "/blocks";
             }
             let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("block_goallblock") + '</a>';
@@ -1308,7 +1315,12 @@ var WebBrowser;
                 $("#version").text(block.version);
                 $("#index").text(block.index);
                 //`<a href="`+ Url.href_block(item.index) + `" target="_self">`
-                $("#previos-block").html(`<a href="` + WebBrowser.Url.href_block(block.index - 1) + `" target="_self">` + (block.index - 1) + `</a>`);
+                if (block.index == 0) {
+                    $("#previos-block").html(`<a href="` + WebBrowser.Url.href_block(block.index - 1) + `" target="_self"></a>`);
+                }
+                else {
+                    $("#previos-block").html(`<a href="` + WebBrowser.Url.href_block(block.index - 1) + `" target="_self">` + (block.index - 1) + `</a>`);
+                }
                 $("#next-block").html(`<a href="` + WebBrowser.Url.href_block(parseInt(block.index.toString()) + 1) + `" target="_self">` + (parseInt(block.index.toString()) + 1) + `</a>`);
                 this.txs = block.tx;
                 let txsLength = this.txs.length;
@@ -1575,10 +1587,10 @@ var WebBrowser;
             return __awaiter(this, void 0, void 0, function* () {
                 var appchain = WebBrowser.locationtool.getParam2();
                 if (appchain && appchain.length == 40) {
-                    var blocks = yield WebBrowser.WWW.getappchainblocks(appchain, pageUtil.pageSize, pageUtil.currentPage); //limit this to the 15 by 15 splitting
+                    var blocks = yield WebBrowser.WWW.getappchainblocks(appchain, pageUtil.pageSize, pageUtil.currentPage - 1); //limit this to the 15 by 15 splitting
                 }
                 else {
-                    var blocks = yield WebBrowser.WWW.getblocks(pageUtil.pageSize, pageUtil.currentPage); //limit this to the 15 by 15 splitting
+                    var blocks = yield WebBrowser.WWW.getblocks(pageUtil.pageSize, pageUtil.currentPage - 1); //limit this to the 15 by 15 splitting
                 }
                 $("#blocks-page").children("table").children("tbody").empty();
                 if (pageUtil.totalPage - pageUtil.currentPage) {
@@ -5392,17 +5404,17 @@ var WebBrowser;
             this.app = app;
             this.txlist = $("#txlist-page");
             //监听交易列表选择框
-            $("#TxType").change(() => {
-                this.pageUtil.currentPage = 1;
-                this.updateTransactions(this.pageUtil, $("#TxType").val()); // <string>$("#TxType").val()
-            });
+            // $("#TxType").change(() => {
+            // 	this.pageUtil.currentPage = 1;
+            // 	this.updateTransactions(this.pageUtil, <string>$("#TxType").val());// <string>$("#TxType").val()
+            // });
             $("#txlist-page-next").off("click").click(() => {
                 if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
                     this.pageUtil.currentPage = this.pageUtil.totalPage;
                 }
                 else {
                     this.pageUtil.currentPage += 1;
-                    this.updateTransactions(this.pageUtil, $("#TxType").val()); // <string>$("#TxType").val()
+                    this.updateTransactions(this.pageUtil, ""); // <string>$("#TxType").val()
                 }
             });
             $("#txlist-page-previous").off("click").click(() => {
@@ -5411,7 +5423,7 @@ var WebBrowser;
                 }
                 else {
                     this.pageUtil.currentPage -= 1;
-                    this.updateTransactions(this.pageUtil, $("#TxType").val()); // <string>$("#TxType").val()
+                    this.updateTransactions(this.pageUtil, ""); // <string>$("#TxType").val()
                 }
             });
         }
@@ -5439,8 +5451,15 @@ var WebBrowser;
             return __awaiter(this, void 0, void 0, function* () {
                 this.txlist.find("#txlist-page-transactions").empty();
                 //分页查询交易记录
-                let txs = yield WebBrowser.WWW.getrawtransactions(pageUtil.pageSize, pageUtil.currentPage, txType);
-                let txCount = yield WebBrowser.WWW.gettxcount(txType);
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var txs = yield WebBrowser.WWW.getappchainrawtransactions(appchain, pageUtil.pageSize, pageUtil.currentPage);
+                    var txCount = yield WebBrowser.WWW.getappchaintxcount(appchain);
+                }
+                else {
+                    var txs = yield WebBrowser.WWW.getrawtransactions(pageUtil.pageSize, pageUtil.currentPage, txType);
+                    var txCount = yield WebBrowser.WWW.gettxcount(txType);
+                }
                 pageUtil.totalCount = txCount;
                 let listLength = 0;
                 if (txs.length < 15) {
@@ -5484,8 +5503,14 @@ var WebBrowser;
         start() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.getLangs();
-                let type = $("#TxType").val();
-                let txCount = yield WebBrowser.WWW.gettxcount(type);
+                let type = "";
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var txCount = yield WebBrowser.WWW.getappchaintxcount(appchain);
+                }
+                else {
+                    var txCount = yield WebBrowser.WWW.gettxcount(type);
+                }
                 //初始化交易列表
                 this.pageUtil = new WebBrowser.PageUtil(txCount, 15); //0
                 this.updateTransactions(this.pageUtil, type);
