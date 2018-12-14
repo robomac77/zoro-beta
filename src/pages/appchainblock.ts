@@ -18,7 +18,7 @@
                 let page_lang = [
                     "acblock_info_title",
                     "acblock_info_block",
-                   // "block_info_chainhash",
+                    "acblock_info_appchain",
                     "acblock_info_hash",
                     "acblock_info_time",
                     "acblock_info_size",
@@ -57,10 +57,10 @@
 
 			
 
-
+            this.ac = locationtool.getParam2();
             //this.div.innerHTML = pages.block;
             this.queryBlock(this.ac, locationtool.getParam3() as number);
-            let href = locationtool.getUrl() + "/asset";
+            let href = locationtool.getUrl() + "/asset/" + this.ac;
             let html = '<a href="' + href + '" target="_self">&lt&lt&lt'+this.app.langmgr.get("acblock_goallblock")+'</a>';
             $("#acgoallblock").empty();
             $("#acgoallblock").append(html);
@@ -87,8 +87,8 @@
 
         public async queryBlock(ac :string, index: number )
         {
-            let ajax: Ajax = new Ajax();
-			let blocks: Block[] = await WWW.getacblock(ac ,index);
+            //let ajax: Ajax = new Ajax();
+            let blocks: Block[] = await WWW.getacblock(ac ,index);
             let block: Block = blocks[0];
 			let time = DateTool.getTime(block.time);
 
@@ -97,7 +97,7 @@
 			//id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
 
 	
-			//$("#chainhash").text(block.chainhash);
+			$("#acchain").text(ac);
 			$("#achash").text(id);
 
             $("#acsize" ).text( block.size + ' bytes' );
@@ -108,8 +108,8 @@
 		   //	$("#acindex").html(`<a href="` + Url.href_appchainblock(this.ac, block.index) + `" target="_self">` + (block.index) + `</a>`);
 
             //`<a href="`+ Url.href_block(item.index) + `" target="_self">`
-            $("#acprevios-block").html(`<a href="` + Url.href_block(block.index - 1) + `" target="_self">` + (block.index - 1)+`</a>`);
-			$("#acnext-block").html(`<a href="` + Url.href_block(block.index + 1) + `" target="_self">` + (Number(block.index) + 1) + `</a>`);
+            $("#acprevios-block").html(`<a href="` + Url.href_appchainblock(ac, block.index - 1) + `" target="_self">` + (block.index - 1)+`</a>`);
+			$("#acnext-block").html(`<a href="` + Url.href_appchainblock(ac, parseInt(block.index.toString()) + 1) + `" target="_self">` + (parseInt(block.index.toString()) + 1) + `</a>`);
             this.txs = block.tx;
             let txsLength = this.txs.length;
             this.pageUtil = new PageUtil(this.txs.length, 10);

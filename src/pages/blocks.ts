@@ -14,7 +14,7 @@ namespace WebBrowser
         {
             if (this.langType != this.app.langmgr.type) {
                 let page_lang = [
-                    "blocks_title", "blocks_appchain", "blocks_height", "blocks_size", "blocks_time", "blocks_txcount"
+                    "blocks_title", "blocks_height", "blocks_size", "blocks_time", "blocks_txcount","blocks_hash"
                 ]
                 page_lang.forEach(
                     lang => {
@@ -34,7 +34,12 @@ namespace WebBrowser
         {
             this.getLangs()
             
-            var count = await WWW.api_getHeight();
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                var count = await WWW.api_getappchainHeight(appchain);
+            }else{
+                var count = await WWW.api_getHeight();
+            }           
             this.pageUtil = new PageUtil(count, 15);
             await this.updateBlocks(this.pageUtil);
             this.div.hidden = false;
@@ -63,7 +68,13 @@ namespace WebBrowser
             this.footer.hidden = true;
         }
         public async updateBlocks(pageUtil: PageUtil) {
-            let blocks: Block[] = await WWW.getblocks( pageUtil.pageSize, pageUtil.currentPage ); //limit this to the 15 by 15 splitting
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                var blocks: Block[] = await WWW.getappchainblocks( appchain, pageUtil.pageSize, pageUtil.currentPage ); //limit this to the 15 by 15 splitting
+            }else{
+                var blocks: Block[] = await WWW.getblocks( pageUtil.pageSize, pageUtil.currentPage ); //limit this to the 15 by 15 splitting
+            }
+            
             $("#blocks-page").children("table").children("tbody").empty();  
             if (pageUtil.totalPage - pageUtil.currentPage) {
                 $("#blocks-page-next").removeClass('disabled');
@@ -96,7 +107,7 @@ namespace WebBrowser
 
                 let html = `
                 <tr>
-                <td><a href="`+ Url.href_asset(id) + `" target="_self">` + id + `</a></td>
+                <td><a href="`+ Url.href_block(item.index) + `" target="_self">` + id + `</a></td>
                 <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + Url.href_block(item.index) + `" target="_self">` + item.index + `</a></td>
                 <td>` + txcounts + `</td>
                 </tr>`;

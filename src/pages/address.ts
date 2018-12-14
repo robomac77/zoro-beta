@@ -57,8 +57,8 @@ namespace WebBrowser {
 			var addrMsg = await WWW.api_getaddrMsg(address);
 			var utxos = await WWW.api_getUTXOCount(address);
 			var balances = await WWW.api_getbalances(address);
-			var nep5ofAddress = await WWW.api_getallnep5assetofaddress(address);
-
+			// var nep5ofAddress = await WWW.api_getallnep5assetofaddress(address);
+			var nep5ofAddress = null;
 			if (addrMsg) {
 				this.loadAddressInfo(address, addrMsg);
 				this.pageUtil = new PageUtil(addrMsg[0].txcount, 10);

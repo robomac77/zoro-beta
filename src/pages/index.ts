@@ -20,6 +20,9 @@ namespace WebBrowser
         cnbtn = document.getElementById("cn-btn");
         enbtn = document.getElementById("en-btn");
 
+        private pageUtil: PageUtil;
+        private nep5s: nep5Asset[];
+
         getLangs()
         {
             if (this.langType != this.app.langmgr.type) {
@@ -30,7 +33,8 @@ namespace WebBrowser
                     "i_walletcreate", "i_alladdress",
                     "i_last10", "i_appchain", "i_last10_height", "i_last10_size", "i_last10_ctm", "i_last10_txcount","i_viewblocks",
                     "i_last10t", "i_last10t_txid", "i_last10t_type", "i_last10t_height", "i_last10t_size", "i_viewtxlist",
-                    
+                    "i_assets_title","i_nep5assets_val","i_nep5assets_asset",
+                    "i_nep5assets_ava","i_nep5assets_pre","i_nep5assets_id"
                 ]
                 page_lang.forEach(
                     lang => {
@@ -154,9 +158,28 @@ namespace WebBrowser
             $( "#index-page" ).find( "#blocks" ).children("tbody" ).append( html_blocks );
             $("#index-page").find("#transactions").children("tbody" ).append(html_txs);
 
-
+            this.nep5s = await WWW.getallnep5asset();
+            this.loadNep5View(this.nep5s);
 
             this.footer.hidden = false;
         }
+
+        
+        public loadNep5View(nep5s: nep5Asset[]) {
+			$("#i_nep5s").empty();
+			nep5s.forEach((nep5s: nep5Asset) => {
+				let href = Url.href_nep5info(nep5s.assetid);
+				let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
+				let htmlnep5 = `
+					<tr>
+					<td>` + nep5s.symbol + `</td>
+                    <td> <a href="`+ href + `" target="_self">` +  assetId + `</a></td>
+                    <td>` + nep5s.name + `</td>
+                    <td>` + nep5s.totalsupply + `</td>                    
+                    <td>` + nep5s.decimals + `</td>
+                    </tr>`;
+				$("#i_nep5s").append(htmlnep5);
+			});
+		}
     }
 }

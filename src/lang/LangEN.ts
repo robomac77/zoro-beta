@@ -50,8 +50,16 @@ namespace WebBrowser
             i_last10t_size: "Size",
             i_viewtxlist: "View all >>>>",
 
+            i_assets_title:"Asset",
+            i_nep5assets_asset: "Asset ID",
+			i_nep5assets_ava: "Name",
+			i_nep5assets_pre: "Total Supply",
+			i_nep5assets_val: "Symbol",
+			i_nep5assets_id: "Decimals", 
+
             // blocks
-			blocks_title: "Blocks",
+            blocks_title: "Blocks",
+            blocks_hash: "Hash",
 			blocks_appchain: "Hash",
             blocks_height: "Height",
             blocks_size: "Size",
@@ -75,6 +83,7 @@ namespace WebBrowser
 
             // app chain block
             acblock_info_title: "App Chain Block Information",
+            acblock_info_appchain: "AppChain Hash",
             acblock_info_block: "Block",
 			acblock_info_hash: "Hash",
 			//block_info_chainhash: "App Chain Hash",

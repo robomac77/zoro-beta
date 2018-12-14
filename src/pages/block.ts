@@ -46,10 +46,15 @@
         start()
         {
             this.getLangs()
-
-            //this.div.innerHTML = pages.block;
-            this.queryBlock(locationtool.getParam() as number);
-            let href = locationtool.getUrl() + "/blocks";
+           
+            this.queryBlock(locationtool.getParam());
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                var href = locationtool.getUrl() + "/blocks/" + appchain;
+            }else{
+                var href = locationtool.getUrl() + "/blocks";
+            }
+            
             let html = '<a href="' + href + '" target="_self">&lt&lt&lt'+this.app.langmgr.get("block_goallblock")+'</a>';
             $("#goallblock").empty();
             $("#goallblock").append(html);
@@ -74,10 +79,24 @@
             this.footer.hidden = false;
         }
 
-        public async queryBlock( index: number )
+        public async queryBlock( index )
         {
             let ajax: Ajax = new Ajax();
-			let blocks: Block[] = await WWW.getblock(index);
+            let blocks: Block[] = null;
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                if (index.indexOf("0x") < 0){
+                    blocks = await WWW.getacblock(appchain, index);
+                }else{
+                    blocks = await WWW.getacblock(appchain, index);
+                }	
+            }else{
+                if (index.indexOf("0x") < 0){
+                    blocks = await WWW.getblock(index);
+                }else{
+                    blocks = await WWW.getblock(index);
+                }	
+            }           		
             let block: Block = blocks[0];
 			let time = DateTool.getTime(block.time);
 
@@ -94,7 +113,7 @@
             $("#index").text(block.index);
             //`<a href="`+ Url.href_block(item.index) + `" target="_self">`
             $("#previos-block").html(`<a href="` + Url.href_block(block.index - 1) + `" target="_self">` + (block.index - 1)+`</a>`);
-			$("#next-block").html(`<a href="` + Url.href_block(block.index + 1) + `" target="_self">` + (Number(block.index) + 1) + `</a>`);
+			$("#next-block").html(`<a href="` + Url.href_block(parseInt(block.index.toString()) + 1) + `" target="_self">` + (parseInt(block.index.toString()) + 1) + `</a>`);
             this.txs = block.tx;
             let txsLength = this.txs.length;
             this.pageUtil = new PageUtil(this.txs.length, 10);

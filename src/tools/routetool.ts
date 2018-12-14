@@ -124,7 +124,6 @@ namespace WebBrowser
                 default:
                     return this.app.notfound;
             }
-            
         }
 
         closePages()

@@ -27,8 +27,8 @@
 					"assets_id",
 					"assets_type",
 					"assets_ava",
-					"assets_pre",
-					"assets_val",
+					//"assets_pre",
+					//"assets_val",
 					"nep5assets_asset",
 					"nep5assets_ava",
 					"nep5assets_pre",
@@ -220,7 +220,6 @@
                     <td> <a href="`+ href + `" target="_self">` + id + `</a></td>
                     <td>` + chainowner + `</td>
                     <td>` + time + `</td>
-                    <td>` + appchain.version + `</td>
          
                     </tr>`;
 				$("#assets").append(html);
@@ -233,11 +232,11 @@
 				let href = Url.href_nep5info(nep5s.assetid);
 				let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
 				let htmlnep5 = `
-                    <tr>
+					<tr>
+					<td>` + nep5s.symbol + `</td>
                     <td> <a href="`+ href + `" target="_self">` +  assetId + `</a></td>
                     <td>` + nep5s.name + `</td>
-                    <td>` + nep5s.totalsupply + `</td>
-                    <td>` + nep5s.symbol + `</td>
+                    <td>` + nep5s.totalsupply + `</td>                    
                     <td>` + nep5s.decimals + `</td>
                     </tr>`;
 				$("#nep5s").append(htmlnep5);

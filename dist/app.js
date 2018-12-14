@@ -108,6 +108,10 @@ var WebBrowser;
             return WebBrowser.locationtool.getUrl() + '/nnsevent';
         }
         static href_block(block) {
+            var appchain = WebBrowser.locationtool.getParam2();
+            if (appchain && appchain.length == 40) {
+                return WebBrowser.locationtool.getUrl() + "/block/" + appchain + "/" + block;
+            }
             return WebBrowser.locationtool.getUrl() + "/block/" + block;
         }
         static href_gui() {
@@ -470,12 +474,18 @@ var WebBrowser;
             window.location.href = WebBrowser.locationtool.getUrl() + page;
         }
         jump() {
+            let appchain = WebBrowser.locationtool.getParam2();
             let search = this.searchText.value;
             search = search.trim();
             if (search) {
                 if (search.length == 34) {
                     if (WebBrowser.Neotool.verifyPublicKey(search)) {
-                        window.open(WebBrowser.locationtool.getUrl() + '/address/' + search);
+                        if (appchain && appchain.length == 40) {
+                            window.open(WebBrowser.locationtool.getUrl() + '/address/' + appchain + "/" + search);
+                        }
+                        else {
+                            window.open(WebBrowser.locationtool.getUrl() + '/address/' + search);
+                        }
                     }
                     else {
                         $("#errContent").text(this.app.langmgr.get('nav_errContent'));
@@ -487,19 +497,39 @@ var WebBrowser;
                 else {
                     search = search.replace('0x', '');
                     if (search.length == 64) {
-                        window.open(WebBrowser.locationtool.getUrl() + '/transaction/' + search);
+                        if (appchain) {
+                            window.open(WebBrowser.locationtool.getUrl() + '/transaction/' + appchain + "/" + search);
+                        }
+                        else {
+                            window.open(WebBrowser.locationtool.getUrl() + '/transaction/' + search);
+                        }
                     }
                     else if (search.length == 40) {
-                        window.open(WebBrowser.locationtool.getUrl() + '/nep5/' + search);
+                        if (appchain) {
+                            window.open(WebBrowser.locationtool.getUrl() + '/nep5/' + appchain + "/" + search);
+                        }
+                        else {
+                            window.open(WebBrowser.locationtool.getUrl() + '/nep5/' + search);
+                        }
                     }
                     else if (!isNaN(Number(search))) {
-                        window.open(WebBrowser.locationtool.getUrl() + '/block/' + search);
+                        if (appchain) {
+                            window.open(WebBrowser.locationtool.getUrl() + '/block/' + appchain + "/" + search);
+                        }
+                        else {
+                            window.open(WebBrowser.locationtool.getUrl() + '/block/' + search);
+                        }
                     }
                     else if (search.length > 64) {
                         let length = this.searchList.children.length;
                         if (length) {
                             let data = this.searchList.children[this.currentLine - 1].getAttribute("data");
-                            window.open(WebBrowser.locationtool.getUrl() + '/asset/' + data);
+                            if (appchain) {
+                                window.open(WebBrowser.locationtool.getUrl() + '/asset/' + appchain + "/" + search);
+                            }
+                            else {
+                                window.open(WebBrowser.locationtool.getUrl() + '/asset/' + data);
+                            }
                             $("#seach_list").empty();
                         }
                     }
@@ -1213,9 +1243,14 @@ var WebBrowser;
         }
         start() {
             this.getLangs();
-            //this.div.innerHTML = pages.block;
             this.queryBlock(WebBrowser.locationtool.getParam());
-            let href = WebBrowser.locationtool.getUrl() + "/blocks";
+            var appchain = WebBrowser.locationtool.getParam2();
+            if (appchain && appchain.length == 40) {
+                var href = WebBrowser.locationtool.getUrl() + "/blocks/" + appchain;
+            }
+            else {
+                var href = WebBrowser.locationtool.getUrl() + "/blocks";
+            }
             let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("block_goallblock") + '</a>';
             $("#goallblock").empty();
             $("#goallblock").append(html);
@@ -1243,7 +1278,24 @@ var WebBrowser;
         queryBlock(index) {
             return __awaiter(this, void 0, void 0, function* () {
                 let ajax = new WebBrowser.Ajax();
-                let blocks = yield WebBrowser.WWW.getblock(index);
+                let blocks = null;
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    if (index.indexOf("0x") < 0) {
+                        blocks = yield WebBrowser.WWW.getacblock(appchain, index);
+                    }
+                    else {
+                        blocks = yield WebBrowser.WWW.getacblock(appchain, index);
+                    }
+                }
+                else {
+                    if (index.indexOf("0x") < 0) {
+                        blocks = yield WebBrowser.WWW.getblock(index);
+                    }
+                    else {
+                        blocks = yield WebBrowser.WWW.getblock(index);
+                    }
+                }
                 let block = blocks[0];
                 let time = WebBrowser.DateTool.getTime(block.time);
                 var id = block.hash;
@@ -1257,7 +1309,7 @@ var WebBrowser;
                 $("#index").text(block.index);
                 //`<a href="`+ Url.href_block(item.index) + `" target="_self">`
                 $("#previos-block").html(`<a href="` + WebBrowser.Url.href_block(block.index - 1) + `" target="_self">` + (block.index - 1) + `</a>`);
-                $("#next-block").html(`<a href="` + WebBrowser.Url.href_block(block.index + 1) + `" target="_self">` + (Number(block.index) + 1) + `</a>`);
+                $("#next-block").html(`<a href="` + WebBrowser.Url.href_block(parseInt(block.index.toString()) + 1) + `" target="_self">` + (parseInt(block.index.toString()) + 1) + `</a>`);
                 this.txs = block.tx;
                 let txsLength = this.txs.length;
                 this.pageUtil = new WebBrowser.PageUtil(this.txs.length, 10);
@@ -1332,7 +1384,7 @@ var WebBrowser;
                 let page_lang = [
                     "acblock_info_title",
                     "acblock_info_block",
-                    // "block_info_chainhash",
+                    "acblock_info_appchain",
                     "acblock_info_hash",
                     "acblock_info_time",
                     "acblock_info_size",
@@ -1352,9 +1404,10 @@ var WebBrowser;
         }
         start() {
             this.getLangs();
+            this.ac = WebBrowser.locationtool.getParam2();
             //this.div.innerHTML = pages.block;
             this.queryBlock(this.ac, WebBrowser.locationtool.getParam3());
-            let href = WebBrowser.locationtool.getUrl() + "/asset";
+            let href = WebBrowser.locationtool.getUrl() + "/asset/" + this.ac;
             let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("acblock_goallblock") + '</a>';
             $("#acgoallblock").empty();
             $("#acgoallblock").append(html);
@@ -1381,14 +1434,14 @@ var WebBrowser;
         }
         queryBlock(ac, index) {
             return __awaiter(this, void 0, void 0, function* () {
-                let ajax = new WebBrowser.Ajax();
+                //let ajax: Ajax = new Ajax();
                 let blocks = yield WebBrowser.WWW.getacblock(ac, index);
                 let block = blocks[0];
                 let time = WebBrowser.DateTool.getTime(block.time);
                 var id = block.hash;
                 id = id.replace('0x', '');
                 //id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
-                //$("#chainhash").text(block.chainhash);
+                $("#acchain").text(ac);
                 $("#achash").text(id);
                 $("#acsize").text(block.size + ' bytes');
                 $("#actime").text(time);
@@ -1397,8 +1450,8 @@ var WebBrowser;
                 //$("#acindex").html(`<a href="` + Url.href_appchainblock(this.ac, block.index) + `" target="_self">` + (block.index) + `</a>`);
                 //	$("#acindex").html(`<a href="` + Url.href_appchainblock(this.ac, block.index) + `" target="_self">` + (block.index) + `</a>`);
                 //`<a href="`+ Url.href_block(item.index) + `" target="_self">`
-                $("#acprevios-block").html(`<a href="` + WebBrowser.Url.href_block(block.index - 1) + `" target="_self">` + (block.index - 1) + `</a>`);
-                $("#acnext-block").html(`<a href="` + WebBrowser.Url.href_block(block.index + 1) + `" target="_self">` + (Number(block.index) + 1) + `</a>`);
+                $("#acprevios-block").html(`<a href="` + WebBrowser.Url.href_appchainblock(ac, block.index - 1) + `" target="_self">` + (block.index - 1) + `</a>`);
+                $("#acnext-block").html(`<a href="` + WebBrowser.Url.href_appchainblock(ac, parseInt(block.index.toString()) + 1) + `" target="_self">` + (parseInt(block.index.toString()) + 1) + `</a>`);
                 this.txs = block.tx;
                 let txsLength = this.txs.length;
                 this.pageUtil = new WebBrowser.PageUtil(this.txs.length, 10);
@@ -1472,7 +1525,7 @@ var WebBrowser;
         getLangs() {
             if (this.langType != this.app.langmgr.type) {
                 let page_lang = [
-                    "blocks_title", "blocks_appchain", "blocks_height", "blocks_size", "blocks_time", "blocks_txcount"
+                    "blocks_title", "blocks_height", "blocks_size", "blocks_time", "blocks_txcount", "blocks_hash"
                 ];
                 page_lang.forEach(lang => {
                     document.getElementById(lang).textContent = this.app.langmgr.get(lang);
@@ -1483,7 +1536,13 @@ var WebBrowser;
         start() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.getLangs();
-                var count = yield WebBrowser.WWW.api_getHeight();
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var count = yield WebBrowser.WWW.api_getappchainHeight(appchain);
+                }
+                else {
+                    var count = yield WebBrowser.WWW.api_getHeight();
+                }
                 this.pageUtil = new WebBrowser.PageUtil(count, 15);
                 yield this.updateBlocks(this.pageUtil);
                 this.div.hidden = false;
@@ -1514,7 +1573,13 @@ var WebBrowser;
         }
         updateBlocks(pageUtil) {
             return __awaiter(this, void 0, void 0, function* () {
-                let blocks = yield WebBrowser.WWW.getblocks(pageUtil.pageSize, pageUtil.currentPage); //limit this to the 15 by 15 splitting
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var blocks = yield WebBrowser.WWW.getappchainblocks(appchain, pageUtil.pageSize, pageUtil.currentPage); //limit this to the 15 by 15 splitting
+                }
+                else {
+                    var blocks = yield WebBrowser.WWW.getblocks(pageUtil.pageSize, pageUtil.currentPage); //limit this to the 15 by 15 splitting
+                }
                 $("#blocks-page").children("table").children("tbody").empty();
                 if (pageUtil.totalPage - pageUtil.currentPage) {
                     $("#blocks-page-next").removeClass('disabled');
@@ -1546,7 +1611,7 @@ var WebBrowser;
                     id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
                     let html = `
                 <tr>
-                <td><a href="` + WebBrowser.Url.href_asset(id) + `" target="_self">` + id + `</a></td>
+                <td><a href="` + WebBrowser.Url.href_block(item.index) + `" target="_self">` + id + `</a></td>
                 <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + WebBrowser.Url.href_block(item.index) + `" target="_self">` + item.index + `</a></td>
                 <td>` + txcounts + `</td>
                 </tr>`;
@@ -1610,6 +1675,16 @@ var WebBrowser;
                 return height;
             });
         }
+        static api_getappchainHeight(ac) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainblockcount", ac);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                var height = parseInt(r[0]["indexx"]) - 1;
+                return height;
+            });
+        }
         //获得交易总数
         static gettxcount(type) {
             return __awaiter(this, void 0, void 0, function* () {
@@ -1633,6 +1708,15 @@ var WebBrowser;
         static getaddrcount() {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getaddrcount");
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r[0]['addrcount'];
+            });
+        }
+        static getappchainaddrcount(ac) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getaddrcount", ac);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -1665,6 +1749,24 @@ var WebBrowser;
         static getblock(index) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getblock", index);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
+        static getblockFromHash(hash) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getblockfromhash", hash);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
+        static getappchainblockFromHash(ac, hash) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainblockfromhash", ac, hash);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -1708,6 +1810,15 @@ var WebBrowser;
                 return r;
             });
         }
+        static getappchainaddrs(ac, size, page) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainaddrs", ac, size, page);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
         static getrawtransaction(txid) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getrawtransaction", txid);
@@ -1717,7 +1828,7 @@ var WebBrowser;
                 return r[0];
             });
         }
-        static getrawactransaction(ac, txid) {
+        static getappchainrawtransaction(ac, txid) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getrawactransaction", ac, txid);
                 var result = yield fetch(str, { "method": "get" });
@@ -1729,6 +1840,15 @@ var WebBrowser;
         static getallnep5asset() {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getallnep5asset");
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
+        static getappchainallnep5asset(ac) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainallnep5asset", ac);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -1791,7 +1911,16 @@ var WebBrowser;
         }
         static api_getUTXO(address, size, page) {
             return __awaiter(this, void 0, void 0, function* () {
-                var str = WWW.makeRpcUrl("getutxo", address, 1, size, page);
+                var str = WWW.makeRpcUrl("getutxo", address, size, page);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
+        static api_getappchainUTXO(ac, address, size, page) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainutxo", ac, address, size, page);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -1801,6 +1930,15 @@ var WebBrowser;
         static api_getbalances(address) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getbalance", address);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
+        static api_getappchainbalances(ac, address) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainbalance", ac, address);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -1825,6 +1963,15 @@ var WebBrowser;
                 return r;
             });
         }
+        static api_getappchainnep5(ac, nep5) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainnep5asset", ac, nep5);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
         static api_getallnep5assetofaddress(nep5) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getallnep5assetofaddress", nep5, 1);
@@ -1836,7 +1983,20 @@ var WebBrowser;
         }
         static getaddrsesstxs(addr, size, page) {
             return __awaiter(this, void 0, void 0, function* () {
-                var str = WWW.makeUrl("getaddresstxs", WWW.apiaggr, addr, size, page);
+                var str = WWW.makeRpcUrl("getaddresstxs", addr, size, page);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                if (r) {
+                    r = json["result"][0];
+                    return r["list"];
+                }
+                return r;
+            });
+        }
+        static getappchainaddrsesstxs(ac, addr, size, page) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainaddresstxs", ac, addr, size, page);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -1856,10 +2016,28 @@ var WebBrowser;
                 return r;
             });
         }
+        static api_getappchainaddrMsg(ac, addr) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainaddr", ac, addr);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
         //资产排行
         static getrankbyasset(nep5id, size, page) {
             return __awaiter(this, void 0, void 0, function* () {
-                var str = WWW.makeUrl("getrankbyasset", WWW.apiaggr, nep5id, size, page);
+                var str = WWW.makeRpcUrl("getrankbyasset", nep5id, size, page);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
+        static getappchainrankbyasset(ac, nep5id, size, page) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainrankbyasset", ac, nep5id, size, page);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -1869,7 +2047,16 @@ var WebBrowser;
         //资产排行总数
         static api_getrankbyassetcount(id) {
             return __awaiter(this, void 0, void 0, function* () {
-                var str = WWW.makeUrl("getrankbyassetcount", WWW.apiaggr, id);
+                var str = WWW.makeRpcUrl("getrankbyassetcount", id);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
+        static api_getappchainrankbyassetcount(ac, id) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainrankbyassetcount", ac, id);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -2368,7 +2555,8 @@ var WebBrowser;
                 var addrMsg = yield WebBrowser.WWW.api_getaddrMsg(address);
                 var utxos = yield WebBrowser.WWW.api_getUTXOCount(address);
                 var balances = yield WebBrowser.WWW.api_getbalances(address);
-                var nep5ofAddress = yield WebBrowser.WWW.api_getallnep5assetofaddress(address);
+                // var nep5ofAddress = await WWW.api_getallnep5assetofaddress(address);
+                var nep5ofAddress = null;
                 if (addrMsg) {
                     this.loadAddressInfo(address, addrMsg);
                     this.pageUtil = new WebBrowser.PageUtil(addrMsg[0].txcount, 10);
@@ -2791,7 +2979,7 @@ var WebBrowser;
             this.actxcount = 0;
             this.acblockcount = 0;
             this.acaddcount = 0;
-            this.ac = WebBrowser.locationtool.getParam();
+            this.ac = null;
             this.app = app;
         }
         getLangs() {
@@ -2816,6 +3004,8 @@ var WebBrowser;
                     "asset_from",
                     "asset_to",
                     "asset_height",
+                    "asset_blockheight",
+                    "asset_tx"
                 ];
                 page_lang.forEach(lang => {
                     document.getElementById(lang).textContent = this.app.langmgr.get(lang);
@@ -2829,6 +3019,7 @@ var WebBrowser;
                 this.allacaddress.href = WebBrowser.Url.href_addresses(); // document.getElementById("i_acalladdress") as HTMLAnchorElement;  // 
                 this.allacblock.href = WebBrowser.Url.href_assetblock(); // addeventlistener // this.acblockssection
                 this.allactxlist.href = WebBrowser.Url.href_assettran(); // location.getUrl()   //  window.location.href()          
+                this.ac = WebBrowser.locationtool.getParam();
                 var ap = this.ac;
                 ap = WebBrowser.locationtool.getParam();
                 ap = ap.replace('0x', '');
@@ -3125,8 +3316,8 @@ var WebBrowser;
                     "assets_id",
                     "assets_type",
                     "assets_ava",
-                    "assets_pre",
-                    "assets_val",
+                    //"assets_pre",
+                    //"assets_val",
                     "nep5assets_asset",
                     "nep5assets_ava",
                     "nep5assets_pre",
@@ -3243,7 +3434,6 @@ var WebBrowser;
                     <td> <a href="` + href + `" target="_self">` + id + `</a></td>
                     <td>` + chainowner + `</td>
                     <td>` + time + `</td>
-                    <td>` + appchain.version + `</td>
          
                     </tr>`;
                 $("#assets").append(html);
@@ -3255,11 +3445,11 @@ var WebBrowser;
                 let href = WebBrowser.Url.href_nep5info(nep5s.assetid);
                 let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
                 let htmlnep5 = `
-                    <tr>
+					<tr>
+					<td>` + nep5s.symbol + `</td>
                     <td> <a href="` + href + `" target="_self">` + assetId + `</a></td>
                     <td>` + nep5s.name + `</td>
-                    <td>` + nep5s.totalsupply + `</td>
-                    <td>` + nep5s.symbol + `</td>
+                    <td>` + nep5s.totalsupply + `</td>                    
                     <td>` + nep5s.decimals + `</td>
                     </tr>`;
                 $("#nep5s").append(htmlnep5);
@@ -5084,6 +5274,8 @@ var WebBrowser;
                     "i_walletcreate", "i_alladdress",
                     "i_last10", "i_appchain", "i_last10_height", "i_last10_size", "i_last10_ctm", "i_last10_txcount", "i_viewblocks",
                     "i_last10t", "i_last10t_txid", "i_last10t_type", "i_last10t_height", "i_last10t_size", "i_viewtxlist",
+                    "i_assets_title", "i_nep5assets_val", "i_nep5assets_asset",
+                    "i_nep5assets_ava", "i_nep5assets_pre", "i_nep5assets_id"
                 ];
                 page_lang.forEach(lang => {
                     document.getElementById(lang).textContent = this.app.langmgr.get(lang);
@@ -5160,7 +5352,25 @@ var WebBrowser;
                 });
                 $("#index-page").find("#blocks").children("tbody").append(html_blocks);
                 $("#index-page").find("#transactions").children("tbody").append(html_txs);
+                this.nep5s = yield WebBrowser.WWW.getallnep5asset();
+                this.loadNep5View(this.nep5s);
                 this.footer.hidden = false;
+            });
+        }
+        loadNep5View(nep5s) {
+            $("#i_nep5s").empty();
+            nep5s.forEach((nep5s) => {
+                let href = WebBrowser.Url.href_nep5info(nep5s.assetid);
+                let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
+                let htmlnep5 = `
+					<tr>
+					<td>` + nep5s.symbol + `</td>
+                    <td> <a href="` + href + `" target="_self">` + assetId + `</a></td>
+                    <td>` + nep5s.name + `</td>
+                    <td>` + nep5s.totalsupply + `</td>                    
+                    <td>` + nep5s.decimals + `</td>
+                    </tr>`;
+                $("#i_nep5s").append(htmlnep5);
             });
         }
     }
@@ -5612,8 +5822,8 @@ var WebBrowser;
         }
         updateTxInfo(ac, txid) {
             return __awaiter(this, void 0, void 0, function* () {
-                let t = yield WebBrowser.WWW.getrawactransaction(ac, txid);
-                let txInfo = yield WebBrowser.WWW.getrawactransaction(ac, txid);
+                let t = yield WebBrowser.WWW.getappchainrawtransaction(ac, txid);
+                let txInfo = yield WebBrowser.WWW.getappchainrawtransaction(ac, txid);
                 $("#actype").text(txInfo.type.replace("Transaction", "")); //txInfo.type.replace("Transaction", "")
                 $("#actxid").text(txInfo.txid); //txInfo.txid
                 $("#acblockindex").empty();
@@ -5632,7 +5842,7 @@ var WebBrowser;
                 for (let index = 0; index < txInfo.vin.length; index++) {
                     const vin = txInfo.vin[index];
                     try {
-                        let txInfo = yield WebBrowser.WWW.getrawactransaction(ac, vin.txid);
+                        let txInfo = yield WebBrowser.WWW.getappchainrawtransaction(ac, vin.txid);
                         let vout = txInfo.vout[vin.vout];
                         let address = vout.address;
                         let value = vout.value;
@@ -6491,8 +6701,15 @@ var WebBrowser;
                 i_last10t_height: "高度",
                 i_last10t_size: "大小",
                 i_viewtxlist: "查看所有 >>>>",
+                i_assets_title: "资产",
+                i_nep5assets_asset: "资产ID",
+                i_nep5assets_ava: "所属",
+                i_nep5assets_pre: "总量",
+                i_nep5assets_val: "应用链资产",
+                i_nep5assets_id: "小数点后位数",
                 // blocks
                 blocks_title: "区块列表",
+                blocks_hash: "块哈希",
                 blocks_height: "区块高度",
                 blocks_size: "大小",
                 blocks_time: "时间",
@@ -6514,6 +6731,7 @@ var WebBrowser;
                 block_goallblock: "返回",
                 // app chain block
                 acblock_info_title: "应用链区块列表",
+                acblock_info_appchain: "应用链哈希",
                 acblock_info_block: "区块",
                 acblock_info_hash: "哈希",
                 //block_info_chainhash: "App Chain Hash",
@@ -6595,17 +6813,18 @@ var WebBrowser;
                 assets_id: "应用链哈希",
                 assets_type: "创建者",
                 assets_ava: "生成时间",
+                assets_pre: "应用链版本",
                 //nep5assets
                 nep5assets_asset: "资产ID",
-                nep5assets_ava: "名称",
+                nep5assets_ava: "所属",
                 nep5assets_pre: "总量",
-                nep5assets_val: "标",
+                nep5assets_val: "应用链资产",
                 nep5assets_id: "小数点后位数",
                 //nep5assetinfo
                 nep5assetid: "资产ID",
-                nep5name: "名称",
+                nep5name: "所属",
                 nep5assettotalsupply: "总量",
-                nep5symbol: "标",
+                nep5symbol: "应用链资产",
                 nep5decimals: "小数点后位数",
                 // appchain
                 asset_title: "应用链信息",
@@ -6680,8 +6899,15 @@ var WebBrowser;
                 i_last10t_height: "Height",
                 i_last10t_size: "Size",
                 i_viewtxlist: "View all >>>>",
+                i_assets_title: "Asset",
+                i_nep5assets_asset: "Asset ID",
+                i_nep5assets_ava: "Name",
+                i_nep5assets_pre: "Total Supply",
+                i_nep5assets_val: "Symbol",
+                i_nep5assets_id: "Decimals",
                 // blocks
                 blocks_title: "Blocks",
+                blocks_hash: "Hash",
                 blocks_appchain: "Hash",
                 blocks_height: "Height",
                 blocks_size: "Size",
@@ -6704,6 +6930,7 @@ var WebBrowser;
                 block_goallblock: "Back to all blocks",
                 // app chain block
                 acblock_info_title: "App Chain Block Information",
+                acblock_info_appchain: "AppChain Hash",
                 acblock_info_block: "Block",
                 acblock_info_hash: "Hash",
                 //block_info_chainhash: "App Chain Hash",

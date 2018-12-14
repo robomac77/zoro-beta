@@ -134,13 +134,18 @@ namespace WebBrowser
             window.location.href =locationtool.getUrl() + page;
         }
         jump()
-        {
+        {           
+            let appchain = locationtool.getParam2();
             let search: string = this.searchText.value;
             search = search.trim();
             if (search) {
                 if (search.length == 34) {
-                    if (Neotool.verifyPublicKey(search)) {
-                        window.open(locationtool.getUrl() + '/address/' + search);
+                    if (Neotool.verifyPublicKey(search)) {                        
+                        if (appchain && appchain.length == 40){
+                            window.open(locationtool.getUrl() + '/address/' + appchain + "/" +search);
+                        }else{
+                            window.open(locationtool.getUrl() + '/address/' + search);
+                        }                        
                     } else {
                         $("#errContent").text(this.app.langmgr.get('nav_errContent'));
                         $('#errMsg').modal('show');
@@ -150,19 +155,35 @@ namespace WebBrowser
                 } else {
                     search = search.replace('0x', '');
                     if (search.length == 64) {
-                        window.open(locationtool.getUrl() + '/transaction/' + search);
+                        if (appchain){
+                            window.open(locationtool.getUrl() + '/transaction/' + appchain + "/" +search);
+                        }else{
+                            window.open(locationtool.getUrl() + '/transaction/' + search);
+                        }
                     }
                     else if (search.length == 40) {
-                        window.open(locationtool.getUrl() + '/nep5/' + search);
+                        if (appchain){
+                            window.open(locationtool.getUrl() + '/nep5/' + appchain + "/" +search);
+                        }else{
+                            window.open(locationtool.getUrl() + '/nep5/' + search);
+                        }
                     }
                     else if (!isNaN(Number(search))) {
-                        window.open(locationtool.getUrl() + '/block/' + search);
+                        if (appchain){
+                            window.open(locationtool.getUrl() + '/block/' + appchain + "/" +search);
+                        }else{
+                            window.open(locationtool.getUrl() + '/block/' + search);
+                        }
                     }
                     else if (search.length > 64) {
                         let length = this.searchList.children.length;
                         if (length) {
                             let data = this.searchList.children[this.currentLine-1].getAttribute("data");
-                            window.open(locationtool.getUrl() + '/asset/' + data);
+                            if (appchain){
+                                window.open(locationtool.getUrl() + '/asset/' + appchain + "/" +search);
+                            }else{
+                                window.open(locationtool.getUrl() + '/asset/' + data);
+                            }
                             $("#seach_list").empty();
                         }
                     } else {

@@ -30,6 +30,8 @@
 					"asset_from",
 					"asset_to",
 					"asset_height",
+					"asset_blockheight",
+					"asset_tx"
 				]
 				page_lang.forEach(
 					lang => {
@@ -69,7 +71,7 @@
 		public acaddcount: number = 0;
 		public txx: Tx[];
 
-		public ac :string  = locationtool.getParam()
+		public ac :string  = null;
 		async start() {
 
 			this.getLangs()
@@ -81,7 +83,7 @@
 			this.allactxlist.href = Url.href_assettran(); // location.getUrl()   //  window.location.href()          
 			
 			
-
+			this.ac = locationtool.getParam();
 			var ap = this.ac
 			ap = locationtool.getParam();
 			ap = ap.replace('0x', '');

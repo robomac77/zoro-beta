@@ -135,8 +135,12 @@ namespace WebBrowser
         static href_nnsevent() {
             return locationtool.getUrl() + '/nnsevent'
         }
-        static href_block( block: number )
+        static href_block( block: number)
         {
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                return locationtool.getUrl() +  "/block/" + appchain + "/"+ block;
+            }
             return locationtool.getUrl() +  "/block/" + block;
         }
         static href_gui()

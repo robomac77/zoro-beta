@@ -66,8 +66,8 @@ namespace WebBrowser {
 			this.footer.hidden = false;
 		}
 		public async updateTxInfo(ac: string, txid: string) {
-			let t = await WWW.getrawactransaction(ac, txid);
-			let txInfo: Tx = await WWW.getrawactransaction(ac ,txid);
+			let t = await WWW.getappchainrawtransaction(ac, txid);
+			let txInfo: Tx = await WWW.getappchainrawtransaction(ac ,txid);
 			$("#actype").text(txInfo.type.replace("Transaction", "")); //txInfo.type.replace("Transaction", "")
 			$("#actxid").text(txInfo.txid); //txInfo.txid
 			$("#acblockindex").empty();
@@ -88,7 +88,7 @@ namespace WebBrowser {
 			for (let index = 0; index < txInfo.vin.length; index++) {
 				const vin = txInfo.vin[index];
 				try {
-					let txInfo: Tx = await WWW.getrawactransaction(ac,vin.txid);
+					let txInfo: Tx = await WWW.getappchainrawtransaction(ac,vin.txid);
 					let vout = txInfo.vout[vin.vout]
 					let address: string = vout.address;
 					let value: string = vout.value;

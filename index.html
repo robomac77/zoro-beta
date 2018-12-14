@@ -224,6 +224,25 @@
 					</div>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-md-2">
+					<div class="title">
+						<span id="i_assets_title">Assets</span>
+					</div>
+				</div>
+			</div>
+			<table class="table cool table-nel">
+				<thead>
+					<tr>
+						<th id="i_nep5assets_val">Symbols</th>
+						<th id="i_nep5assets_asset">Asset ID</th>
+						<th id="i_nep5assets_ava">Name</th>
+						<th id="i_nep5assets_pre">Total Supply</th>						
+						<th id="i_nep5assets_id">Decimals</th>
+					</tr>
+				</thead>
+				<tbody id="i_nep5s"></tbody>
+			</table>			
 		</div>
 		<!-- 区块列表页面 -->
 		<div id="blocks-page" class="container-nel" hidden style="min-height: 619px;">
@@ -233,7 +252,7 @@
 			<table class="table table-nel cool">
 				<thead>
 					<tr>
-						<th id="blocks_appchain">App Chain</th>
+						<th id="blocks_hash">Hash</th>
 						<th id="blocks_size">Size</th>
 						<th id="blocks_time">Time</th>
 						<th id="blocks_height">Height</th>
@@ -317,8 +336,8 @@
 						<th id="assets_id">ID</th>
 						<th id="assets_type">Type</th>
 						<th id="assets_ava">Available</th>
-						<th id="assets_pre">Seedlist</th>
-						<th id="assets_val">Validators</th>
+						<!-- <th id="assets_pre">Seedlist</th> -->
+						<!-- <th id="assets_val">Validators</th> -->
 						
 					</tr>
 				</thead>
@@ -346,10 +365,10 @@
 			<table class="table cool table-nel">
 				<thead>
 					<tr>
+						<th id="nep5assets_val">Symbols</th>
 						<th id="nep5assets_asset">Asset ID</th>
 						<th id="nep5assets_ava">Name</th>
-						<th id="nep5assets_pre">Total Supply</th>
-						<th id="nep5assets_val">Symbols</th>
+						<th id="nep5assets_pre">Total Supply</th>						
 						<th id="nep5assets_id">Decimals</th>
 					</tr>
 				</thead>
@@ -376,11 +395,11 @@
             </div>
             <div class="list-nel">
                 <div class="list-body">
-                    <div class="line"></div>
+					<div class="line"></div>
+					<div class="line"><div class="title-nel"><span>Symbol</span></div><div class="content-nel"><span id="nep5symbol"></span></div></div>
                     <div class="line"><div class="title-nel"><span>Asset ID</span></div> <div class="content-nel"><span id="nep5assetid"></span></div></div>
                     <div class="line"><div class="title-nel"><span>Name</span></div> <div class="content-nel"><span id="nep5name"></span></div></div>
-                    <div class="line"><div class="title-nel"><span>Total Supply</span></div> <div class="content-nel"><span id="nep5assettotalsupply"></span></div></div>
-                    <div class="line"><div class="title-nel"><span>Symbol</span></div><div class="content-nel"><span id="nep5symbol"></span></div></div>
+                    <div class="line"><div class="title-nel"><span>Total Supply</span></div> <div class="content-nel"><span id="nep5assettotalsupply"></span></div></div>                    
                     <div class="line"><div class="title-nel"><span>Decimals</span></div><div class="content-nel"><span id="nep5decimals"></span></div></div>
                 </div>
             </div>
@@ -502,6 +521,7 @@
 			</div>
 			<div class="list-nel">
 				<div class="list-body">
+					<div class="line"><div class="title-nel"><span id="acblock_info_appchain">Block</span></div> <div class="content-nel"><span id="acchain"></span></div></div>
 					<div class="line"><div class="title-nel"><span id="acblock_info_block">Block</span></div> <div class="content-nel"><span id="acindex"></span></div></div>
 					<div class="line"><div class="title-nel"><span id="acblock_info_hash">Hash</span></div> <div class="content-nel"><span id="achash"></span></div></div>
 					<div class="line"><div class="title-nel"><span id="acblock_info_time">Time</span></div> <div class="content-nel"><span id="actime"></span></div></div>

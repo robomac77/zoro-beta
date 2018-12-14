@@ -62,6 +62,16 @@ namespace WebBrowser {
 			var height = parseInt(r[0]["indexx"] as string) - 1;
 			return height;
 		}
+
+		static async  api_getappchainHeight(ac:string)    // covered ; gets the id of lastblockheight
+		{
+			var str = WWW.makeRpcUrl("getappchainblockcount", ac);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			var height = parseInt(r[0]["indexx"] as string) - 1;
+			return height;
+		}
 		//获得交易总数
 		static async gettxcount(type: string) // covered ; gets the total number of txs in address_tx
 		{
@@ -71,6 +81,7 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r[0]['txcount'] as number;
 		}
+
 		static async getappchaintxcount(appchain: string) // covered ; gets the total number of txs in address_tx
 		{
 			var str = WWW.makeRpcUrl("getappchaintxcount", appchain);
@@ -83,6 +94,14 @@ namespace WebBrowser {
 		static async getaddrcount()     // covered ; gets the total number of address in address
 		{
 			var str = WWW.makeRpcUrl("getaddrcount");
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r[0]['addrcount'] as number;
+		}
+		static async getappchainaddrcount(ac:string)     // covered ; gets the total number of address in address
+		{
+			var str = WWW.makeRpcUrl("getaddrcount", ac);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
@@ -119,6 +138,24 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r as Block[];
 		}
+		static async getblockFromHash(hash: string)      
+		{
+			var str = WWW.makeRpcUrl("getblockfromhash", hash);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r as Block[];
+		}
+
+		static async getappchainblockFromHash(ac:string, hash: string)      
+		{
+			var str = WWW.makeRpcUrl("getappchainblockfromhash", ac, hash);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r as Block[];
+		}
+
 		static async getacblock(ac :string ,index: number)      
 		{
 			var str = WWW.makeRpcUrl("getacblock", ac ,index);
@@ -154,6 +191,13 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r as Addr[]; 
 		}
+		static async getappchainaddrs(ac:string, size: number, page: number) {
+			var str = WWW.makeRpcUrl("getappchainaddrs", ac, size, page);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r as Addr[]; 
+		}
 
 		static async getrawtransaction(txid: string) 
 		{
@@ -163,7 +207,8 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r[0] as Tx;
 		}
-		static async getrawactransaction(ac: string ,txid: string) 
+
+		static async getappchainrawtransaction(ac: string ,txid: string) 
 		{
 			var str = WWW.makeRpcUrl("getrawactransaction", ac,txid);
 			var result = await fetch(str, { "method": "get" });
@@ -174,6 +219,14 @@ namespace WebBrowser {
 
 		static async getallnep5asset() {         
 			var str = WWW.makeRpcUrl("getallnep5asset");
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r: nep5Asset[] = json["result"];
+			return r;
+		}
+
+		static async getappchainallnep5asset(ac:string) {         
+			var str = WWW.makeRpcUrl("getappchainallnep5asset",ac);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r: nep5Asset[] = json["result"];
@@ -230,7 +283,14 @@ namespace WebBrowser {
 			return r;
 		}
 		static async api_getUTXO(address: string, size: number, page: number) {
-			var str = WWW.makeRpcUrl("getutxo", address, 1, size, page);
+			var str = WWW.makeRpcUrl("getutxo", address, size, page);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r;
+		}
+		static async api_getappchainUTXO(ac:string, address: string, size: number, page: number) {
+			var str = WWW.makeRpcUrl("getappchainutxo", ac, address, size, page);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
@@ -244,6 +304,15 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r;
 		}
+		static async api_getappchainbalances(ac:string, address: string)   
+		{
+			var str = WWW.makeRpcUrl("getappchainbalance", ac, address);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r;
+		}
+
 		static async api_getasset(asset: string) {   
 			var str = WWW.makeRpcUrl("getasset", asset);
 			var result = await fetch(str, { "method": "get" });
@@ -259,6 +328,14 @@ namespace WebBrowser {
 			return r;
 		}
 
+		static async api_getappchainnep5(ac:string, nep5: string) { 
+			var str = WWW.makeRpcUrl("getappchainnep5asset", ac, nep5);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r;
+		}
+
 		static async api_getallnep5assetofaddress(nep5: string) {  
 			var str = WWW.makeRpcUrl("getallnep5assetofaddress", nep5, 1);
 			var result = await fetch(str, { "method": "get" });
@@ -268,7 +345,19 @@ namespace WebBrowser {
 		}
 
 		static async getaddrsesstxs(addr: string, size: number, page: number) { 
-			var str = WWW.makeUrl("getaddresstxs", WWW.apiaggr, addr, size, page);
+			var str = WWW.makeRpcUrl("getaddresstxs", addr, size, page);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			if (r) {
+				r = json["result"][0];
+				return r["list"] as TransOfAddress[];
+			}
+			return r
+		}
+
+		static async getappchainaddrsesstxs(ac:string, addr: string, size: number, page: number) { 
+			var str = WWW.makeRpcUrl("getappchainaddresstxs", ac, addr, size, page);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
@@ -286,9 +375,23 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r as AddressMsg[];
 		}
+		static async api_getappchainaddrMsg(ac:string, addr: string) {    
+			var str = WWW.makeRpcUrl("getappchainaddr", ac, addr);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r as AddressMsg[];
+		}
 		//资产排行
 		static async getrankbyasset(nep5id: string, size: number, page: number) {
-			var str = WWW.makeUrl("getrankbyasset", WWW.apiaggr, nep5id, size, page);
+			var str = WWW.makeRpcUrl("getrankbyasset", nep5id, size, page);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r;
+		}
+		static async getappchainrankbyasset(ac:string, nep5id: string, size: number, page: number) {
+			var str = WWW.makeRpcUrl("getappchainrankbyasset", ac, nep5id, size, page);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
@@ -296,7 +399,14 @@ namespace WebBrowser {
 		}
 		//资产排行总数
 		static async api_getrankbyassetcount(id: string) {
-			var str = WWW.makeUrl("getrankbyassetcount", WWW.apiaggr, id);
+			var str = WWW.makeRpcUrl("getrankbyassetcount", id);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r;
+		}
+		static async api_getappchainrankbyassetcount(ac:string, id: string) {
+			var str = WWW.makeRpcUrl("getappchainrankbyassetcount", ac, id);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
