@@ -69,7 +69,7 @@ namespace WebBrowser {
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
-			var height = parseInt(r[0]["indexx"] as string) - 1;
+			var height = parseInt(r[0]["blockcount"] as string) - 1;
 			return height;
 		}
 		//获得交易总数
@@ -282,6 +282,13 @@ namespace WebBrowser {
 			var r = json["result"];
 			return r;
 		}
+		static async api_getappchainUTXOCount(ac:string, address: string) {
+			var str = WWW.makeRpcUrl("getappchainutxo", ac, address);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r;
+		}
 		static async api_getUTXO(address: string, size: number, page: number) {
 			var str = WWW.makeRpcUrl("getutxo", address, size, page);
 			var result = await fetch(str, { "method": "get" });
@@ -344,28 +351,20 @@ namespace WebBrowser {
 			return r;
 		}
 
-		static async getaddrsesstxs(addr: string, size: number, page: number) { 
+		static async getaddresstxs(addr: string, size: number, page: number) { 
 			var str = WWW.makeRpcUrl("getaddresstxs", addr, size, page);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
-			if (r) {
-				r = json["result"][0];
-				return r["list"] as TransOfAddress[];
-			}
-			return r
+			return r as TransOfAddress[];
 		}
 
-		static async getappchainaddrsesstxs(ac:string, addr: string, size: number, page: number) { 
+		static async getappchainaddresstxs(ac:string, addr: string, size: number, page: number) { 
 			var str = WWW.makeRpcUrl("getappchainaddresstxs", ac, addr, size, page);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
-			if (r) {
-				r = json["result"][0];
-				return r["list"] as TransOfAddress[];
-			}
-			return r
+			return r as TransOfAddress[];
 		}
 
 		static async api_getaddrMsg(addr: string) {    

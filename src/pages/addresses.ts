@@ -38,13 +38,18 @@
          * addrlistInit
          */
 		public async addrlistInit() {
-			let addrlist: Addr[] = await WWW.getaddrs(this.pageUtil.pageSize, this.pageUtil.currentPage);
+			var appchain = locationtool.getParam2();                       
+            if (appchain && appchain.length == 40){
+				var addrlist: Addr[] = await WWW.getappchainaddrs(appchain, this.pageUtil.pageSize, this.pageUtil.currentPage - 1);
+			}else{
+				var addrlist: Addr[] = await WWW.getaddrs(this.pageUtil.pageSize, this.pageUtil.currentPage - 1);
+			}
 			//let newDate: Date = new Date();
 			addrlist.map((item) => {
-				let firstTime = DateTool.getTime(item.firstuse.blocktime.$date);
+				let firstTime = DateTool.getTime(parseInt(item.firstDate));
 
 				item.firstDate = firstTime;
-				let lastTime = DateTool.getTime(item.lastuse.blocktime.$date);
+				let lastTime = DateTool.getTime(parseInt(item.lastDate));
 
 				item.lastDate = lastTime;
 			});
@@ -78,7 +83,12 @@
 
 			this.div.hidden = false;
 
-			let prom = await WWW.getaddrcount();
+			var appchain = locationtool.getParam2();                       
+            if (appchain && appchain.length == 40){
+				var prom = await WWW.getappchainaddrcount(appchain);
+			}else{
+				var prom = await WWW.getaddrcount();
+			}
 			this.pageUtil = new PageUtil(prom, 15);
 			await this.addrlistInit();
 			//this.addrlistInit();

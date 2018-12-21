@@ -86,22 +86,16 @@ namespace WebBrowser
         version: number;
         blockindex: number;
         gas: string;
-        vin: {
-            txid: string;
-            vout: number;
-        }[];
-        vout: {
-            address: string;
-            asset: string;
-            n: number;
-            value: string;
-        }[];
     }
 
     export class Url
     {
         static href_blocks()
         {
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                return locationtool.getUrl() +  "/blocks/" + appchain;
+            }
             return locationtool.getUrl() + '/blocks';
 		}
 		static href_appchains() {
@@ -122,10 +116,18 @@ namespace WebBrowser
 		
         static href_transactions()
         {
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                return locationtool.getUrl() +  "/transactions/" + appchain;
+            }
             return locationtool.getUrl() + '/transactions';
         }
         static href_addresses()
         {
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                return locationtool.getUrl() +  "/addresses/" + appchain;
+            }
             return locationtool.getUrl() +  '/addresses'
         }
         static href_assets()
@@ -164,7 +166,12 @@ namespace WebBrowser
 		}
         static href_address( addr: string )
         {
-            return locationtool.getUrl() +  "/address/" + addr;
+            var appchain = locationtool.getParam2();                       
+            if (appchain && appchain.length == 40){
+                return locationtool.getUrl() +  "/address/" + appchain + "/" + addr;
+            }else{
+                return locationtool.getUrl() +  "/address/" + addr;
+            }           
 		}
 		static href_acblock(block: number) {
 			return locationtool.getUrl() + "/appchain/" + block;
@@ -183,15 +190,6 @@ namespace WebBrowser
 		}
         static href_nep5(nep5) {
             return locationtool.getUrl() + '/nep5/' + nep5
-        }
-        static href_nnsbeing() {
-            return locationtool.getUrl() + '/nnsauction/'
-        }
-        static href_nnsrank() {
-            return locationtool.getUrl() + '/nnsrank/'
-        }
-        static href_nns(domain) {
-            return locationtool.getUrl() + '/nns/' + domain
         }
     }
 
@@ -237,29 +235,13 @@ namespace WebBrowser
 
     export interface Balance
     {
-        asset: string;
-        balance: number;
-        name: {
-            lang: string;
-            name: string;
-        }[];
+        name: string;
+        balance: string;
     }
     export interface AddressMsg {
         addr: string;
-        firstuse: {
-            txid: string;
-            blockindex: number;
-            blocktime: {
-                $date: number;
-            }
-        };
-        lastuse: {
-            txid: string;
-            blockindex: number;
-            blocktime: {
-                $date: number;
-            }
-        };
+        firstDate: number;
+        lastDate: number;
         txcount: number;
     }
 
@@ -267,26 +249,7 @@ namespace WebBrowser
         addr: string,
         txid: string,
         blockindex: number,
-        blocktime: {
-            $date: number
-        },
-        type: string,
-        vout: [
-            {
-                n: number,
-                asset: string,
-                value: number,
-                address: string
-            }
-        ],
-        vin: [
-            {
-                n: number,
-                asset: string,
-                value: number,
-                address: string
-            }
-        ]
+        blocktime:number  
     }
 
     export interface Nep5OfAddress {
@@ -300,16 +263,6 @@ namespace WebBrowser
         addr: string;
         firstDate: string;
         lastDate: string;
-        firstuse: {
-            txid: string;
-            blockindex: number;
-            blocktime: { $date: number; };
-        };
-        lastuse: {
-            txid: string;
-            blockindex: number;
-            blocktime: { $date: number; };
-        };
         txcount: number;
     }
 

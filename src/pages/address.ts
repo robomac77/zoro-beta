@@ -23,9 +23,9 @@ namespace WebBrowser {
 					"addr_type",
 					"addr_time",
 
-					"addr_utxo_asset",
-					"addr_utxo_number",
-					"addr_utxo_txid",
+					// "addr_utxo_asset",
+					// "addr_utxo_number",
+					// "addr_utxo_txid",
 				]
 				page_lang.forEach(
 					lang => {
@@ -48,17 +48,25 @@ namespace WebBrowser {
 		async start() {
 			this.getLangs()
 
-			//this.div.innerHTML = pages.addres;
-			var address = locationtool.getParam();
-			let href = locationtool.getUrl() + "/addresses";
+			var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+				var address = locationtool.getParam3();
+				var href = locationtool.getUrl() + "/addresses/" + appchain;
+				var addrMsg = await WWW.api_getappchainaddrMsg(appchain, address);
+				var utxos = await WWW.api_getappchainUTXOCount(appchain, address);
+				var balances = await WWW.api_getappchainbalances(appchain, address);
+			}else{
+				var address = locationtool.getParam();
+				var href = locationtool.getUrl() + "/addresses";
+				var addrMsg = await WWW.api_getaddrMsg(address);
+				var utxos = await WWW.api_getUTXOCount(address);
+				var balances = await WWW.api_getbalances(address);
+			}
+			
 			let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("addr_goalladress") + '</a>';
 			$("#goalladress").empty();
 			$("#goalladress").append(html);
-			var addrMsg = await WWW.api_getaddrMsg(address);
-			var utxos = await WWW.api_getUTXOCount(address);
-			var balances = await WWW.api_getbalances(address);
-			// var nep5ofAddress = await WWW.api_getallnep5assetofaddress(address);
-			var nep5ofAddress = null;
+			
 			if (addrMsg) {
 				this.loadAddressInfo(address, addrMsg);
 				this.pageUtil = new PageUtil(addrMsg[0].txcount, 10);
@@ -73,17 +81,17 @@ namespace WebBrowser {
 				$("#addr-trans").append(html);
 			}
 
-			this.loadView(balances, nep5ofAddress);
+			this.loadView(balances);
 
-			if (utxos) {
-				this.pageUtilUtxo = new PageUtil(utxos.length, 10);
-				this.initUTXOPage(utxos.length, address);
-				this.updateAddrUTXO(address, this.pageUtilUtxo)
-			} else {
-				let html = '<tr><td colspan="3" >' + this.app.langmgr.get('no_data') + '</td></tr>';
+			// if (utxos) {
+			// 	this.pageUtilUtxo = new PageUtil(utxos.length, 10);
+			// 	this.initUTXOPage(utxos.length, address);
+			// 	this.updateAddrUTXO(address, this.pageUtilUtxo)
+			// } else {
+			// 	let html = '<tr><td colspan="3" >' + this.app.langmgr.get('no_data') + '</td></tr>';
 
-				$("#add-utxos").append(html);
-			}
+			// 	$("#add-utxos").append(html);
+			// }
 			//this.loadUTXOView(utxos);
 
 
@@ -93,7 +101,7 @@ namespace WebBrowser {
 
 		//AddressInfo视图
 		loadAddressInfo(address: string, addrMsg: AddressMsg[]) {
-			let createdTime = DateTool.getTime(addrMsg[0].firstuse.blocktime.$date);
+			let createdTime = DateTool.getTime(addrMsg[0].firstDate);
 
 			let totalTran = addrMsg[0].txcount;
 			$("#address").text(address);
@@ -102,28 +110,32 @@ namespace WebBrowser {
 
 		}
 
-		loadView(balances: Balance[], nep5ofAddress: Nep5OfAddress[]) {
+		loadView(balances: Balance[]) {
 			$("#balance").empty();
 			if (balances) {
 				balances.forEach((balance: Balance) => {
-					var name = CoinTool.assetID2name[balance.asset];
-
+					if (balance.name.indexOf("{") >= 0){
+						var json = JSON.parse(balance.name);		
+						for (let i = 0; i < json.length; i++){
+							if (this.langType == "cn" && json[i].lang == "zh-CN"){
+								balance.name = json[i].name;
+								break;
+							}
+							else if (json[i].lang == this.langType){
+								balance.name = json[i].name;
+								break;
+							}
+						};												
+					}					
+					
 					let html = `
-                <div class="line" > <div class="title-nel" > <span>` + name + ` </span></div >
+                <div class="line" > <div class="title-nel" > <span>` + balance.name + ` </span></div >
                 <div class="content-nel" > <span> ` + balance.balance + ` </span></div > </div>`;
 					$("#balance").append(html);
 				});
 			}
-
-			if (nep5ofAddress) {
-				nep5ofAddress.forEach((nep5ofAddress: Nep5OfAddress) => {
-					let html = `
-                <div class="line" > <div class="title-nel" > <span>` + nep5ofAddress.symbol + ` </span></div >
-                <div class="content-nel" > <span> ` + nep5ofAddress.balance + ` </span></div > </div>`;
-					$("#balance").append(html);
-				})
-			}
-			if (!balances && !nep5ofAddress) {
+			
+			if (!balances) {
 				let html = '<div class="line"><div class="title-nel" style="width:100%;text-align:center;display: block;line-height: 56px;"><span>' + this.app.langmgr.get('no_data') + '</span></div> </div>';
 
 				$("#balance").append(html);
@@ -205,7 +217,12 @@ namespace WebBrowser {
 		public async updateAddrTrasctions(address: string, pageUtil: PageUtil) {
 			$("#addr-trans").empty();
 			//分页查询交易记录
-			let txlist: TransOfAddress[] = await WWW.getaddrsesstxs(address, pageUtil.pageSize, pageUtil.currentPage);
+			var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+				var txlist: TransOfAddress[] = await WWW.getappchainaddresstxs(appchain, address, pageUtil.pageSize, pageUtil.currentPage - 1);
+			}else{
+				var txlist: TransOfAddress[] = await WWW.getaddresstxs(address, pageUtil.pageSize, pageUtil.currentPage - 1);
+			}
 			let listLength = 0;
 			if (txlist) {
 				if (txlist.length < 10) {
@@ -215,13 +232,13 @@ namespace WebBrowser {
 				}
 				for (var n = 0; n < listLength; n++) {
 					let txid = txlist[n].txid;
-					let time = DateTool.getTime(txlist[n].blocktime.$date);
+					let time = DateTool.getTime(txlist[n].blocktime);
 
-					let html: string = await this.getAddrTransLine(txid, txlist[n].type, time, txlist[n].vin, txlist[n].vout);
+					let html: string = await this.getAddrTransLine(txid, txlist[n].blockindex.toString(), time);
 					$("#addr-trans").append(html);
 				}
 			} else {
-				let html = '<div class="line" style="text-align:center;padding:16px;font-size:16px;">' + this.app.langmgr.get('no_data') + '</div>';
+				let html = '<div class="line"><div class="title-nel" style="width:100%;text-align:center;display: block;line-height: 56px;"><span>' + this.app.langmgr.get('no_data') + '</span></div></div>';
 				$("#addr-trans").append(html);
 			}
 
@@ -249,7 +266,12 @@ namespace WebBrowser {
 		public async updateAddrUTXO(address: string, pageUtil: PageUtil) {
 			$("#add-utxos").empty();
 			//分页查询交易记录
-			let utxolist: Utxo[] = await WWW.api_getUTXO(address, pageUtil.pageSize, pageUtil.currentPage);
+			var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+				var utxolist: Utxo[] = await WWW.api_getappchainUTXO(appchain, address, pageUtil.pageSize, pageUtil.currentPage);
+			}else{
+				var utxolist: Utxo[] = await WWW.api_getUTXO(address, pageUtil.pageSize, pageUtil.currentPage);
+			}
 			let listLength = 0;
 			if (utxolist) {
 				if (utxolist.length < 10) {
@@ -280,75 +302,18 @@ namespace WebBrowser {
 			}
 		}
 
-		async getAddrTransLine(txid: string, type: string, time: string, vins, vouts) {
+		async getAddrTransLine(txid: string, blockindex: string, time: string) {
 			var id = txid.replace('0x', '');
 			id = id.substring(0, 6) + '...' + id.substring(id.length - 6);
 			return `
             <div class="line">
                 <div class="line-general">
                     <div class="content-nel"><span><a href="`+ Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
-                    <div class="content-nel"><span>`+ type.replace("Transaction", "") + `</span></div>
+                    <div class="content-nel"><span>`+ blockindex + `</span></div>
                     <div class="content-nel"><span>`+ time + `</a></span></div>
-                </div>
-                <a onclick="txgMsg(this)" class="end" id="genbtn"><img src="./img/open.svg" /></a>
-                <div class="transaction" style="width:100%;display: none;" vins='`+ JSON.stringify(vins) + `' vouts='` + JSON.stringify(vouts) + `'>
                 </div>
             </div>
             `;
-		}
-
-		static async getTxMsg(vins, vouts, div: HTMLDivElement) {
-			vins = JSON.parse(vins);
-			vouts = JSON.parse(vouts);
-			let myAddress = $("#address").text();
-
-			let form = "";
-			vins.forEach(vins => {
-				let name = CoinTool.assetID2name[vins.asset];
-				let href = Url.href_address(vins.address);
-				let addrStr = '';
-				if (vins.address == myAddress) {
-					addrStr = `<div class="address"><a class="color-FDBA27">` + vins.address + `</a></div>`
-				} else {
-					addrStr = `<div class="address"><a href="` + href + `" target="_self">` + vins.address + `</a></div>`
-				}
-				form +=
-					`
-                <div class="item">`+ addrStr + `
-                    <ul class="amount"><li>`+ vins.value + ` ` + name + `</li></ul>
-                </div>
-                `
-			});
-
-			let tostr = "";
-			vouts.forEach(vout => {
-				let name = CoinTool.assetID2name[vout.asset];
-				let href = Url.href_address(vout.address);
-				let addrStr = '';
-				if (vout.address == myAddress) {
-					addrStr = `<div class="address"><a class="color-FDBA27">` + vout.address + `</a></div>`
-				} else {
-					addrStr = `<div class="address"><a href="` + href + `" target="_self">` + vout.address + `</a></div>`
-				}
-				tostr +=
-					`
-                <div class="item">`+ addrStr + `
-                    <ul class="amount"><li>`+ vout.value + ` ` + name + `</li></ul>
-                </div>
-                `
-			});
-
-			var res = `
-            <div class="formaddr">
-                `+ form + `
-            </div>
-            <div class="turnto"><img src="./img/turnto.svg" /></div>
-            <div class="toaddr">
-                `+ tostr + `
-            </div>
-            `
-			div.innerHTML = res;
-		}
-
+		}		
 	}
 }

@@ -169,7 +169,29 @@ namespace WebBrowser
 			$("#i_nep5s").empty();
 			nep5s.forEach((nep5s: nep5Asset) => {
 				let href = Url.href_nep5info(nep5s.assetid);
-				let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
+                let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
+                if (nep5s.symbol.indexOf("{") >= 0){
+					var json = JSON.parse(nep5s.symbol);
+					for (var i = 0; i < json.length; i++){
+						if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN"){
+							nep5s.symbol = json[i].name;
+							break;
+						}else if (this.app.langmgr.type == json[i].lang) {
+							nep5s.symbol = json[i].name;
+							break;
+						}
+					}
+					var json = JSON.parse(nep5s.name);
+					for (var i = 0; i < json.length; i++){
+						if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN"){
+							nep5s.name = json[i].name;
+							break;
+						}else if (this.app.langmgr.type == json[i].lang) {
+							nep5s.name = json[i].name;
+							break;
+						}
+					}
+				}
 				let htmlnep5 = `
 					<tr>
 					<td>` + nep5s.symbol + `</td>

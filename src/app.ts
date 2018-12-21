@@ -195,7 +195,7 @@ function txgMsg(obj: HTMLAnchorElement) {
         obj.classList.add("active");
         var vins = tran.getAttribute('vins');
         var vouts = tran.getAttribute('vouts')
-        WebBrowser.Address.getTxMsg(vins, vouts, tran);
+        //WebBrowser.Address.getTxMsg(vins, vouts, tran);
     }
 
 

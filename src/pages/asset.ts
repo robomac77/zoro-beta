@@ -2,8 +2,13 @@
 	export class AssetInfo implements Page {
 		app: App
 		langType: string;
+
+		private assetlist: JQuery<HTMLElement>;
+		private appchains: Appchain[];
+		private nep5s: nep5Asset[];
+		private assetType: string;
 		constructor(app: App) {
-			this.app = app
+			this.app = app			
 		}
 
 		getLangs() {
@@ -15,23 +20,30 @@
 					"asset_type",
 					"asset_ava",
 					"asset_pre",
-					"asset_pre2",
-					"asset_pre3",
-					"asset_pre4",
 					"asset_adm",
 
-					"asset_title2",
-					"asset_rank",
-					"asset_addr",
-					"asset_balance",
+					"ac_summary",
+                    "ac_lastblock", "ac_allblock",
+                    "ac_totaltrans", "ac_alltxlist",
+                    "ac_walletcreate", "ac_alladdress",
+                    
+                    "ac_assets_title","ac_nep5assets_val","ac_nep5assets_asset",
+                    "ac_nep5assets_ava","ac_nep5assets_pre","ac_nep5assets_id",
 
-					"asset_title3",
-					"asset_txid",
-					"asset_from",
-					"asset_to",
-					"asset_height",
-					"asset_blockheight",
-					"asset_tx"
+					"ac_last10",
+					"ac_appchain",
+					"ac_last10_height",
+					"ac_last10_size",
+					"ac_last10_ctm",
+					"ac_last10_txcount",
+					"ac_viewblocks",
+					"ac_last10t",
+					"ac_last10t_txid",
+					"ac_last10t_type",
+					"ac_last10t_height",
+					"ac_last10t_size",
+					"ac_viewtxlist",
+					"ac_chaindata",
 				]
 				page_lang.forEach(
 					lang => {
@@ -44,15 +56,18 @@
 
 		}
 
+		viewtxlist: HTMLAnchorElement = document.getElementById( "ac_viewtxlist" ) as HTMLAnchorElement;
+		viewblocks: HTMLAnchorElement = document.getElementById("ac_viewblocks") as HTMLAnchorElement;
+
 		acblockssection: HTMLDivElement = document.getElementById("assets-balance-list") as HTMLDivElement;
 		actranssection: HTMLDivElement = document.getElementById("assets-trans-list") as HTMLDivElement;
 
 		div: HTMLDivElement = document.getElementById("asset-info") as HTMLDivElement;
 		footer: HTMLDivElement = document.getElementById('footer-box') as HTMLDivElement;
 
-		allacaddress: HTMLAnchorElement = document.getElementById("i_acalladdress") as HTMLAnchorElement;
-		allacblock: HTMLAnchorElement = document.getElementById("i_acallblock") as HTMLAnchorElement;
-		allactxlist: HTMLAnchorElement = document.getElementById("i_acalltxlist") as HTMLAnchorElement;
+		acalladdress: HTMLAnchorElement = document.getElementById("ac_alladdress") as HTMLAnchorElement;
+		acallblock: HTMLAnchorElement = document.getElementById("ac_allblock") as HTMLAnchorElement;
+        acalltxlist: HTMLAnchorElement = document.getElementById("ac_alltxlist") as HTMLAnchorElement;
 
 		name: HTMLSpanElement;
 		type: HTMLSpanElement;
@@ -64,23 +79,19 @@
 		pageUtil: PageUtil;
 		transpageUtil: PageUtil;
 
-		private chaintxlist: JQuery<HTMLElement>;
-
 		public actxcount: number = 0;
 		public acblockcount: number = 0;
 		public acaddcount: number = 0;
 		public txx: Tx[];
 
 		public ac :string  = null;
-		async start() {
-
-			this.getLangs()
+		async start() {			
 			
+			this.assetlist = $("#asset-page");
 
-
-			this.allacaddress.href = Url.href_addresses();// document.getElementById("i_acalladdress") as HTMLAnchorElement;  // 
-			this.allacblock.href = Url.href_assetblock(); // addeventlistener // this.acblockssection
-			this.allactxlist.href = Url.href_assettran(); // location.getUrl()   //  window.location.href()          
+			this.acalladdress.href = Url.href_addresses();// document.getElementById("i_acalladdress") as HTMLAnchorElement;  // 
+			this.acallblock.href = Url.href_blocks(); // addeventlistener // this.acblockssection
+			this.acalltxlist.href = Url.href_transactions(); // location.getUrl()   //  window.location.href()          
 			
 			
 			this.ac = locationtool.getParam();
@@ -97,65 +108,74 @@
 
 			this.loadAssetInfoView(ap);
 
-			this.acaddcount = await WWW.api_getAppchainAddrcount(ap) as number;
-			this.acblockcount = await WWW.api_getAppchainBlockcount(ap) as number;
-			this.pageUtil = new PageUtil(this.acblockcount, 15);
-			await this.updateBlocks(ap, this.pageUtil);
-
+			this.acblockcount = await WWW.api_getappchainHeight(ap) as number;
 			this.actxcount = await WWW.getappchaintxcount(ap) as number;
-			this.transpageUtil = new PageUtil(this.actxcount, 15);
-			this.updateNep5TransView(ap, this.transpageUtil);
+			this.acaddcount = await WWW.api_getAppchainAddrcount(ap) as number;
 
-			$("#acblockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount)); 
+			$("#ac_blockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount)); 
 
-			$("#actxcount").text(this.actxcount);//$("#txcount").text(NumberTool.toThousands(this.actxcount)); // 
+			$("#ac_txcount").text(this.actxcount);//$("#txcount").text(NumberTool.toThousands(this.actxcount)); // 
 
-			$("#acaddrCount").text(this.acaddcount); //$("#addrCount").text(NumberTool.toThousands(this.acaddcount));
+			$("#ac_addrCount").text(this.acaddcount); //$("#addrCount").text(NumberTool.toThousands(this.acaddcount));
 
+			//分页查询区块数据
+			let blocks: Block[] = await WWW.getappchainblocks( ap, 10, 0 );
+			this.getTenBlock(blocks);
+			//分页查询交易记录
+			let txs: Tx[] = await WWW.getappchainrawtransactions(ap, 10, 0);
+			this.getTenTx(txs);
+
+			this.nep5s = await WWW.getappchainallnep5asset(ap);
+			if (this.nep5s){
+				this.pageUtil = new PageUtil(this.nep5s.length, 15);
+				this.pageUtil.currentPage = 1;
+				if (this.nep5s.length > 15) {
+					this.updateNep5s(this.pageUtil);
+					this.assetlist.find(".page").show();
+				} else {
+					this.loadNep5View(this.nep5s);
+					let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+					$("#asset-page").find("#asset-page-msg").html(pageMsg);
+					this.assetlist.find(".page").hide();
+				}
+	
+				$("#asset-page-next").off("click").click(() => {
+					if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
+						this.pageUtil.currentPage = this.pageUtil.totalPage;
+					} else {
+						this.pageUtil.currentPage += 1;
+						if (this.assetType == "Nep5") {
+							this.updateNep5s(this.pageUtil);
+						}
+					}
+				});
+				$("#asset-page-previous").off("click").click(() => {
+					if (this.pageUtil.currentPage <= 1) {
+						this.pageUtil.currentPage = 1;
+					} else {
+						this.pageUtil.currentPage -= 1;
+						if (this.assetType == "Nep5") {
+							this.updateNep5s(this.pageUtil);
+						}
+					}
+				});
+
+				this.pageUtil = new PageUtil(this.nep5s.length, 15);
+				if (this.nep5s.length > 15) {
+					this.updateNep5s(this.pageUtil);
+					this.assetlist.find(".page").show();
+				} else {
+					this.loadNep5View(this.nep5s);
+					let pageMsg = "AppChains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+					$("#asset-page").find("#asset-page-msg").html(pageMsg);
+					this.assetlist.find(".page").hide();
+				}
+			}						
+
+			this.getLangs();
 
 			this.div.hidden = false;
 			this.footer.hidden = false;
-
-			$("#assets-balance-next").off("click").click(() => {
-				if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
-					this.pageUtil.currentPage = this.pageUtil.totalPage;
-				} else {
-					this.pageUtil.currentPage += 1;
-					this.updateBlocks(ap, this.pageUtil);
-				}
-			});
-			$("#assets-balance-previous").off("click").click(() => {
-				if (this.pageUtil.currentPage <= 1) {
-					this.pageUtil.currentPage = 1;
-				} else {
-					this.pageUtil.currentPage -= 1;
-					this.updateBlocks(ap, this.pageUtil);
-				}
-			});
-
-			this.chaintxlist = $("#assets-tran-list");
-			//监听交易列表选择框
-			$("#TxType").change(() => {
-				this.pageUtil.currentPage = 1;
-				this.updateNep5TransView(ap, this.pageUtil);
-			});
-
-			$("#assets-tran-next").off("click").click(() => {
-				if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
-					this.pageUtil.currentPage = this.pageUtil.totalPage;
-				} else {
-					this.pageUtil.currentPage += 1;
-					this.updateNep5TransView(ap, this.pageUtil);
-				}
-			});
-			$("#assets-tran-previous").off("click").click(() => {
-				if (this.pageUtil.currentPage <= 1) {
-					this.pageUtil.currentPage = 1;
-				} else {
-					this.pageUtil.currentPage -= 1;
-					this.updateNep5TransView(ap, this.pageUtil); //
-				}
-			});
 
 			/*$("#i_acallblock").off("click").click(() => { //
 				if (this.pageUtil.currentPage <= 1) {
@@ -167,138 +187,47 @@
 				//this.allacblock.href = document.getElementById("assets-balance-list") as HTMLAnchorElement; //
 				}
 			});*/ 
-
-
-			
-			this.div.hidden = false;
-			this.footer.hidden = false;
 		}
 		close(): void {
 			this.div.hidden = true;
 			this.footer.hidden = true;
 		}
 		loadAssetInfoView(appchain: string) {
+			$("#appchain_list").empty();
+			var html = `<div class="line"></div>
+				<div class="line"><div class="title-nel"><span id="asset_id">ID</span></div> <div class="content-nel"><span id="id"></span></div></div>
+				<div class="line"><div class="title-nel"><span id="asset_asset">Asset</span></div> <div class="content-nel"><span id="name"></span></div></div>
+				<div class="line"><div class="title-nel"><span id="asset_type">Type</span></div> <div class="content-nel"><span id="type"></span></div></div>					
+				<div class="line"><div class="title-nel"><span id="asset_adm">Admin</span></div><div class="content-nel"><span id="admin"></span></div></div>`;
+			$("#appchain_list").append(html);
 			//this.div.innerHTML = pages.asset; 
 			WWW.api_getAppchain(appchain).then((data) => {
 				var appchain = data[0];
+				var seedlist = appchain.seedlist;
 				var valsplit = appchain.validators;
 
 				let time = DateTool.getTime(appchain.timestamp);
-				$("#name").text(appchain.name);
-				$("#type").text(time);
 				$("#id").text(appchain.hash);
-				$("#available").text(appchain.seedlist);
-				$("#precision").text(valsplit[0]);
-				$("#precision2").text(valsplit[1]);
-				$("#precision3").text(valsplit[2]);
-				$("#precision4").text(valsplit[3]);
+				$("#name").text(appchain.name);
+				$("#type").text(time);				
 				$("#admin").text(appchain.owner); 
+			
+				for (var i = 0; i < seedlist.length; i++) {
+					var html = `<div class="line"><div class="title-nel"><span id="asset_ava"></span></div><div class="content-nel">
+					<span>` + seedlist[i] + `</span>
+					</div></div>`;
+					$("#appchain_list").append(html);
+				}
+				for (var i = 0; i < valsplit.length; i++) {
+					var html = `<div class="line"><div class="title-nel"><span id="asset_pre"></span></div><div class="content-nel">
+					<span>` + valsplit[i] + `</span>
+					</div></div>`
+					$("#appchain_list").append(html);
+				}			
 			})
 
 		}
-		public async updateBlocks(appchain: string, pageUtil: PageUtil) {
-
-			let blocks: Block[] = await WWW.getappchainblocks(appchain, pageUtil.pageSize, pageUtil.currentPage);
-			$("#assets-balance-list").empty();
-			if (pageUtil.totalPage - pageUtil.currentPage) {
-				$("#assets-balance-next").removeClass('disabled');
-			} else {
-				$("#assets-balance-next").addClass('disabled');
-			}
-			if (pageUtil.currentPage - 1) {
-				$("#assets-balance-previous").removeClass('disabled');
-			} else {
-				$("#assets-balance-previous").addClass('disabled');
-			}
-			
-			let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
-			let maxNum = pageUtil.totalCount;
-			let diffNum = maxNum - minNum;
-			if (diffNum > 15) {
-				maxNum = pageUtil.currentPage * pageUtil.pageSize;
-			}
-			let pageMsg = "Blocks " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
-			$("#assets-balance-msg").html(pageMsg);
-
-
-			//let newDate = new Date();
-			blocks.forEach((item, index, input) => {
-				//newDate.setTime(item.time * 1000);
-				let time = DateTool.getTime(item.time);
-				let txcounts = item.tx.length
-				var id = item.hash
-				id = id.replace('0x', '');
-				//id = id.substring(0, 4) + '...' + ap.substring(id.length - 4); 
-
-				var ap = appchain;
-				ap = ap.replace('0x', '');
-				//ap = ap.substring(0, 4) + '...' + ap.substring(id.length - 4);
-
-				let html = `
-                <tr>
-                  <td>` + id + `</td>
-                <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + Url.href_appchainblock(ap,item.index) + `" target="_self">` + item.index + `</a></td>
-                <td>` + txcounts + `</td>
-                </tr>`
-				$("#assets-balance-list").append(html);
-			});
-		}
-
-		
-		async updateNep5TransView(nep5id: string, pageUtil: PageUtil) {
-
-			var ap = this.ac;
-			ap = ap.replace('0x', '');
-			let tranList: Tx[] = await WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage);// update Nep5 transfer loads the nep5s html element, as Tx
-            $("#assets-tran-list").empty();
-            if (tranList) {
-                tranList.forEach((item) => {
-                    if (!item.vin) {
-                        item.type = '-'
-                    }
-                    if (!item.size) {
-                        item.type = '-'
-					}
-
-                    this.loadAssetTranView(item.txid, item.type, item.size, item.blockindex);
-                })
-            } else {
-                let html = '<tr><td colspan="4" >'+this.app.langmgr.get('no_data')+'</td></tr>';
-                $("#assets-tran-list").append(html);
-                if (pageUtil.currentPage == 1) {
-                    $(".asset-tran-page").hide();
-                } else {
-                    $(".asset-tran-page").show();
-                }
-            }
-
-            if (pageUtil.totalCount > 10) {
-                if (pageUtil.totalPage - pageUtil.currentPage) {
-                    $("#assets-tran-next").removeClass('disabled');
-                } else {
-                    $("#assets-tran-next").addClass('disabled');
-                }
-                if (pageUtil.currentPage - 1) {
-                    $("#assets-tran-previous").removeClass('disabled');
-                } else {
-                    $("#assets-tran-previous").addClass('disabled');
-                }
-                let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
-                let maxNum = pageUtil.totalCount;
-                let diffNum = maxNum - minNum;
-                if (diffNum > 10) {
-                    maxNum = pageUtil.currentPage * pageUtil.pageSize;
-                }
-                let pageMsg = "Transactions " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
-                $("#assets-tran-msg").html(pageMsg);
-                $(".asset-tran-page").show();
-            } else {
-                $(".asset-tran-page").hide();
-            }
-
-
-        }
-
+				
         loadAssetTranView(txid:string,from:string,to:number,blockindex:number)
         {
             let html = `
@@ -314,6 +243,121 @@
             $("#assets-tran-list").append(html);
         }
 		
+		public loadNep5View(nep5s: nep5Asset[]) {
+			$("#nep5s").empty();
+			nep5s.forEach((nep5s: nep5Asset) => {
+				let href = Url.href_nep5info(nep5s.assetid);
+				let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
+				if (nep5s.symbol.indexOf("{") >= 0){
+					var json = JSON.parse(nep5s.symbol);
+					for (var i = 0; i < json.length; i++){
+						if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN"){
+							nep5s.symbol = json[i].name;
+							break;
+						}else if (this.app.langmgr.type == json[i].lang) {
+							nep5s.symbol = json[i].name;
+							break;
+						}
+					}
+					var json = JSON.parse(nep5s.name);
+					for (var i = 0; i < json.length; i++){
+						if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN"){
+							nep5s.name = json[i].name;
+							break;
+						}else if (this.app.langmgr.type == json[i].lang) {
+							nep5s.name = json[i].name;
+							break;
+						}
+					}
+				}
+				let htmlnep5 = `
+					<tr>
+					<td>` + nep5s.symbol + `</td>
+                    <td> <a href="`+ href + `" target="_self">` +  assetId + `</a></td>
+                    <td>` + nep5s.name + `</td>
+                    <td>` + nep5s.totalsupply + `</td>                    
+                    <td>` + nep5s.decimals + `</td>
+                    </tr>`;
+				$("#nep5s").append(htmlnep5);
+			});
+		}
 
+		//更新asset表格
+		public async updateNep5s(pageUtil: PageUtil) {
+			$("#asset-page").find("#asset-page-msg").html("");
+			let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
+			let maxNum = pageUtil.totalCount;
+			let diffNum = maxNum - minNum;
+			if (diffNum > 15) {
+				maxNum = pageUtil.currentPage * pageUtil.pageSize;
+			} else {
+				maxNum = pageUtil.totalCount;
+			}
+			let arrNep5s = new Array();
+			for (let i = minNum; i < maxNum; i++) {
+				arrNep5s.push(this.nep5s[i]);
+			}
+			this.loadNep5View(arrNep5s);
+
+			let pageMsg = "Assets " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
+			$("#asset-page").find("#asset-page-msg").html(pageMsg);
+			if (this.pageUtil.totalPage - this.pageUtil.currentPage) {
+				$("#asset-page-next").removeClass('disabled');
+			} else {
+				$("#asset-page-next").addClass('disabled');
+			}
+			if (this.pageUtil.currentPage - 1) {
+				$("#asset-page-previous").removeClass('disabled');
+			} else {
+				$("#asset-page-previous").addClass('disabled');
+			}
+		}
+
+		public getTenBlock(blocks:Block[]){
+			let html_blocks = ``;
+            
+            blocks.forEach( ( item, index, input ) =>
+            {
+				let time = DateTool.getTime(item.time);
+				var id = item.hash
+				id.replace('0x', '');
+				id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
+
+                html_blocks += `
+                <tr><td>
+                <a class="code" target="_self" href ='`+ Url.href_blockh(id) + `' > 
+                `+ id + `</a></td>
+                <td>` + item.size + ` bytes</td>
+                <td>` + time + `</td>
+                <td><a class="code" target="_self" href ='`+ Url.href_block(item.index) + `' > 
+                `+ item.index + `</a></td>
+                <td>` + item.tx.length + `</td></tr>`;
+            } );
+            $( "#index-page" ).find( "#blocks" ).children("tbody" ).append( html_blocks );
+		}
+
+		public getTenTx(txs:Tx[]){
+			let html_txs = ``;
+			txs.forEach( ( tx ) =>
+            {
+                let txid: string = tx.txid;
+                let txtype = tx.type.replace( "Transaction", "" );
+                txid = txid.replace( '0x', '' );
+                txid = txid.substring( 0, 4 ) + '...' + txid.substring( txid.length - 4 );
+                html_txs += `
+                <tr>
+                <td><a class='code' target='_self'
+                 href ='`+ Url.href_transaction( tx.txid ) + `' > ` + txid + ` </a>
+                </td>
+                <td>` + txtype + `
+                </td>
+                <td> `+ tx.blockindex + `
+                </td>
+                <td> `+ tx.size + ` bytes
+                </td>
+                </tr>`;
+			} );
+			$("#index-page").find("#transactions").children("tbody" ).append(html_txs);
+		}
 	}
 }

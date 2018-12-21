@@ -81,6 +81,10 @@ var WebBrowser;
     WebBrowser.PageUtil = PageUtil;
     class Url {
         static href_blocks() {
+            var appchain = WebBrowser.locationtool.getParam2();
+            if (appchain && appchain.length == 40) {
+                return WebBrowser.locationtool.getUrl() + "/blocks/" + appchain;
+            }
             return WebBrowser.locationtool.getUrl() + '/blocks';
         }
         static href_appchains() {
@@ -96,9 +100,17 @@ var WebBrowser;
             return WebBrowser.locationtool.getUrl() + '/nep5info/' + nep5id;
         }
         static href_transactions() {
+            var appchain = WebBrowser.locationtool.getParam2();
+            if (appchain && appchain.length == 40) {
+                return WebBrowser.locationtool.getUrl() + "/transactions/" + appchain;
+            }
             return WebBrowser.locationtool.getUrl() + '/transactions';
         }
         static href_addresses() {
+            var appchain = WebBrowser.locationtool.getParam2();
+            if (appchain && appchain.length == 40) {
+                return WebBrowser.locationtool.getUrl() + "/addresses/" + appchain;
+            }
             return WebBrowser.locationtool.getUrl() + '/addresses';
         }
         static href_assets() {
@@ -133,7 +145,13 @@ var WebBrowser;
             return WebBrowser.locationtool.getUrl() + "/asset/" + tx;
         }
         static href_address(addr) {
-            return WebBrowser.locationtool.getUrl() + "/address/" + addr;
+            var appchain = WebBrowser.locationtool.getParam2();
+            if (appchain && appchain.length == 40) {
+                return WebBrowser.locationtool.getUrl() + "/address/" + appchain + "/" + addr;
+            }
+            else {
+                return WebBrowser.locationtool.getUrl() + "/address/" + addr;
+            }
         }
         static href_acblock(block) {
             return WebBrowser.locationtool.getUrl() + "/appchain/" + block;
@@ -149,15 +167,6 @@ var WebBrowser;
         }
         static href_nep5(nep5) {
             return WebBrowser.locationtool.getUrl() + '/nep5/' + nep5;
-        }
-        static href_nnsbeing() {
-            return WebBrowser.locationtool.getUrl() + '/nnsauction/';
-        }
-        static href_nnsrank() {
-            return WebBrowser.locationtool.getUrl() + '/nnsrank/';
-        }
-        static href_nns(domain) {
-            return WebBrowser.locationtool.getUrl() + '/nns/' + domain;
         }
     }
     WebBrowser.Url = Url;
@@ -1693,7 +1702,7 @@ var WebBrowser;
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
-                var height = parseInt(r[0]["indexx"]) - 1;
+                var height = parseInt(r[0]["blockcount"]) - 1;
                 return height;
             });
         }
@@ -1921,6 +1930,15 @@ var WebBrowser;
                 return r;
             });
         }
+        static api_getappchainUTXOCount(ac, address) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainutxo", ac, address);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
         static api_getUTXO(address, size, page) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getutxo", address, size, page);
@@ -1993,29 +2011,21 @@ var WebBrowser;
                 return r;
             });
         }
-        static getaddrsesstxs(addr, size, page) {
+        static getaddresstxs(addr, size, page) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getaddresstxs", addr, size, page);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
-                if (r) {
-                    r = json["result"][0];
-                    return r["list"];
-                }
                 return r;
             });
         }
-        static getappchainaddrsesstxs(ac, addr, size, page) {
+        static getappchainaddresstxs(ac, addr, size, page) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getappchainaddresstxs", ac, addr, size, page);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
-                if (r) {
-                    r = json["result"][0];
-                    return r["list"];
-                }
                 return r;
             });
         }
@@ -2541,9 +2551,6 @@ var WebBrowser;
                     "addr_txid",
                     "addr_type",
                     "addr_time",
-                    "addr_utxo_asset",
-                    "addr_utxo_number",
-                    "addr_utxo_txid",
                 ];
                 page_lang.forEach(lang => {
                     document.getElementById(lang).textContent = this.app.langmgr.get(lang);
@@ -2558,17 +2565,24 @@ var WebBrowser;
         start() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.getLangs();
-                //this.div.innerHTML = pages.addres;
-                var address = WebBrowser.locationtool.getParam();
-                let href = WebBrowser.locationtool.getUrl() + "/addresses";
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var address = WebBrowser.locationtool.getParam3();
+                    var href = WebBrowser.locationtool.getUrl() + "/addresses/" + appchain;
+                    var addrMsg = yield WebBrowser.WWW.api_getappchainaddrMsg(appchain, address);
+                    var utxos = yield WebBrowser.WWW.api_getappchainUTXOCount(appchain, address);
+                    var balances = yield WebBrowser.WWW.api_getappchainbalances(appchain, address);
+                }
+                else {
+                    var address = WebBrowser.locationtool.getParam();
+                    var href = WebBrowser.locationtool.getUrl() + "/addresses";
+                    var addrMsg = yield WebBrowser.WWW.api_getaddrMsg(address);
+                    var utxos = yield WebBrowser.WWW.api_getUTXOCount(address);
+                    var balances = yield WebBrowser.WWW.api_getbalances(address);
+                }
                 let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("addr_goalladress") + '</a>';
                 $("#goalladress").empty();
                 $("#goalladress").append(html);
-                var addrMsg = yield WebBrowser.WWW.api_getaddrMsg(address);
-                var utxos = yield WebBrowser.WWW.api_getUTXOCount(address);
-                var balances = yield WebBrowser.WWW.api_getbalances(address);
-                // var nep5ofAddress = await WWW.api_getallnep5assetofaddress(address);
-                var nep5ofAddress = null;
                 if (addrMsg) {
                     this.loadAddressInfo(address, addrMsg);
                     this.pageUtil = new WebBrowser.PageUtil(addrMsg[0].txcount, 10);
@@ -2582,16 +2596,15 @@ var WebBrowser;
                     let html = '<div class="line" style="text-align:center;padding:16px;font-size:16px;">' + this.app.langmgr.get('no_data') + '</div>';
                     $("#addr-trans").append(html);
                 }
-                this.loadView(balances, nep5ofAddress);
-                if (utxos) {
-                    this.pageUtilUtxo = new WebBrowser.PageUtil(utxos.length, 10);
-                    this.initUTXOPage(utxos.length, address);
-                    this.updateAddrUTXO(address, this.pageUtilUtxo);
-                }
-                else {
-                    let html = '<tr><td colspan="3" >' + this.app.langmgr.get('no_data') + '</td></tr>';
-                    $("#add-utxos").append(html);
-                }
+                this.loadView(balances);
+                // if (utxos) {
+                // 	this.pageUtilUtxo = new PageUtil(utxos.length, 10);
+                // 	this.initUTXOPage(utxos.length, address);
+                // 	this.updateAddrUTXO(address, this.pageUtilUtxo)
+                // } else {
+                // 	let html = '<tr><td colspan="3" >' + this.app.langmgr.get('no_data') + '</td></tr>';
+                // 	$("#add-utxos").append(html);
+                // }
                 //this.loadUTXOView(utxos);
                 this.div.hidden = false;
                 this.footer.hidden = false;
@@ -2599,32 +2612,37 @@ var WebBrowser;
         }
         //AddressInfo视图
         loadAddressInfo(address, addrMsg) {
-            let createdTime = WebBrowser.DateTool.getTime(addrMsg[0].firstuse.blocktime.$date);
+            let createdTime = WebBrowser.DateTool.getTime(addrMsg[0].firstDate);
             let totalTran = addrMsg[0].txcount;
             $("#address").text(address);
             $("#created").text(createdTime);
             $("#totalTran").text(totalTran);
         }
-        loadView(balances, nep5ofAddress) {
+        loadView(balances) {
             $("#balance").empty();
             if (balances) {
                 balances.forEach((balance) => {
-                    var name = WebBrowser.CoinTool.assetID2name[balance.asset];
+                    if (balance.name.indexOf("{") >= 0) {
+                        var json = JSON.parse(balance.name);
+                        for (let i = 0; i < json.length; i++) {
+                            if (this.langType == "cn" && json[i].lang == "zh-CN") {
+                                balance.name = json[i].name;
+                                break;
+                            }
+                            else if (json[i].lang == this.langType) {
+                                balance.name = json[i].name;
+                                break;
+                            }
+                        }
+                        ;
+                    }
                     let html = `
-                <div class="line" > <div class="title-nel" > <span>` + name + ` </span></div >
+                <div class="line" > <div class="title-nel" > <span>` + balance.name + ` </span></div >
                 <div class="content-nel" > <span> ` + balance.balance + ` </span></div > </div>`;
                     $("#balance").append(html);
                 });
             }
-            if (nep5ofAddress) {
-                nep5ofAddress.forEach((nep5ofAddress) => {
-                    let html = `
-                <div class="line" > <div class="title-nel" > <span>` + nep5ofAddress.symbol + ` </span></div >
-                <div class="content-nel" > <span> ` + nep5ofAddress.balance + ` </span></div > </div>`;
-                    $("#balance").append(html);
-                });
-            }
-            if (!balances && !nep5ofAddress) {
+            if (!balances) {
                 let html = '<div class="line"><div class="title-nel" style="width:100%;text-align:center;display: block;line-height: 56px;"><span>' + this.app.langmgr.get('no_data') + '</span></div> </div>';
                 $("#balance").append(html);
             }
@@ -2708,7 +2726,13 @@ var WebBrowser;
             return __awaiter(this, void 0, void 0, function* () {
                 $("#addr-trans").empty();
                 //分页查询交易记录
-                let txlist = yield WebBrowser.WWW.getaddrsesstxs(address, pageUtil.pageSize, pageUtil.currentPage);
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var txlist = yield WebBrowser.WWW.getappchainaddresstxs(appchain, address, pageUtil.pageSize, pageUtil.currentPage - 1);
+                }
+                else {
+                    var txlist = yield WebBrowser.WWW.getaddresstxs(address, pageUtil.pageSize, pageUtil.currentPage - 1);
+                }
                 let listLength = 0;
                 if (txlist) {
                     if (txlist.length < 10) {
@@ -2719,13 +2743,13 @@ var WebBrowser;
                     }
                     for (var n = 0; n < listLength; n++) {
                         let txid = txlist[n].txid;
-                        let time = WebBrowser.DateTool.getTime(txlist[n].blocktime.$date);
-                        let html = yield this.getAddrTransLine(txid, txlist[n].type, time, txlist[n].vin, txlist[n].vout);
+                        let time = WebBrowser.DateTool.getTime(txlist[n].blocktime);
+                        let html = yield this.getAddrTransLine(txid, txlist[n].blockindex.toString(), time);
                         $("#addr-trans").append(html);
                     }
                 }
                 else {
-                    let html = '<div class="line" style="text-align:center;padding:16px;font-size:16px;">' + this.app.langmgr.get('no_data') + '</div>';
+                    let html = '<div class="line"><div class="title-nel" style="width:100%;text-align:center;display: block;line-height: 56px;"><span>' + this.app.langmgr.get('no_data') + '</span></div></div>';
                     $("#addr-trans").append(html);
                 }
                 let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
@@ -2755,7 +2779,13 @@ var WebBrowser;
             return __awaiter(this, void 0, void 0, function* () {
                 $("#add-utxos").empty();
                 //分页查询交易记录
-                let utxolist = yield WebBrowser.WWW.api_getUTXO(address, pageUtil.pageSize, pageUtil.currentPage);
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var utxolist = yield WebBrowser.WWW.api_getappchainUTXO(appchain, address, pageUtil.pageSize, pageUtil.currentPage);
+                }
+                else {
+                    var utxolist = yield WebBrowser.WWW.api_getUTXO(address, pageUtil.pageSize, pageUtil.currentPage);
+                }
                 let listLength = 0;
                 if (utxolist) {
                     if (utxolist.length < 10) {
@@ -2788,7 +2818,7 @@ var WebBrowser;
                 }
             });
         }
-        getAddrTransLine(txid, type, time, vins, vouts) {
+        getAddrTransLine(txid, blockindex, time) {
             return __awaiter(this, void 0, void 0, function* () {
                 var id = txid.replace('0x', '');
                 id = id.substring(0, 6) + '...' + id.substring(id.length - 6);
@@ -2796,67 +2826,11 @@ var WebBrowser;
             <div class="line">
                 <div class="line-general">
                     <div class="content-nel"><span><a href="` + WebBrowser.Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
-                    <div class="content-nel"><span>` + type.replace("Transaction", "") + `</span></div>
+                    <div class="content-nel"><span>` + blockindex + `</span></div>
                     <div class="content-nel"><span>` + time + `</a></span></div>
                 </div>
-                <a onclick="txgMsg(this)" class="end" id="genbtn"><img src="./img/open.svg" /></a>
-                <div class="transaction" style="width:100%;display: none;" vins='` + JSON.stringify(vins) + `' vouts='` + JSON.stringify(vouts) + `'>
-                </div>
             </div>
             `;
-            });
-        }
-        static getTxMsg(vins, vouts, div) {
-            return __awaiter(this, void 0, void 0, function* () {
-                vins = JSON.parse(vins);
-                vouts = JSON.parse(vouts);
-                let myAddress = $("#address").text();
-                let form = "";
-                vins.forEach(vins => {
-                    let name = WebBrowser.CoinTool.assetID2name[vins.asset];
-                    let href = WebBrowser.Url.href_address(vins.address);
-                    let addrStr = '';
-                    if (vins.address == myAddress) {
-                        addrStr = `<div class="address"><a class="color-FDBA27">` + vins.address + `</a></div>`;
-                    }
-                    else {
-                        addrStr = `<div class="address"><a href="` + href + `" target="_self">` + vins.address + `</a></div>`;
-                    }
-                    form +=
-                        `
-                <div class="item">` + addrStr + `
-                    <ul class="amount"><li>` + vins.value + ` ` + name + `</li></ul>
-                </div>
-                `;
-                });
-                let tostr = "";
-                vouts.forEach(vout => {
-                    let name = WebBrowser.CoinTool.assetID2name[vout.asset];
-                    let href = WebBrowser.Url.href_address(vout.address);
-                    let addrStr = '';
-                    if (vout.address == myAddress) {
-                        addrStr = `<div class="address"><a class="color-FDBA27">` + vout.address + `</a></div>`;
-                    }
-                    else {
-                        addrStr = `<div class="address"><a href="` + href + `" target="_self">` + vout.address + `</a></div>`;
-                    }
-                    tostr +=
-                        `
-                <div class="item">` + addrStr + `
-                    <ul class="amount"><li>` + vout.value + ` ` + name + `</li></ul>
-                </div>
-                `;
-                });
-                var res = `
-            <div class="formaddr">
-                ` + form + `
-            </div>
-            <div class="turnto"><img src="./img/turnto.svg" /></div>
-            <div class="toaddr">
-                ` + tostr + `
-            </div>
-            `;
-                div.innerHTML = res;
             });
         }
     }
@@ -2895,12 +2869,18 @@ var WebBrowser;
          */
         addrlistInit() {
             return __awaiter(this, void 0, void 0, function* () {
-                let addrlist = yield WebBrowser.WWW.getaddrs(this.pageUtil.pageSize, this.pageUtil.currentPage);
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var addrlist = yield WebBrowser.WWW.getappchainaddrs(appchain, this.pageUtil.pageSize, this.pageUtil.currentPage - 1);
+                }
+                else {
+                    var addrlist = yield WebBrowser.WWW.getaddrs(this.pageUtil.pageSize, this.pageUtil.currentPage - 1);
+                }
                 //let newDate: Date = new Date();
                 addrlist.map((item) => {
-                    let firstTime = WebBrowser.DateTool.getTime(item.firstuse.blocktime.$date);
+                    let firstTime = WebBrowser.DateTool.getTime(parseInt(item.firstDate));
                     item.firstDate = firstTime;
-                    let lastTime = WebBrowser.DateTool.getTime(item.lastuse.blocktime.$date);
+                    let lastTime = WebBrowser.DateTool.getTime(parseInt(item.lastDate));
                     item.lastDate = lastTime;
                 });
                 this.loadView(addrlist);
@@ -2933,7 +2913,13 @@ var WebBrowser;
             return __awaiter(this, void 0, void 0, function* () {
                 this.getLangs();
                 this.div.hidden = false;
-                let prom = yield WebBrowser.WWW.getaddrcount();
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var prom = yield WebBrowser.WWW.getappchainaddrcount(appchain);
+                }
+                else {
+                    var prom = yield WebBrowser.WWW.getaddrcount();
+                }
                 this.pageUtil = new WebBrowser.PageUtil(prom, 15);
                 yield this.addrlistInit();
                 //this.addrlistInit();
@@ -2981,13 +2967,15 @@ var WebBrowser;
 (function (WebBrowser) {
     class AssetInfo {
         constructor(app) {
+            this.viewtxlist = document.getElementById("ac_viewtxlist");
+            this.viewblocks = document.getElementById("ac_viewblocks");
             this.acblockssection = document.getElementById("assets-balance-list");
             this.actranssection = document.getElementById("assets-trans-list");
             this.div = document.getElementById("asset-info");
             this.footer = document.getElementById('footer-box');
-            this.allacaddress = document.getElementById("i_acalladdress");
-            this.allacblock = document.getElementById("i_acallblock");
-            this.allactxlist = document.getElementById("i_acalltxlist");
+            this.acalladdress = document.getElementById("ac_alladdress");
+            this.acallblock = document.getElementById("ac_allblock");
+            this.acalltxlist = document.getElementById("ac_alltxlist");
             this.actxcount = 0;
             this.acblockcount = 0;
             this.acaddcount = 0;
@@ -3003,21 +2991,27 @@ var WebBrowser;
                     "asset_type",
                     "asset_ava",
                     "asset_pre",
-                    "asset_pre2",
-                    "asset_pre3",
-                    "asset_pre4",
                     "asset_adm",
-                    "asset_title2",
-                    "asset_rank",
-                    "asset_addr",
-                    "asset_balance",
-                    "asset_title3",
-                    "asset_txid",
-                    "asset_from",
-                    "asset_to",
-                    "asset_height",
-                    "asset_blockheight",
-                    "asset_tx"
+                    "ac_summary",
+                    "ac_lastblock", "ac_allblock",
+                    "ac_totaltrans", "ac_alltxlist",
+                    "ac_walletcreate", "ac_alladdress",
+                    "ac_assets_title", "ac_nep5assets_val", "ac_nep5assets_asset",
+                    "ac_nep5assets_ava", "ac_nep5assets_pre", "ac_nep5assets_id",
+                    "ac_last10",
+                    "ac_appchain",
+                    "ac_last10_height",
+                    "ac_last10_size",
+                    "ac_last10_ctm",
+                    "ac_last10_txcount",
+                    "ac_viewblocks",
+                    "ac_last10t",
+                    "ac_last10t_txid",
+                    "ac_last10t_type",
+                    "ac_last10t_height",
+                    "ac_last10t_size",
+                    "ac_viewtxlist",
+                    "ac_chaindata",
                 ];
                 page_lang.forEach(lang => {
                     document.getElementById(lang).textContent = this.app.langmgr.get(lang);
@@ -3027,10 +3021,10 @@ var WebBrowser;
         }
         start() {
             return __awaiter(this, void 0, void 0, function* () {
-                this.getLangs();
-                this.allacaddress.href = WebBrowser.Url.href_addresses(); // document.getElementById("i_acalladdress") as HTMLAnchorElement;  // 
-                this.allacblock.href = WebBrowser.Url.href_assetblock(); // addeventlistener // this.acblockssection
-                this.allactxlist.href = WebBrowser.Url.href_assettran(); // location.getUrl()   //  window.location.href()          
+                this.assetlist = $("#asset-page");
+                this.acalladdress.href = WebBrowser.Url.href_addresses(); // document.getElementById("i_acalladdress") as HTMLAnchorElement;  // 
+                this.acallblock.href = WebBrowser.Url.href_blocks(); // addeventlistener // this.acblockssection
+                this.acalltxlist.href = WebBrowser.Url.href_transactions(); // location.getUrl()   //  window.location.href()          
                 this.ac = WebBrowser.locationtool.getParam();
                 var ap = this.ac;
                 ap = WebBrowser.locationtool.getParam();
@@ -3040,60 +3034,69 @@ var WebBrowser;
                 $("#goallasset").empty();
                 $("#goallasset").append(html);
                 this.loadAssetInfoView(ap);
-                this.acaddcount = (yield WebBrowser.WWW.api_getAppchainAddrcount(ap));
-                this.acblockcount = (yield WebBrowser.WWW.api_getAppchainBlockcount(ap));
-                this.pageUtil = new WebBrowser.PageUtil(this.acblockcount, 15);
-                yield this.updateBlocks(ap, this.pageUtil);
+                this.acblockcount = (yield WebBrowser.WWW.api_getappchainHeight(ap));
                 this.actxcount = (yield WebBrowser.WWW.getappchaintxcount(ap));
-                this.transpageUtil = new WebBrowser.PageUtil(this.actxcount, 15);
-                this.updateNep5TransView(ap, this.transpageUtil);
-                $("#acblockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount)); 
-                $("#actxcount").text(this.actxcount); //$("#txcount").text(NumberTool.toThousands(this.actxcount)); // 
-                $("#acaddrCount").text(this.acaddcount); //$("#addrCount").text(NumberTool.toThousands(this.acaddcount));
+                this.acaddcount = (yield WebBrowser.WWW.api_getAppchainAddrcount(ap));
+                $("#ac_blockHeight").text(this.acblockcount); //$("#blockHeight").text(NumberTool.toThousands(this.acblockcount)); 
+                $("#ac_txcount").text(this.actxcount); //$("#txcount").text(NumberTool.toThousands(this.actxcount)); // 
+                $("#ac_addrCount").text(this.acaddcount); //$("#addrCount").text(NumberTool.toThousands(this.acaddcount));
+                //分页查询区块数据
+                let blocks = yield WebBrowser.WWW.getappchainblocks(ap, 10, 0);
+                this.getTenBlock(blocks);
+                //分页查询交易记录
+                let txs = yield WebBrowser.WWW.getappchainrawtransactions(ap, 10, 0);
+                this.getTenTx(txs);
+                this.nep5s = yield WebBrowser.WWW.getappchainallnep5asset(ap);
+                if (this.nep5s) {
+                    this.pageUtil = new WebBrowser.PageUtil(this.nep5s.length, 15);
+                    this.pageUtil.currentPage = 1;
+                    if (this.nep5s.length > 15) {
+                        this.updateNep5s(this.pageUtil);
+                        this.assetlist.find(".page").show();
+                    }
+                    else {
+                        this.loadNep5View(this.nep5s);
+                        let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+                        $("#asset-page").find("#asset-page-msg").html(pageMsg);
+                        this.assetlist.find(".page").hide();
+                    }
+                    $("#asset-page-next").off("click").click(() => {
+                        if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
+                            this.pageUtil.currentPage = this.pageUtil.totalPage;
+                        }
+                        else {
+                            this.pageUtil.currentPage += 1;
+                            if (this.assetType == "Nep5") {
+                                this.updateNep5s(this.pageUtil);
+                            }
+                        }
+                    });
+                    $("#asset-page-previous").off("click").click(() => {
+                        if (this.pageUtil.currentPage <= 1) {
+                            this.pageUtil.currentPage = 1;
+                        }
+                        else {
+                            this.pageUtil.currentPage -= 1;
+                            if (this.assetType == "Nep5") {
+                                this.updateNep5s(this.pageUtil);
+                            }
+                        }
+                    });
+                    this.pageUtil = new WebBrowser.PageUtil(this.nep5s.length, 15);
+                    if (this.nep5s.length > 15) {
+                        this.updateNep5s(this.pageUtil);
+                        this.assetlist.find(".page").show();
+                    }
+                    else {
+                        this.loadNep5View(this.nep5s);
+                        let pageMsg = "AppChains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+                        $("#asset-page").find("#asset-page-msg").html(pageMsg);
+                        this.assetlist.find(".page").hide();
+                    }
+                }
+                this.getLangs();
                 this.div.hidden = false;
                 this.footer.hidden = false;
-                $("#assets-balance-next").off("click").click(() => {
-                    if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
-                        this.pageUtil.currentPage = this.pageUtil.totalPage;
-                    }
-                    else {
-                        this.pageUtil.currentPage += 1;
-                        this.updateBlocks(ap, this.pageUtil);
-                    }
-                });
-                $("#assets-balance-previous").off("click").click(() => {
-                    if (this.pageUtil.currentPage <= 1) {
-                        this.pageUtil.currentPage = 1;
-                    }
-                    else {
-                        this.pageUtil.currentPage -= 1;
-                        this.updateBlocks(ap, this.pageUtil);
-                    }
-                });
-                this.chaintxlist = $("#assets-tran-list");
-                //监听交易列表选择框
-                $("#TxType").change(() => {
-                    this.pageUtil.currentPage = 1;
-                    this.updateNep5TransView(ap, this.pageUtil);
-                });
-                $("#assets-tran-next").off("click").click(() => {
-                    if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
-                        this.pageUtil.currentPage = this.pageUtil.totalPage;
-                    }
-                    else {
-                        this.pageUtil.currentPage += 1;
-                        this.updateNep5TransView(ap, this.pageUtil);
-                    }
-                });
-                $("#assets-tran-previous").off("click").click(() => {
-                    if (this.pageUtil.currentPage <= 1) {
-                        this.pageUtil.currentPage = 1;
-                    }
-                    else {
-                        this.pageUtil.currentPage -= 1;
-                        this.updateNep5TransView(ap, this.pageUtil); //
-                    }
-                });
                 /*$("#i_acallblock").off("click").click(() => { //
                     if (this.pageUtil.currentPage <= 1) {
                         this.pageUtil.currentPage = 1;
@@ -3104,8 +3107,6 @@ var WebBrowser;
                     //this.allacblock.href = document.getElementById("assets-balance-list") as HTMLAnchorElement; //
                     }
                 });*/
-                this.div.hidden = false;
-                this.footer.hidden = false;
             });
         }
         close() {
@@ -3113,119 +3114,34 @@ var WebBrowser;
             this.footer.hidden = true;
         }
         loadAssetInfoView(appchain) {
+            $("#appchain_list").empty();
+            var html = `<div class="line"></div>
+				<div class="line"><div class="title-nel"><span id="asset_id">ID</span></div> <div class="content-nel"><span id="id"></span></div></div>
+				<div class="line"><div class="title-nel"><span id="asset_asset">Asset</span></div> <div class="content-nel"><span id="name"></span></div></div>
+				<div class="line"><div class="title-nel"><span id="asset_type">Type</span></div> <div class="content-nel"><span id="type"></span></div></div>					
+				<div class="line"><div class="title-nel"><span id="asset_adm">Admin</span></div><div class="content-nel"><span id="admin"></span></div></div>`;
+            $("#appchain_list").append(html);
             //this.div.innerHTML = pages.asset; 
             WebBrowser.WWW.api_getAppchain(appchain).then((data) => {
                 var appchain = data[0];
+                var seedlist = appchain.seedlist;
                 var valsplit = appchain.validators;
                 let time = WebBrowser.DateTool.getTime(appchain.timestamp);
+                $("#id").text(appchain.hash);
                 $("#name").text(appchain.name);
                 $("#type").text(time);
-                $("#id").text(appchain.hash);
-                $("#available").text(appchain.seedlist);
-                $("#precision").text(valsplit[0]);
-                $("#precision2").text(valsplit[1]);
-                $("#precision3").text(valsplit[2]);
-                $("#precision4").text(valsplit[3]);
                 $("#admin").text(appchain.owner);
-            });
-        }
-        updateBlocks(appchain, pageUtil) {
-            return __awaiter(this, void 0, void 0, function* () {
-                let blocks = yield WebBrowser.WWW.getappchainblocks(appchain, pageUtil.pageSize, pageUtil.currentPage);
-                $("#assets-balance-list").empty();
-                if (pageUtil.totalPage - pageUtil.currentPage) {
-                    $("#assets-balance-next").removeClass('disabled');
+                for (var i = 0; i < seedlist.length; i++) {
+                    var html = `<div class="line"><div class="title-nel"><span id="asset_ava"></span></div><div class="content-nel">
+					<span>` + seedlist[i] + `</span>
+					</div></div>`;
+                    $("#appchain_list").append(html);
                 }
-                else {
-                    $("#assets-balance-next").addClass('disabled');
-                }
-                if (pageUtil.currentPage - 1) {
-                    $("#assets-balance-previous").removeClass('disabled');
-                }
-                else {
-                    $("#assets-balance-previous").addClass('disabled');
-                }
-                let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
-                let maxNum = pageUtil.totalCount;
-                let diffNum = maxNum - minNum;
-                if (diffNum > 15) {
-                    maxNum = pageUtil.currentPage * pageUtil.pageSize;
-                }
-                let pageMsg = "Blocks " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
-                $("#assets-balance-msg").html(pageMsg);
-                //let newDate = new Date();
-                blocks.forEach((item, index, input) => {
-                    //newDate.setTime(item.time * 1000);
-                    let time = WebBrowser.DateTool.getTime(item.time);
-                    let txcounts = item.tx.length;
-                    var id = item.hash;
-                    id = id.replace('0x', '');
-                    //id = id.substring(0, 4) + '...' + ap.substring(id.length - 4); 
-                    var ap = appchain;
-                    ap = ap.replace('0x', '');
-                    //ap = ap.substring(0, 4) + '...' + ap.substring(id.length - 4);
-                    let html = `
-                <tr>
-                  <td>` + id + `</td>
-                <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + WebBrowser.Url.href_appchainblock(ap, item.index) + `" target="_self">` + item.index + `</a></td>
-                <td>` + txcounts + `</td>
-                </tr>`;
-                    $("#assets-balance-list").append(html);
-                });
-            });
-        }
-        updateNep5TransView(nep5id, pageUtil) {
-            return __awaiter(this, void 0, void 0, function* () {
-                var ap = this.ac;
-                ap = ap.replace('0x', '');
-                let tranList = yield WebBrowser.WWW.getappchainrawtransactions(nep5id, pageUtil.pageSize, pageUtil.currentPage); // update Nep5 transfer loads the nep5s html element, as Tx
-                $("#assets-tran-list").empty();
-                if (tranList) {
-                    tranList.forEach((item) => {
-                        if (!item.vin) {
-                            item.type = '-';
-                        }
-                        if (!item.size) {
-                            item.type = '-';
-                        }
-                        this.loadAssetTranView(item.txid, item.type, item.size, item.blockindex);
-                    });
-                }
-                else {
-                    let html = '<tr><td colspan="4" >' + this.app.langmgr.get('no_data') + '</td></tr>';
-                    $("#assets-tran-list").append(html);
-                    if (pageUtil.currentPage == 1) {
-                        $(".asset-tran-page").hide();
-                    }
-                    else {
-                        $(".asset-tran-page").show();
-                    }
-                }
-                if (pageUtil.totalCount > 10) {
-                    if (pageUtil.totalPage - pageUtil.currentPage) {
-                        $("#assets-tran-next").removeClass('disabled');
-                    }
-                    else {
-                        $("#assets-tran-next").addClass('disabled');
-                    }
-                    if (pageUtil.currentPage - 1) {
-                        $("#assets-tran-previous").removeClass('disabled');
-                    }
-                    else {
-                        $("#assets-tran-previous").addClass('disabled');
-                    }
-                    let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
-                    let maxNum = pageUtil.totalCount;
-                    let diffNum = maxNum - minNum;
-                    if (diffNum > 10) {
-                        maxNum = pageUtil.currentPage * pageUtil.pageSize;
-                    }
-                    let pageMsg = "Transactions " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
-                    $("#assets-tran-msg").html(pageMsg);
-                    $(".asset-tran-page").show();
-                }
-                else {
-                    $(".asset-tran-page").hide();
+                for (var i = 0; i < valsplit.length; i++) {
+                    var html = `<div class="line"><div class="title-nel"><span id="asset_pre"></span></div><div class="content-nel">
+					<span>` + valsplit[i] + `</span>
+					</div></div>`;
+                    $("#appchain_list").append(html);
                 }
             });
         }
@@ -3242,123 +3158,44 @@ var WebBrowser;
                     </tr>`;
             $("#assets-tran-list").append(html);
         }
-    }
-    WebBrowser.AssetInfo = AssetInfo;
-})(WebBrowser || (WebBrowser = {}));
-var WebBrowser;
-(function (WebBrowser) {
-    //资产页面管理器
-    class Appchains {
-        constructor(app) {
-            this.div = document.getElementById("asset-page");
-            this.footer = document.getElementById('footer-box');
-            this.app = app;
-            this.assetlist = $("#asset-page");
-            //监听交易列表选择框
-            $("#asset-TxType").change(() => {
-                this.pageUtil.currentPage = 1;
-                this.assetType = $("#asset-TxType").val();
-                if (this.assetType == "Assets") {
-                    this.pageUtil = new WebBrowser.PageUtil(this.appchains.length, 15);
-                    this.pageUtil.currentPage = 1;
-                    if (this.appchains.length > 15) {
-                        this.updateAssets(this.pageUtil);
-                        this.assetlist.find(".page").show();
+        loadNep5View(nep5s) {
+            $("#nep5s").empty();
+            nep5s.forEach((nep5s) => {
+                let href = WebBrowser.Url.href_nep5info(nep5s.assetid);
+                let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
+                if (nep5s.symbol.indexOf("{") >= 0) {
+                    var json = JSON.parse(nep5s.symbol);
+                    for (var i = 0; i < json.length; i++) {
+                        if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN") {
+                            nep5s.symbol = json[i].name;
+                            break;
+                        }
+                        else if (this.app.langmgr.type == json[i].lang) {
+                            nep5s.symbol = json[i].name;
+                            break;
+                        }
                     }
-                    else {
-                        this.loadAssetView(this.appchains);
-                        let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
-                        $("#asset-page").find("#asset-page-msg").html(pageMsg);
-                        this.assetlist.find(".page").hide();
-                    }
-                }
-                else if (this.assetType == "Nep5") {
-                    this.pageUtil = new WebBrowser.PageUtil(this.nep5s.length, 15);
-                    this.pageUtil.currentPage = 1;
-                    if (this.nep5s.length > 15) {
-                        this.updateNep5s(this.pageUtil);
-                        this.assetlist.find(".page").show();
-                    }
-                    else {
-                        this.loadNep5View(this.nep5s);
-                        let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
-                        $("#asset-page").find("#asset-page-msg").html(pageMsg);
-                        this.assetlist.find(".page").hide();
+                    var json = JSON.parse(nep5s.name);
+                    for (var i = 0; i < json.length; i++) {
+                        if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN") {
+                            nep5s.name = json[i].name;
+                            break;
+                        }
+                        else if (this.app.langmgr.type == json[i].lang) {
+                            nep5s.name = json[i].name;
+                            break;
+                        }
                     }
                 }
-            });
-            $("#asset-page-next").off("click").click(() => {
-                if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
-                    this.pageUtil.currentPage = this.pageUtil.totalPage;
-                }
-                else {
-                    this.pageUtil.currentPage += 1;
-                    if (this.assetType == "Assets") {
-                        this.updateAssets(this.pageUtil);
-                    }
-                    else if (this.assetType == "Nep5") {
-                        this.updateNep5s(this.pageUtil);
-                    }
-                }
-            });
-            $("#asset-page-previous").off("click").click(() => {
-                if (this.pageUtil.currentPage <= 1) {
-                    this.pageUtil.currentPage = 1;
-                }
-                else {
-                    this.pageUtil.currentPage -= 1;
-                    if (this.assetType == "Assets") {
-                        this.updateAssets(this.pageUtil);
-                    }
-                    else if (this.assetType == "Nep5") {
-                        this.updateNep5s(this.pageUtil);
-                    }
-                }
-            });
-        }
-        close() {
-            this.div.hidden = true;
-            this.footer.hidden = true;
-        }
-        getLangs() {
-            if (this.langType != this.app.langmgr.type) {
-                let page_lang = [
-                    "assets_title",
-                    "assets_asset",
-                    "assets_id",
-                    "assets_type",
-                    "assets_ava",
-                    //"assets_pre",
-                    //"assets_val",
-                    "nep5assets_asset",
-                    "nep5assets_ava",
-                    "nep5assets_pre",
-                    "nep5assets_val",
-                    "nep5assets_id",
-                ];
-                page_lang.forEach(lang => {
-                    document.getElementById(lang).textContent = this.app.langmgr.get(lang);
-                });
-                this.langType = this.app.langmgr.type;
-            }
-        }
-        //更新asset表格
-        updateAssets(pageUtil) {
-            return __awaiter(this, void 0, void 0, function* () {
-                $("#asset-page").find("#asset-page-msg").html("");
-                let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
-                let maxNum = pageUtil.totalCount;
-                let diffNum = maxNum - minNum;
-                if (diffNum > 15) {
-                    maxNum = pageUtil.currentPage * pageUtil.pageSize;
-                }
-                let arrAsset = new Array();
-                for (let i = minNum; i < maxNum; i++) {
-                    arrAsset.push(this.appchains[i]);
-                }
-                this.loadAssetView(arrAsset);
-                let pageMsg = "Assets " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
-                $("#asset-page").find("#asset-page-msg").html(pageMsg);
+                let htmlnep5 = `
+					<tr>
+					<td>` + nep5s.symbol + `</td>
+                    <td> <a href="` + href + `" target="_self">` + assetId + `</a></td>
+                    <td>` + nep5s.name + `</td>
+                    <td>` + nep5s.totalsupply + `</td>                    
+                    <td>` + nep5s.decimals + `</td>
+                    </tr>`;
+                $("#nep5s").append(htmlnep5);
             });
         }
         //更新asset表格
@@ -3395,6 +3232,139 @@ var WebBrowser;
                 }
             });
         }
+        getTenBlock(blocks) {
+            let html_blocks = ``;
+            blocks.forEach((item, index, input) => {
+                let time = WebBrowser.DateTool.getTime(item.time);
+                var id = item.hash;
+                id.replace('0x', '');
+                id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
+                html_blocks += `
+                <tr><td>
+                <a class="code" target="_self" href ='` + WebBrowser.Url.href_blockh(id) + `' > 
+                ` + id + `</a></td>
+                <td>` + item.size + ` bytes</td>
+                <td>` + time + `</td>
+                <td><a class="code" target="_self" href ='` + WebBrowser.Url.href_block(item.index) + `' > 
+                ` + item.index + `</a></td>
+                <td>` + item.tx.length + `</td></tr>`;
+            });
+            $("#index-page").find("#blocks").children("tbody").append(html_blocks);
+        }
+        getTenTx(txs) {
+            let html_txs = ``;
+            txs.forEach((tx) => {
+                let txid = tx.txid;
+                let txtype = tx.type.replace("Transaction", "");
+                txid = txid.replace('0x', '');
+                txid = txid.substring(0, 4) + '...' + txid.substring(txid.length - 4);
+                html_txs += `
+                <tr>
+                <td><a class='code' target='_self'
+                 href ='` + WebBrowser.Url.href_transaction(tx.txid) + `' > ` + txid + ` </a>
+                </td>
+                <td>` + txtype + `
+                </td>
+                <td> ` + tx.blockindex + `
+                </td>
+                <td> ` + tx.size + ` bytes
+                </td>
+                </tr>`;
+            });
+            $("#index-page").find("#transactions").children("tbody").append(html_txs);
+        }
+    }
+    WebBrowser.AssetInfo = AssetInfo;
+})(WebBrowser || (WebBrowser = {}));
+var WebBrowser;
+(function (WebBrowser) {
+    //资产页面管理器
+    class Appchains {
+        constructor(app) {
+            this.div = document.getElementById("asset-page");
+            this.footer = document.getElementById('footer-box');
+            this.app = app;
+            this.assetlist = $("#asset-page");
+            //监听交易列表选择框
+            $("#asset-TxType").change(() => {
+                this.pageUtil.currentPage = 1;
+                this.assetType = $("#asset-TxType").val();
+                if (this.assetType == "Assets") {
+                    this.pageUtil = new WebBrowser.PageUtil(this.appchains.length, 15);
+                    this.pageUtil.currentPage = 1;
+                    if (this.appchains.length > 15) {
+                        this.updateAssets(this.pageUtil);
+                        this.assetlist.find(".page").show();
+                    }
+                    else {
+                        this.loadAssetView(this.appchains);
+                        let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
+                        $("#asset-page").find("#asset-page-msg").html(pageMsg);
+                        this.assetlist.find(".page").hide();
+                    }
+                }
+            });
+            $("#asset-page-next").off("click").click(() => {
+                if (this.pageUtil.currentPage == this.pageUtil.totalPage) {
+                    this.pageUtil.currentPage = this.pageUtil.totalPage;
+                }
+                else {
+                    this.pageUtil.currentPage += 1;
+                    if (this.assetType == "Assets") {
+                        this.updateAssets(this.pageUtil);
+                    }
+                }
+            });
+            $("#asset-page-previous").off("click").click(() => {
+                if (this.pageUtil.currentPage <= 1) {
+                    this.pageUtil.currentPage = 1;
+                }
+                else {
+                    this.pageUtil.currentPage -= 1;
+                    if (this.assetType == "Assets") {
+                        this.updateAssets(this.pageUtil);
+                    }
+                }
+            });
+        }
+        close() {
+            this.div.hidden = true;
+            this.footer.hidden = true;
+        }
+        getLangs() {
+            if (this.langType != this.app.langmgr.type) {
+                let page_lang = [
+                    "assets_title",
+                    "assets_asset",
+                    "assets_id",
+                    "assets_type",
+                    "assets_ava",
+                ];
+                page_lang.forEach(lang => {
+                    document.getElementById(lang).textContent = this.app.langmgr.get(lang);
+                });
+                this.langType = this.app.langmgr.type;
+            }
+        }
+        //更新asset表格
+        updateAssets(pageUtil) {
+            return __awaiter(this, void 0, void 0, function* () {
+                $("#asset-page").find("#asset-page-msg").html("");
+                let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
+                let maxNum = pageUtil.totalCount;
+                let diffNum = maxNum - minNum;
+                if (diffNum > 15) {
+                    maxNum = pageUtil.currentPage * pageUtil.pageSize;
+                }
+                let arrAsset = new Array();
+                for (let i = minNum; i < maxNum; i++) {
+                    arrAsset.push(this.appchains[i]);
+                }
+                this.loadAssetView(arrAsset);
+                let pageMsg = "Assets " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
+                $("#asset-page").find("#asset-page-msg").html(pageMsg);
+            });
+        }
         start() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.getLangs();
@@ -3409,18 +3379,6 @@ var WebBrowser;
                 else {
                     this.loadAssetView(this.appchains);
                     let pageMsg = "App Chains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
-                    $("#asset-page").find("#asset-page-msg").html(pageMsg);
-                    this.assetlist.find(".page").hide();
-                }
-                this.nep5s = yield WebBrowser.WWW.getallnep5asset();
-                this.pageUtil = new WebBrowser.PageUtil(this.nep5s.length, 15);
-                if (this.nep5s.length > 15) {
-                    this.updateNep5s(this.pageUtil);
-                    this.assetlist.find(".page").show();
-                }
-                else {
-                    this.loadNep5View(this.nep5s);
-                    let pageMsg = "AppChains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
                     $("#asset-page").find("#asset-page-msg").html(pageMsg);
                     this.assetlist.find(".page").hide();
                 }
@@ -3449,22 +3407,6 @@ var WebBrowser;
          
                     </tr>`;
                 $("#assets").append(html);
-            });
-        }
-        loadNep5View(nep5s) {
-            $("#nep5s").empty();
-            nep5s.forEach((nep5s) => {
-                let href = WebBrowser.Url.href_nep5info(nep5s.assetid);
-                let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
-                let htmlnep5 = `
-					<tr>
-					<td>` + nep5s.symbol + `</td>
-                    <td> <a href="` + href + `" target="_self">` + assetId + `</a></td>
-                    <td>` + nep5s.name + `</td>
-                    <td>` + nep5s.totalsupply + `</td>                    
-                    <td>` + nep5s.decimals + `</td>
-                    </tr>`;
-                $("#nep5s").append(htmlnep5);
             });
         }
     }
@@ -5374,6 +5316,30 @@ var WebBrowser;
             nep5s.forEach((nep5s) => {
                 let href = WebBrowser.Url.href_nep5info(nep5s.assetid);
                 let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
+                if (nep5s.symbol.indexOf("{") >= 0) {
+                    var json = JSON.parse(nep5s.symbol);
+                    for (var i = 0; i < json.length; i++) {
+                        if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN") {
+                            nep5s.symbol = json[i].name;
+                            break;
+                        }
+                        else if (this.app.langmgr.type == json[i].lang) {
+                            nep5s.symbol = json[i].name;
+                            break;
+                        }
+                    }
+                    var json = JSON.parse(nep5s.name);
+                    for (var i = 0; i < json.length; i++) {
+                        if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN") {
+                            nep5s.name = json[i].name;
+                            break;
+                        }
+                        else if (this.app.langmgr.type == json[i].lang) {
+                            nep5s.name = json[i].name;
+                            break;
+                        }
+                    }
+                }
                 let htmlnep5 = `
 					<tr>
 					<td>` + nep5s.symbol + `</td>
@@ -5472,7 +5438,7 @@ var WebBrowser;
                 }
                 for (var n = 0; n < listLength; n++) {
                     let txid = txs[n].txid;
-                    let html = yield this.getTxLine(txid, txs[n].type, txs[n].size.toString(), txs[n].blockindex.toString(), txs[n].vin, txs[n].vout);
+                    let html = yield this.getTxLine(txid, txs[n].type, txs[n].size.toString(), txs[n].blockindex.toString());
                     this.txlist.find("#txlist-page-transactions").append(html);
                 }
                 let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize; //       
@@ -5518,39 +5484,32 @@ var WebBrowser;
                 this.footer.hidden = false;
             });
         }
-        getTxLine(txid, type, size, index, vins, vouts) {
+        getTxLine(txid, type, size, index) {
             return __awaiter(this, void 0, void 0, function* () {
-                console.log(vins);
-                console.log(JSON.stringify(vins));
-                console.log("--------------");
-                console.log(vouts);
-                console.log(JSON.stringify(vouts));
                 var id = txid.replace('0x', '');
                 id = id.substring(0, 6) + '...' + id.substring(id.length - 6);
-                if (vins.length == 0 && vouts.length == 0) {
-                    return `<div class="line">
-                            <div class="line-general">
-                                <div class="content-nel"><span><a href="` + WebBrowser.Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
-                                <div class="content-nel"><span>` + type.replace("Transaction", "") + `</span></div>
-                                <div class="content-nel"><span>` + size + ` bytes</span></div>
-                                <div class="content-nel"><span><a href="` + WebBrowser.Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
-                            </div>
-                            <a class="end" id="genbtn" style="border-left:none;"></a>
-                        </div>`;
-                }
-                return `
-            <div class="line">
-                <div class="line-general">
-                    <div class="content-nel"><span><a href="` + WebBrowser.Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
-                    <div class="content-nel"><span>` + type.replace("Transaction", "") + `</span></div>
-                    <div class="content-nel"><span>` + size + ` bytes</span></div>
-                    <div class="content-nel"><span><a href="` + WebBrowser.Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
-                </div>
-                <a onclick="txgeneral(this)" class="end" id="genbtn"><img src="./img/open.svg" /></a>
-                <div class="transaction" style="width:100%;display: none;" vins='` + JSON.stringify(vins) + `' vouts='` + JSON.stringify(vouts) + `'>
-                </div>
-            </div>
-            `;
+                return `<div class="line">
+						<div class="line-general">
+							<div class="content-nel"><span><a href="` + WebBrowser.Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
+							<div class="content-nel"><span>` + type.replace("Transaction", "") + `</span></div>
+							<div class="content-nel"><span>` + size + ` bytes</span></div>
+							<div class="content-nel"><span><a href="` + WebBrowser.Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
+						</div>
+						<a class="end" id="genbtn" style="border-left:none;"></a>
+					</div>`;
+                // return `
+                // <div class="line">
+                //     <div class="line-general">
+                //         <div class="content-nel"><span><a href="`+ Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
+                //         <div class="content-nel"><span>`+ type.replace("Transaction", "") + `</span></div>
+                //         <div class="content-nel"><span>`+ size + ` bytes</span></div>
+                //         <div class="content-nel"><span><a href="`+ Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
+                //     </div>
+                //     <a onclick="txgeneral(this)" class="end" id="genbtn"><img src="./img/open.svg" /></a>
+                //     <div class="transaction" style="width:100%;display: none;" vins='`+ JSON.stringify(vins) + `' vouts='` + JSON.stringify(vouts) + `'>
+                //     </div>
+                // </div>
+                // `;
             });
         }
         static getTxgeneral(vins, vouts, div) {
@@ -5572,11 +5531,11 @@ var WebBrowser;
                     const vin = vins[index];
                     try {
                         let txInfos = yield ajax.post('getrawtransaction', [vin.txid]);
-                        let vout = txInfos[0].vout[vin.vout];
-                        let address = vout.address;
-                        let value = vout.value;
-                        let name = allAsset.find(val => val.id == vout.asset).name.map(name => { return name.name; }).join("|");
-                        arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value });
+                        // let vout = [];
+                        // let address: string = vout.address;
+                        // let value: string = vout.value;
+                        // let name = allAsset.find(val => val.id == vout.asset).name.map(name => { return name.name }).join("|");
+                        // arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value });
                     }
                     catch (error) {
                     }
@@ -5693,22 +5652,21 @@ var WebBrowser;
                 let block = blocks[0];
                 let time = WebBrowser.DateTool.getTime(block.time);
                 $("#transaction-time").text(time);
-                txInfo.vin = JSON.parse(txInfo.vin.toString());
+                //txInfo.vin = JSON.parse(txInfo.vin.toString());
                 //let allAsset: Asset[] = await WWW.api_getAllAssets();
                 let arr = new Array();
-                for (let index = 0; index < txInfo.vin.length; index++) {
-                    const vin = txInfo.vin[index];
-                    try {
-                        let txInfo = yield WebBrowser.WWW.getrawtransaction(vin.txid);
-                        let vout = txInfo.vout[vin.vout];
-                        let address = vout.address;
-                        let value = vout.value;
-                        let name = WebBrowser.CoinTool.assetID2name[vout.asset];
-                        arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value }); //  fro
-                    }
-                    catch (error) {
-                    }
-                }
+                // for (let index = 0; index < txInfo.vin.length; index++) {
+                // 	const vin = txInfo.vin[index];
+                // 	try {
+                // 		let txInfo: Tx = await WWW.getrawtransaction(vin.txid);
+                // 		let vout = txInfo.vout[vin.vout]
+                // 		let address: string = vout.address;
+                // 		let value: string = vout.value;
+                // 		let name = CoinTool.assetID2name[vout.asset];
+                // 		arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value }); //  fro
+                // 	} catch (error) {
+                // 	}
+                // }
                 $("#from").empty();
                 let array = Transaction.groupByaddr(arr);
                 for (let index = 0; index < array.length; index++) {
@@ -5724,20 +5682,20 @@ var WebBrowser;
                     $("#from").append(html);
                 }
                 $("#to").empty();
-                txInfo.vout = JSON.parse(txInfo.vout.toString());
-                txInfo.vout.forEach(vout => {
-                    let name = WebBrowser.CoinTool.assetID2name[vout.asset];
-                    let sign = "";
-                    if (array.find(item => item.addr == vout.address)) {
-                        sign = "(change)";
-                    }
-                    let html = "";
-                    html += '<div class="line" > <div class="title-nel" > <span>Address </span></div >';
-                    html += '<div class="content-nel" > <span id="size" >' + vout.address + ' </span></div > </div>';
-                    html += '<div class="line" > <div class="title-nel" > <span>' + name + ' </span></div >';
-                    html += '<div class="content-nel" > <span id="size" >' + vout.value + sign + ' </span></div > </div>';
-                    $("#to").append(html);
-                });
+                // txInfo.vout = JSON.parse(txInfo.vout.toString());
+                // txInfo.vout.forEach(vout => {
+                // 	let name = CoinTool.assetID2name[vout.asset];
+                // 	let sign: string = "";
+                // 	if (array.find(item => item.addr == vout.address)) {
+                // 		sign = "(change)"
+                // 	}
+                // 	let html = "";
+                // 	html += '<div class="line" > <div class="title-nel" > <span>Address </span></div >';
+                // 	html += '<div class="content-nel" > <span id="size" >' + vout.address + ' </span></div > </div>';
+                // 	html += '<div class="line" > <div class="title-nel" > <span>' + name + ' </span></div >';
+                // 	html += '<div class="content-nel" > <span id="size" >' + vout.value + sign + ' </span></div > </div>';
+                // 	$("#to").append(html);
+                // });
                 $("#txidnep5").empty();
                 let txidNep = yield WebBrowser.WWW.api_getnep5transferbytxid(txid);
                 //console.log(txidNep);
@@ -5862,21 +5820,20 @@ var WebBrowser;
                 let time = WebBrowser.DateTool.getTime(block.time);
                 $("#actransaction-time").text(time);
                 //let allAsset: Asset[] = await WWW.api_getAllAssets();
-                txInfo.vin = JSON.parse(txInfo.vin.toString());
+                // txInfo.vin = JSON.parse(txInfo.vin.toString());
                 let arr = new Array();
-                for (let index = 0; index < txInfo.vin.length; index++) {
-                    const vin = txInfo.vin[index];
-                    try {
-                        let txInfo = yield WebBrowser.WWW.getappchainrawtransaction(ac, vin.txid);
-                        let vout = txInfo.vout[vin.vout];
-                        let address = vout.address;
-                        let value = vout.value;
-                        let name = WebBrowser.CoinTool.assetID2name[vout.asset];
-                        arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value });
-                    }
-                    catch (error) {
-                    }
-                }
+                // for (let index = 0; index < txInfo.vin.length; index++) {
+                // 	const vin = txInfo.vin[index];
+                // 	try {
+                // 		let txInfo: Tx = await WWW.getappchainrawtransaction(ac,vin.txid);
+                // 		let vout = txInfo.vout[vin.vout]
+                // 		let address: string = vout.address;
+                // 		let value: string = vout.value;
+                // 		let name = CoinTool.assetID2name[vout.asset];
+                // 		arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value });
+                // 	} catch (error) {
+                // 	}
+                // }
                 $("#acfrom").empty();
                 let array = WebBrowser.Transaction.groupByaddr(arr);
                 for (let index = 0; index < array.length; index++) {
@@ -5892,20 +5849,20 @@ var WebBrowser;
                     $("#acfrom").append(html);
                 }
                 $("#acto").empty();
-                txInfo.vout = JSON.parse(txInfo.vout.toString());
-                txInfo.vout.forEach(vout => {
-                    let name = WebBrowser.CoinTool.assetID2name[vout.asset];
-                    let sign = "";
-                    if (array.find(item => item.addr == vout.address)) {
-                        sign = "(change)";
-                    }
-                    let html = "";
-                    html += '<div class="line" > <div class="title-nel" > <span>Address </span></div >';
-                    html += '<div class="content-nel" > <span id="size" >' + vout.address + ' </span></div > </div>';
-                    html += '<div class="line" > <div class="title-nel" > <span>' + name + ' </span></div >';
-                    html += '<div class="content-nel" > <span id="size" >' + vout.value + sign + ' </span></div > </div>';
-                    $("#acto").append(html);
-                });
+                // txInfo.vout = JSON.parse(txInfo.vout.toString());
+                // txInfo.vout.forEach(vout => {
+                // 	let name = CoinTool.assetID2name[vout.asset];
+                // 	let sign: string = "";
+                // 	if (array.find(item => item.addr == vout.address)) {
+                // 		sign = "(change)"
+                // 	}
+                // 	let html = "";
+                // 	html += '<div class="line" > <div class="title-nel" > <span>Address </span></div >';
+                // 	html += '<div class="content-nel" > <span id="size" >' + vout.address + ' </span></div > </div>';
+                // 	html += '<div class="line" > <div class="title-nel" > <span>' + name + ' </span></div >';
+                // 	html += '<div class="content-nel" > <span id="size" >' + vout.value + sign + ' </span></div > </div>';
+                // 	$("#acto").append(html);
+                // });
                 $("#actxidnep5").empty();
                 let txidNep = yield WebBrowser.WWW.api_getnep5transferbytxid(txid);
                 //console.log(txidNep);
@@ -6140,9 +6097,9 @@ var WebBrowser;
                 $("#assets-tran-list").empty();
                 if (tranList) {
                     tranList.forEach((item) => {
-                        if (!item.vin) {
-                            item.type = '-';
-                        }
+                        // if (!item.vin) {
+                        //     item.type = '-'
+                        // }
                         if (!item.size) {
                             item.type = '-';
                         }
@@ -6826,7 +6783,7 @@ var WebBrowser;
                 addr_title2: "资产",
                 addr_title3: "交易",
                 addr_txid: "交易ID",
-                addr_type: "交易类型",
+                addr_type: "交易高度",
                 addr_time: "时间",
                 addr_utxo_asset: "资产",
                 addr_utxo_number: "交易数量",
@@ -6856,11 +6813,8 @@ var WebBrowser;
                 asset_id: "应用链",
                 asset_asset: "应用链名",
                 asset_type: "生成时间",
-                asset_ava: "高度",
-                asset_pre: "共识节点1",
-                asset_pre2: "共识节点2",
-                asset_pre3: "共识节点3",
-                asset_pre4: "共识节点4",
+                asset_ava: "种子节点",
+                asset_pre: "共识节点",
                 asset_adm: "创建者",
                 asset_title2: "应用链区块",
                 asset_rank: "哈希",
@@ -6875,6 +6829,33 @@ var WebBrowser;
                 asset_height: "区块高度",
                 asset_goallasset: "返回",
                 no_data: "没有数据",
+                ac_last10: "最新的10个区块",
+                ac_appchain: "哈希",
+                ac_last10_height: "高度",
+                ac_last10_size: "大小",
+                ac_last10_ctm: "创建时间",
+                ac_last10_txcount: "交易数量",
+                ac_viewblocks: "查看所有 >>>>",
+                ac_last10t: "最新的10笔交易",
+                ac_last10t_txid: "交易ID",
+                ac_last10t_type: "类型",
+                ac_last10t_height: "高度",
+                ac_last10t_size: "大小",
+                ac_viewtxlist: "查看所有 >>>>",
+                ac_chaindata: "应用链数据",
+                ac_assets_title: "资产",
+                ac_nep5assets_asset: "资产ID",
+                ac_nep5assets_ava: "所属",
+                ac_nep5assets_pre: "总量",
+                ac_nep5assets_val: "应用链资产",
+                ac_nep5assets_id: "小数点后位数",
+                ac_summary: "统计",
+                ac_lastblock: "上一个区块",
+                ac_allblock: "查看所有区块",
+                ac_totaltrans: "交易总数",
+                ac_alltxlist: "查看所有交易",
+                ac_walletcreate: "已创建的钱包地址数",
+                ac_alladdress: "查看所有地址",
             };
         }
     }
@@ -7025,7 +7006,7 @@ var WebBrowser;
                 addr_title2: "Balance",
                 addr_title3: "Transactions",
                 addr_txid: "TXID",
-                addr_type: "Type",
+                addr_type: "Height",
                 addr_time: "Time",
                 addr_utxo_asset: "Asset",
                 addr_utxo_number: "Number",
@@ -7055,11 +7036,8 @@ var WebBrowser;
                 asset_id: "App Chain Hash",
                 asset_asset: "App Chain Name",
                 asset_type: "Time Created",
-                asset_ava: "Seedlist",
-                asset_pre: "Validator1",
-                asset_pre2: "Validator2",
-                asset_pre3: "Validator3",
-                asset_pre4: "Validator4",
+                asset_ava: "Seed",
+                asset_pre: "Validator",
                 asset_adm: "Owner",
                 asset_title2: "App Chain Blocks",
                 asset_rank: "Hash",
@@ -7074,6 +7052,33 @@ var WebBrowser;
                 asset_height: "Height",
                 asset_goallasset: "Back to all app chains",
                 no_data: "There is no data",
+                ac_last10: "Last 10 Blocks",
+                ac_appchain: "Hash",
+                ac_last10_height: "Height",
+                ac_last10_size: "Size",
+                ac_last10_ctm: "Time Created",
+                ac_last10_txcount: "Tx count",
+                ac_viewblocks: "View all >>>>",
+                ac_last10t: "Last 10 Transactions",
+                ac_last10t_txid: "TXID",
+                ac_last10t_type: "Type",
+                ac_last10t_height: "Height",
+                ac_last10t_size: "Size",
+                ac_viewtxlist: "View all >>>>",
+                ac_chaindata: "AppChain Data",
+                ac_assets_title: "Asset",
+                ac_nep5assets_asset: "AssetID",
+                ac_nep5assets_ava: "Name",
+                ac_nep5assets_pre: "Total Supply",
+                ac_nep5assets_val: "Symbol",
+                ac_nep5assets_id: "Decimals",
+                ac_summary: "Dashboard",
+                ac_lastblock: "Last block",
+                ac_allblock: "View all blocks",
+                ac_totaltrans: "Total transactions",
+                ac_alltxlist: "View all transactions",
+                ac_walletcreate: "Wallet address created",
+                ac_alladdress: "View all addresses",
             };
         }
     }
@@ -7516,7 +7521,7 @@ function txgMsg(obj) {
         obj.classList.add("active");
         var vins = tran.getAttribute('vins');
         var vouts = tran.getAttribute('vouts');
-        WebBrowser.Address.getTxMsg(vins, vouts, tran);
+        //WebBrowser.Address.getTxMsg(vins, vouts, tran);
     }
 }
 //# sourceMappingURL=app.js.map

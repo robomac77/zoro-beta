@@ -83,21 +83,21 @@ namespace WebBrowser {
 
 			$("#actransaction-time").text(time);
 			//let allAsset: Asset[] = await WWW.api_getAllAssets();
-			txInfo.vin = JSON.parse(txInfo.vin.toString());
+			// txInfo.vin = JSON.parse(txInfo.vin.toString());
 			let arr = new Array<any>();
-			for (let index = 0; index < txInfo.vin.length; index++) {
-				const vin = txInfo.vin[index];
-				try {
-					let txInfo: Tx = await WWW.getappchainrawtransaction(ac,vin.txid);
-					let vout = txInfo.vout[vin.vout]
-					let address: string = vout.address;
-					let value: string = vout.value;
-					let name = CoinTool.assetID2name[vout.asset];
-					arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value });
-				} catch (error) {
+			// for (let index = 0; index < txInfo.vin.length; index++) {
+			// 	const vin = txInfo.vin[index];
+			// 	try {
+			// 		let txInfo: Tx = await WWW.getappchainrawtransaction(ac,vin.txid);
+			// 		let vout = txInfo.vout[vin.vout]
+			// 		let address: string = vout.address;
+			// 		let value: string = vout.value;
+			// 		let name = CoinTool.assetID2name[vout.asset];
+			// 		arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value });
+			// 	} catch (error) {
 
-				}
-			}
+			// 	}
+			// }
 			$("#acfrom").empty();
 			let array = Transaction.groupByaddr(arr);
 			for (let index = 0; index < array.length; index++) {
@@ -114,20 +114,20 @@ namespace WebBrowser {
 				$("#acfrom").append(html);
 			}
 			$("#acto").empty();
-			txInfo.vout = JSON.parse(txInfo.vout.toString());
-			txInfo.vout.forEach(vout => {
-				let name = CoinTool.assetID2name[vout.asset];
-				let sign: string = "";
-				if (array.find(item => item.addr == vout.address)) {
-					sign = "(change)"
-				}
-				let html = "";
-				html += '<div class="line" > <div class="title-nel" > <span>Address </span></div >';
-				html += '<div class="content-nel" > <span id="size" >' + vout.address + ' </span></div > </div>';
-				html += '<div class="line" > <div class="title-nel" > <span>' + name + ' </span></div >';
-				html += '<div class="content-nel" > <span id="size" >' + vout.value + sign + ' </span></div > </div>';
-				$("#acto").append(html);
-			});
+			// txInfo.vout = JSON.parse(txInfo.vout.toString());
+			// txInfo.vout.forEach(vout => {
+			// 	let name = CoinTool.assetID2name[vout.asset];
+			// 	let sign: string = "";
+			// 	if (array.find(item => item.addr == vout.address)) {
+			// 		sign = "(change)"
+			// 	}
+			// 	let html = "";
+			// 	html += '<div class="line" > <div class="title-nel" > <span>Address </span></div >';
+			// 	html += '<div class="content-nel" > <span id="size" >' + vout.address + ' </span></div > </div>';
+			// 	html += '<div class="line" > <div class="title-nel" > <span>' + name + ' </span></div >';
+			// 	html += '<div class="content-nel" > <span id="size" >' + vout.value + sign + ' </span></div > </div>';
+			// 	$("#acto").append(html);
+			// });
 
 			$("#actxidnep5").empty();
 			let txidNep = await WWW.api_getnep5transferbytxid(txid);

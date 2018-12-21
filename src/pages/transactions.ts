@@ -93,7 +93,7 @@ namespace WebBrowser {
 			for (var n = 0; n < listLength; n++) {
 			
 				let txid = txs[n].txid;
-				let html: string = await this.getTxLine(txid, txs[n].type, txs[n].size.toString(), txs[n].blockindex.toString(), txs[n].vin, txs[n].vout);
+				let html: string = await this.getTxLine(txid, txs[n].type, txs[n].size.toString(), txs[n].blockindex.toString());
 				this.txlist.find("#txlist-page-transactions").append(html);
 			}
 
@@ -138,39 +138,33 @@ namespace WebBrowser {
 		}
 
 
-		async getTxLine(txid: string, type: string, size: string, index: string, vins, vouts) // deleted string datatype for string
+		async getTxLine(txid: string, type: string, size: string, index: string) // deleted string datatype for string
 		{
-			console.log(vins)
-			console.log(JSON.stringify(vins));
-			console.log("--------------")
-			console.log(vouts)
-			console.log(JSON.stringify(vouts));
 			var id = txid.replace('0x', '');
 			id = id.substring(0, 6) + '...' + id.substring(id.length - 6);
-			if (vins.length == 0 && vouts.length == 0) {
-				return `<div class="line">
-                            <div class="line-general">
-                                <div class="content-nel"><span><a href="`+ Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
-                                <div class="content-nel"><span>`+ type.replace("Transaction", "") + `</span></div>
-                                <div class="content-nel"><span>`+ size + ` bytes</span></div>
-                                <div class="content-nel"><span><a href="`+ Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
-                            </div>
-                            <a class="end" id="genbtn" style="border-left:none;"></a>
-                        </div>`;
-			}
-			return `
-            <div class="line">
-                <div class="line-general">
-                    <div class="content-nel"><span><a href="`+ Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
-                    <div class="content-nel"><span>`+ type.replace("Transaction", "") + `</span></div>
-                    <div class="content-nel"><span>`+ size + ` bytes</span></div>
-                    <div class="content-nel"><span><a href="`+ Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
-                </div>
-                <a onclick="txgeneral(this)" class="end" id="genbtn"><img src="./img/open.svg" /></a>
-                <div class="transaction" style="width:100%;display: none;" vins='`+ JSON.stringify(vins) + `' vouts='` + JSON.stringify(vouts) + `'>
-                </div>
-            </div>
-            `;
+			return `<div class="line">
+						<div class="line-general">
+							<div class="content-nel"><span><a href="`+ Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
+							<div class="content-nel"><span>`+ type.replace("Transaction", "") + `</span></div>
+							<div class="content-nel"><span>`+ size + ` bytes</span></div>
+							<div class="content-nel"><span><a href="`+ Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
+						</div>
+						<a class="end" id="genbtn" style="border-left:none;"></a>
+					</div>`;
+
+			// return `
+            // <div class="line">
+            //     <div class="line-general">
+            //         <div class="content-nel"><span><a href="`+ Url.href_transaction(txid) + `" target="_self">` + id + `</a></span></div>
+            //         <div class="content-nel"><span>`+ type.replace("Transaction", "") + `</span></div>
+            //         <div class="content-nel"><span>`+ size + ` bytes</span></div>
+            //         <div class="content-nel"><span><a href="`+ Url.href_block(parseInt(index)) + `" target="_self">` + index + `</a></span></div>
+            //     </div>
+            //     <a onclick="txgeneral(this)" class="end" id="genbtn"><img src="./img/open.svg" /></a>
+            //     <div class="transaction" style="width:100%;display: none;" vins='`+ JSON.stringify(vins) + `' vouts='` + JSON.stringify(vouts) + `'>
+            //     </div>
+            // </div>
+            // `;
 		}
 
 		static async getTxgeneral(vins, vouts, div: HTMLDivElement) {
@@ -192,11 +186,11 @@ namespace WebBrowser {
 				const vin = vins[index];
 				try {
 					let txInfos: Tx[] = await ajax.post('getrawtransaction', [vin.txid]);
-					let vout = txInfos[0].vout[vin.vout]
-					let address: string = vout.address;
-					let value: string = vout.value;
-					let name = allAsset.find(val => val.id == vout.asset).name.map(name => { return name.name }).join("|");
-					arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value });
+					// let vout = [];
+					// let address: string = vout.address;
+					// let value: string = vout.value;
+					// let name = allAsset.find(val => val.id == vout.asset).name.map(name => { return name.name }).join("|");
+					// arr.push({ vin: vin.txid, vout: vin.vout, addr: address, name: name, amount: value });
 				} catch (error) {
 
 				}

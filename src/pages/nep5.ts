@@ -206,9 +206,9 @@ namespace WebBrowser
             $("#assets-tran-list").empty();
             if (tranList) {
                 tranList.forEach((item) => {
-                    if (!item.vin) {
-                        item.type = '-'
-                    }
+                    // if (!item.vin) {
+                    //     item.type = '-'
+                    // }
                     if (!item.size) {
                         item.type = '-'
                     }

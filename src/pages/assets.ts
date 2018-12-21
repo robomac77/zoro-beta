@@ -29,11 +29,6 @@
 					"assets_ava",
 					//"assets_pre",
 					//"assets_val",
-					"nep5assets_asset",
-					"nep5assets_ava",
-					"nep5assets_pre",
-					"nep5assets_val",
-					"nep5assets_id", 
 				]
 				page_lang.forEach(
 					lang => {
@@ -68,19 +63,7 @@
 						$("#asset-page").find("#asset-page-msg").html(pageMsg);
 						this.assetlist.find(".page").hide();
 					}
-				} else if (this.assetType == "Nep5") {
-					this.pageUtil = new PageUtil(this.nep5s.length, 15);
-					this.pageUtil.currentPage = 1;
-					if (this.nep5s.length > 15) {
-						this.updateNep5s(this.pageUtil);
-						this.assetlist.find(".page").show();
-					} else {
-						this.loadNep5View(this.nep5s);
-						let pageMsg = "Assets 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
-						$("#asset-page").find("#asset-page-msg").html(pageMsg);
-						this.assetlist.find(".page").hide();
-					}
-				}
+				} 
 			});
 
 			$("#asset-page-next").off("click").click(() => {
@@ -90,8 +73,6 @@
 					this.pageUtil.currentPage += 1;
 					if (this.assetType == "Assets") {
 						this.updateAssets(this.pageUtil);
-					} else if (this.assetType == "Nep5") {
-						this.updateNep5s(this.pageUtil);
 					}
 				}
 			});
@@ -102,8 +83,6 @@
 					this.pageUtil.currentPage -= 1;
 					if (this.assetType == "Assets") {
 						this.updateAssets(this.pageUtil);
-					} else if (this.assetType == "Nep5") {
-						this.updateNep5s(this.pageUtil);
 					}
 				}
 			});
@@ -128,36 +107,7 @@
 			$("#asset-page").find("#asset-page-msg").html(pageMsg);
 		}
 
-		//更新asset表格
-		public async updateNep5s(pageUtil: PageUtil) {
-			$("#asset-page").find("#asset-page-msg").html("");
-			let minNum = pageUtil.currentPage * pageUtil.pageSize - pageUtil.pageSize;
-			let maxNum = pageUtil.totalCount;
-			let diffNum = maxNum - minNum;
-			if (diffNum > 15) {
-				maxNum = pageUtil.currentPage * pageUtil.pageSize;
-			} else {
-				maxNum = pageUtil.totalCount;
-			}
-			let arrNep5s = new Array();
-			for (let i = minNum; i < maxNum; i++) {
-				arrNep5s.push(this.nep5s[i]);
-			}
-			this.loadNep5View(arrNep5s);
-
-			let pageMsg = "Assets " + (minNum + 1) + " to " + maxNum + " of " + pageUtil.totalCount;
-			$("#asset-page").find("#asset-page-msg").html(pageMsg);
-			if (this.pageUtil.totalPage - this.pageUtil.currentPage) {
-				$("#asset-page-next").removeClass('disabled');
-			} else {
-				$("#asset-page-next").addClass('disabled');
-			}
-			if (this.pageUtil.currentPage - 1) {
-				$("#asset-page-previous").removeClass('disabled');
-			} else {
-				$("#asset-page-previous").addClass('disabled');
-			}
-		}
+		
 
 		async start() {
 			this.getLangs()
@@ -176,20 +126,7 @@
 				let pageMsg = "App Chains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
 				$("#asset-page").find("#asset-page-msg").html(pageMsg);
 				this.assetlist.find(".page").hide();
-			}
-
-			this.nep5s = await WWW.getallnep5asset();
-
-			this.pageUtil = new PageUtil(this.nep5s.length, 15);
-			if (this.nep5s.length > 15) {
-				this.updateNep5s(this.pageUtil);
-				this.assetlist.find(".page").show();
-			} else {
-				this.loadNep5View(this.nep5s);
-				let pageMsg = "AppChains 1 to " + this.pageUtil.totalCount + " of " + this.pageUtil.totalCount;
-				$("#asset-page").find("#asset-page-msg").html(pageMsg);
-				this.assetlist.find(".page").hide();
-			}
+			}			
 
 			this.div.hidden = false;
 			this.footer.hidden = false;
@@ -226,21 +163,6 @@
 			});
 		}
 
-		public loadNep5View(nep5s: nep5Asset[]) {
-			$("#nep5s").empty();
-			nep5s.forEach((nep5s: nep5Asset) => {
-				let href = Url.href_nep5info(nep5s.assetid);
-				let assetId = nep5s.assetid.substring(2, 6) + '...' + nep5s.assetid.substring(nep5s.assetid.length - 4);
-				let htmlnep5 = `
-					<tr>
-					<td>` + nep5s.symbol + `</td>
-                    <td> <a href="`+ href + `" target="_self">` +  assetId + `</a></td>
-                    <td>` + nep5s.name + `</td>
-                    <td>` + nep5s.totalsupply + `</td>                    
-                    <td>` + nep5s.decimals + `</td>
-                    </tr>`;
-				$("#nep5s").append(htmlnep5);
-			});
-		}
+		
 	}
 }

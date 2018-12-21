@@ -354,38 +354,7 @@
 				<div id="asset-page-next" class="page-next">
 					<img src="./img/righttrangle.svg" alt="">
 				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-2">
-					<div class="title">
-						<span id="assets_title">Assets</span>
-					</div>
-				</div>
-			</div>
-			<table class="table cool table-nel">
-				<thead>
-					<tr>
-						<th id="nep5assets_val">Symbols</th>
-						<th id="nep5assets_asset">Asset ID</th>
-						<th id="nep5assets_ava">Name</th>
-						<th id="nep5assets_pre">Total Supply</th>						
-						<th id="nep5assets_id">Decimals</th>
-					</tr>
-				</thead>
-				<tbody id="nep5s"></tbody>
-			</table>
-			<div class="page-number">
-				<span id="nep5-page-msg"></span>
-			</div>
-			<div class="page">
-				<div id="nep5-page-previous" class="page-previous">
-					<img src="./img/lefttrangle.svg" alt="">
-				</div>
-				<div style="width:1px;"></div>
-				<div id="nep5-page-next" class="page-next">
-					<img src="./img/righttrangle.svg" alt="">
-				</div>
-			</div>
+			</div>			
 		</div>
 
 		<div id="nep5asset-info" style="min-height: 619px;">
@@ -625,7 +594,7 @@
 					</div>
 				</div>
 
-				<div class="title">
+				<!-- <div class="title">
 					<span>UTXO</span>
 				</div>
 				<table class="table table-nel cool">
@@ -637,8 +606,8 @@
 						</tr>
 					</thead>
 					<tbody id="add-utxos"></tbody>
-				</table>
-				<div class="page-number">
+				</table> -->
+				<!-- <div class="page-number">
 					<span id="utxo-page-msg"></span>
 				</div>
 				<div class="page" id="addr-utxo-page">
@@ -649,7 +618,7 @@
 					<div id="utxo-next" class="page-next">
 						<img src="./img/righttrangle.svg" alt="">
 					</div>
-				</div>
+				</div> -->
 			</div>
 		</div>
 		<div id="gui-info" class="container-nel" hidden style="min-height: 619px;">
@@ -661,16 +630,16 @@
 				<div class="go-back" id="goallasset"></div>
 			</div>
 			<div class="title">
-				<span id="i_summary">Summary</span>
+				<span id="ac_summary">Summary</span>
 			</div>
 			<div class="row summary">
 				<div class="col-md-4 ">
 					<div class="block">
 						<div class="caption">
-							<div class="title-summary" id="i_aclastblock">Last block</div>
-							<div class="number" id="acblockHeight">0</div>
+							<div class="title-summary" id="ac_lastblock">Last block</div>
+							<div class="number" id="ac_blockHeight">0</div>
 							<div>
-								<a id="i_acallblock" class="btn btn-nel" target="_self">View all blocks</a>
+								<a id="ac_allblock" class="btn btn-nel" target="_self">View all blocks</a>
 							</div>
 						</div>
 					</div>
@@ -678,10 +647,10 @@
 				<div class="col-md-4 ">
 					<div class="block">
 						<div class="caption">
-							<div class="title-summary" id="i_actotaltrans">Total transactions</div>
-							<div class="number" id="actxcount">0</div>
+							<div class="title-summary" id="ac_totaltrans">Total transactions</div>
+							<div class="number" id="ac_txcount">0</div>
 							<div>
-								<a id="i_acalltxlist" class="btn btn-nel" target="_self">View all transactions</a>
+								<a id="ac_alltxlist" class="btn btn-nel" target="_self">View all transactions</a>
 							</div>
 						</div>
 					</div>
@@ -689,92 +658,99 @@
 				<div class="col-md-4 ">
 					<div class="block">
 						<div class="caption">
-							<div class="title-summary" id="i_acwalletcreate">Wallet address created</div>
-							<div class="number" id="acaddrCount">0</div>
+							<div class="title-summary" id="ac_walletcreate">Wallet address created</div>
+							<div class="number" id="ac_addrCount">0</div>
 							<div>
-								<a id="i_acalladdress" class="btn btn-nel" target="_self">View all Addresses</a>
+								<a id="ac_alladdress" class="btn btn-nel" target="_self">View all Addresses</a>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="title">
-				<span id="i_chaindata">Chain Data</span>
+				<span id="ac_chaindata">Chain Data</span>
 			</div>
 			<div class="list-nel">
-				<div class="list-body">
-					<div class="line"></div>
-					<div class="line"><div class="title-nel"><span id="asset_id">ID</span></div> <div class="content-nel"><span id="id"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="asset_asset">Asset</span></div> <div class="content-nel"><span id="name"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="asset_type">Type</span></div> <div class="content-nel"><span id="type"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="asset_ava">Available</span></div><div class="content-nel"><span id="available"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="asset_pre">Precision</span></div><div class="content-nel"><span id="precision"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="asset_pre2">Precision</span></div><div class="content-nel"><span id="precision2"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="asset_pre3">Precision</span></div><div class="content-nel"><span id="precision3"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="asset_pre4">Precision</span></div><div class="content-nel"><span id="precision4"></span></div></div>
-					<div class="line"><div class="title-nel"><span id="asset_adm">Admin</span></div><div class="content-nel"><span id="admin"></span></div></div>
+				<div class="list-body" id="appchain_list">					
 				</div>
 			</div>
-
-			<div class="asset-nep5-warp">
-				<div class="title"><span id="asset_title2">Balance Rank</span></div>
-				<table class="table cool table-nel">
-					<thead>
-						<tr>
-							<th id="asset_rank">Rank</th>
-							<th id="asset_addr">Address</th>
-							<th id="asset_balance">Balance</th>
-							<th id="asset_blockheight">Height</th>
-							<th id="asset_tx">Trx Count</th>
-						</tr>
-					</thead>
-					<tbody id="assets-balance-list"></tbody>
-				</table>
-				<div class="asset-balance-page">
-					<div class="page-number">
-						<span id="assets-balance-msg"></span>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="title">
+						<span id="ac_last10">Last 10 Blocks</span>
 					</div>
-					<div class="page">
-						<div id="assets-balance-previous" class="page-previous">
-							<img src="./img/lefttrangle.svg" alt="">
-						</div>
-						<div style="width:1px;"></div>
-						<div id="assets-balance-next" class="page-next">
-							<img src="./img/righttrangle.svg" alt="">
+					<div class="last-info">
+						<table class="table table-nel cool" id="blocks">
+							<thead>
+								<tr>
+									<th id="ac_appchain">Hash</th>
+									<th id="ac_last10_size">Size</th>
+									<th id="ac_last10_ctm">Created at</th>
+									<th id="ac_last10_height">Height</th>
+									<th id="ac_last10_txcount">Tx count</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+						<div class="tfood">
+							<a id="ac_viewblocks" href="#blocks-page" target="_self">View all &nbsp; >>>></a>
 						</div>
 					</div>
 				</div>
-			</div>
-
-			<div class="asset-tran-warp">
-				<div class="title"><span id="asset_title3">Transactions</span></div>
-				<table class="table cool table-nel">
-					<thead>
-						<tr>
-							<th id="asset_txid">TXID</th>
-							<th id="asset_from">From</th>
-							<th id="asset_to">To</th>
-							<th id="asset_height">Height</th>
-						</tr>
-					</thead>
-					<tbody id="assets-tran-list"></tbody>
-				</table>
-				<div class="asset-tran-page">
-					<div class="page-number">
-						<span id="assets-tran-msg"></span>
+				<div class="col-md-6">
+					<div class="title">
+						<span id="ac_last10t">Last 10 Transactions</span>
 					</div>
-					<div class="page">
-						<div id="assets-tran-previous" class="page-previous">
-							<img src="./img/lefttrangle.svg" alt="">
-						</div>
-						<div style="width:1px;"></div>
-						<div id="assets-tran-next" class="page-next">
-							<img src="./img/righttrangle.svg" alt="">
+					<div class="last-info">
+						<table class="table cool table-nel" id="ac_transactions">
+							<thead>
+								<tr>
+									<th id="ac_last10t_txid">TXID</th>
+									<th id="ac_last10t_type">Type</th>
+									<th id="ac_last10t_height">Height</th>
+									<th id="ac_last10t_size">Size</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+						<div class="tfood">
+							<a class="" id="ac_viewtxlist" target="_self">View all &nbsp; >>>></a>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+			<div class="row">
+				<div class="col-md-2">
+					<div class="title">
+						<span id="ac_assets_title">Assets</span>
+					</div>
+				</div>
+			</div>
+			<table class="table cool table-nel">
+				<thead>
+					<tr>
+						<th id="ac_nep5assets_val">Symbols</th>
+						<th id="ac_nep5assets_asset">Asset ID</th>
+						<th id="ac_nep5assets_ava">Name</th>
+						<th id="ac_nep5assets_pre">Total Supply</th>						
+						<th id="ac_nep5assets_id">Decimals</th>
+					</tr>
+				</thead>
+				<tbody id="nep5s"></tbody>
+			</table>
+			<div class="page-number">
+				<span id="nep5-page-msg"></span>
+			</div>
+			<div class="page">
+				<div id="nep5-page-previous" class="page-previous">
+					<img src="./img/lefttrangle.svg" alt="">
+				</div>
+				<div style="width:1px;"></div>
+				<div id="nep5-page-next" class="page-next">
+					<img src="./img/righttrangle.svg" alt="">
+				</div>
+			</div>	
+		</div>		
 		<!--交易详情-->
 		<div id="transaction-info" style="min-height: 619px;">
 			<div class="title">
