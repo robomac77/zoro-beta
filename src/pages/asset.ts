@@ -119,10 +119,10 @@
 			$("#ac_addrCount").text(this.acaddcount); //$("#addrCount").text(NumberTool.toThousands(this.acaddcount));
 
 			//分页查询区块数据
-			let blocks: Block[] = await WWW.getappchainblocks( ap, 10, 0 );
+			let blocks: Block[] = await WWW.getappchainblocksdesc( ap, 10, 0 );
 			this.getTenBlock(blocks);
 			//分页查询交易记录
-			let txs: Tx[] = await WWW.getappchainrawtransactions(ap, 10, 0);
+			let txs: Tx[] = await WWW.getappchainrawtransactionsdesc(ap, 10, 0);
 			this.getTenTx(txs);
 
 			this.nep5s = await WWW.getappchainallnep5asset(ap);
@@ -314,6 +314,7 @@
 		}
 
 		public getTenBlock(blocks:Block[]){
+			$( "#asset-info" ).find( "#ac_blocks" ).children("tbody" ).empty();
 			let html_blocks = ``;
             
             blocks.forEach( ( item, index, input ) =>
@@ -325,7 +326,7 @@
 
                 html_blocks += `
                 <tr><td>
-                <a class="code" target="_self" href ='`+ Url.href_blockh(id) + `' > 
+                <a class="code" target="_self" href ='`+ Url.href_blockh(item.hash) + `' > 
                 `+ id + `</a></td>
                 <td>` + item.size + ` bytes</td>
                 <td>` + time + `</td>
@@ -333,10 +334,11 @@
                 `+ item.index + `</a></td>
                 <td>` + item.tx.length + `</td></tr>`;
             } );
-            $( "#index-page" ).find( "#blocks" ).children("tbody" ).append( html_blocks );
+            $( "#asset-info" ).find( "#ac_blocks" ).children("tbody" ).append( html_blocks );
 		}
 
 		public getTenTx(txs:Tx[]){
+			$("#asset-info").find("#ac_transactions").children("tbody" ).empty();
 			let html_txs = ``;
 			txs.forEach( ( tx ) =>
             {
@@ -357,7 +359,7 @@
                 </td>
                 </tr>`;
 			} );
-			$("#index-page").find("#transactions").children("tbody" ).append(html_txs);
+			$("#asset-info").find("#ac_transactions").children("tbody" ).append(html_txs);
 		}
 	}
 }

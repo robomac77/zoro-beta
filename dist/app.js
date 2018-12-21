@@ -130,6 +130,10 @@ var WebBrowser;
             return WebBrowser.locationtool.getUrl() + '/gui';
         }
         static href_blockh(block) {
+            var appchain = WebBrowser.locationtool.getParam2();
+            if (appchain && appchain.length == 40) {
+                return WebBrowser.locationtool.getUrl() + "/block/" + appchain + "/" + block;
+            }
             return WebBrowser.locationtool.getUrl() + '/block/' + block;
         }
         static href_transaction(tx) {
@@ -1301,7 +1305,7 @@ var WebBrowser;
                         blocks = yield WebBrowser.WWW.getacblock(appchain, index);
                     }
                     else {
-                        blocks = yield WebBrowser.WWW.getacblock(appchain, index);
+                        blocks = yield WebBrowser.WWW.getappchainblockFromHash(appchain, index);
                     }
                 }
                 else {
@@ -1309,7 +1313,7 @@ var WebBrowser;
                         blocks = yield WebBrowser.WWW.getblock(index);
                     }
                     else {
-                        blocks = yield WebBrowser.WWW.getblock(index);
+                        blocks = yield WebBrowser.WWW.getblockFromHash(index);
                     }
                 }
                 let block = blocks[0];
@@ -1632,7 +1636,7 @@ var WebBrowser;
                     id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
                     let html = `
                 <tr>
-                <td><a href="` + WebBrowser.Url.href_block(item.index) + `" target="_self">` + id + `</a></td>
+                <td><a href="` + WebBrowser.Url.href_blockh(item.hash) + `" target="_self">` + id + `</a></td>
                 <td>` + item.size + ` bytes</td><td>` + time + `</td><td><a href="` + WebBrowser.Url.href_block(item.index) + `" target="_self">` + item.index + `</a></td>
                 <td>` + txcounts + `</td>
                 </tr>`;
@@ -1767,6 +1771,29 @@ var WebBrowser;
                 return r;
             });
         }
+        /**
+         * 获取区块列表
+         * @param size 记录条数
+         * @param page 页码
+         */
+        static getblocksdesc(size, page) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getblocksdesc", size, page);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
+        static getappchainblocksdesc(appchain, size, page) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainblocksdesc", appchain, size, page);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
         static getblock(index) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getblock", index);
@@ -1822,6 +1849,25 @@ var WebBrowser;
                 return r; // needs most recent 10 txs returned, needs a sorting by txtype
             });
         }
+        //查询交易列表
+        static getrawtransactionsdesc(size, page, txtype) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getrawtransactionsdesc", size, page, txtype);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r; // needs most recent 10 txs returned, needs a sorting by txtype
+            });
+        }
+        static getappchainrawtransactionsdesc(appchain, size, page) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainrawtransactionsdesc", appchain, size, page);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r; // needs most recent 10 txs returned, needs a sorting by txtype
+            });
+        }
         static getaddrs(size, page) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getaddrs", size, page);
@@ -1851,7 +1897,7 @@ var WebBrowser;
         }
         static getappchainrawtransaction(ac, txid) {
             return __awaiter(this, void 0, void 0, function* () {
-                var str = WWW.makeRpcUrl("getrawactransaction", ac, txid);
+                var str = WWW.makeRpcUrl("getacrawtransaction", ac, txid);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -2107,6 +2153,15 @@ var WebBrowser;
         static api_getnep5transferbytxid(txid) {
             return __awaiter(this, void 0, void 0, function* () {
                 var str = WWW.makeRpcUrl("getnep5transferbytxid", txid);
+                var result = yield fetch(str, { "method": "get" });
+                var json = yield result.json();
+                var r = json["result"];
+                return r;
+            });
+        }
+        static api_getappchainnep5transferbytxid(ac, txid) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var str = WWW.makeRpcUrl("getappchainnep5transferbytxid", ac, txid);
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
@@ -3041,10 +3096,10 @@ var WebBrowser;
                 $("#ac_txcount").text(this.actxcount); //$("#txcount").text(NumberTool.toThousands(this.actxcount)); // 
                 $("#ac_addrCount").text(this.acaddcount); //$("#addrCount").text(NumberTool.toThousands(this.acaddcount));
                 //分页查询区块数据
-                let blocks = yield WebBrowser.WWW.getappchainblocks(ap, 10, 0);
+                let blocks = yield WebBrowser.WWW.getappchainblocksdesc(ap, 10, 0);
                 this.getTenBlock(blocks);
                 //分页查询交易记录
-                let txs = yield WebBrowser.WWW.getappchainrawtransactions(ap, 10, 0);
+                let txs = yield WebBrowser.WWW.getappchainrawtransactionsdesc(ap, 10, 0);
                 this.getTenTx(txs);
                 this.nep5s = yield WebBrowser.WWW.getappchainallnep5asset(ap);
                 if (this.nep5s) {
@@ -3233,6 +3288,7 @@ var WebBrowser;
             });
         }
         getTenBlock(blocks) {
+            $("#asset-info").find("#ac_blocks").children("tbody").empty();
             let html_blocks = ``;
             blocks.forEach((item, index, input) => {
                 let time = WebBrowser.DateTool.getTime(item.time);
@@ -3241,7 +3297,7 @@ var WebBrowser;
                 id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
                 html_blocks += `
                 <tr><td>
-                <a class="code" target="_self" href ='` + WebBrowser.Url.href_blockh(id) + `' > 
+                <a class="code" target="_self" href ='` + WebBrowser.Url.href_blockh(item.hash) + `' > 
                 ` + id + `</a></td>
                 <td>` + item.size + ` bytes</td>
                 <td>` + time + `</td>
@@ -3249,9 +3305,10 @@ var WebBrowser;
                 ` + item.index + `</a></td>
                 <td>` + item.tx.length + `</td></tr>`;
             });
-            $("#index-page").find("#blocks").children("tbody").append(html_blocks);
+            $("#asset-info").find("#ac_blocks").children("tbody").append(html_blocks);
         }
         getTenTx(txs) {
+            $("#asset-info").find("#ac_transactions").children("tbody").empty();
             let html_txs = ``;
             txs.forEach((tx) => {
                 let txid = tx.txid;
@@ -3271,7 +3328,7 @@ var WebBrowser;
                 </td>
                 </tr>`;
             });
-            $("#index-page").find("#transactions").children("tbody").append(html_txs);
+            $("#asset-info").find("#ac_transactions").children("tbody").append(html_txs);
         }
     }
     WebBrowser.AssetInfo = AssetInfo;
@@ -5259,9 +5316,9 @@ var WebBrowser;
                 //查询地址总数
                 let addrCount = yield WebBrowser.WWW.getaddrcount();
                 //分页查询区块数据
-                let blocks = yield WebBrowser.WWW.getblocks(10, 0);
+                let blocks = yield WebBrowser.WWW.getblocksdesc(10, 0);
                 //分页查询交易记录
-                let txs = yield WebBrowser.WWW.getrawtransactions(10, 1, '');
+                let txs = yield WebBrowser.WWW.getrawtransactionsdesc(10, 0, '');
                 $("#blockHeight").text(WebBrowser.NumberTool.toThousands(blockHeight)); //显示在页面
                 $("#txcount").text(WebBrowser.NumberTool.toThousands(txCount)); //显示在页面
                 $("#addrCount").text(WebBrowser.NumberTool.toThousands(addrCount));
@@ -5278,7 +5335,7 @@ var WebBrowser;
                     id = id.substring(0, 4) + '...' + id.substring(id.length - 4);
                     html_blocks += `
                 <tr><td>
-                <a class="code" target="_self" href ='` + WebBrowser.Url.href_blockh(id) + `' > 
+                <a class="code" target="_self" href ='` + WebBrowser.Url.href_blockh(item.hash) + `' > 
                 ` + id + `</a></td>
                 <td>` + item.size + ` bytes</td>
                 <td>` + time + `</td>
@@ -5629,8 +5686,15 @@ var WebBrowser;
         start() {
             this.getLangs();
             //this.div.innerHTML = pages.transaction;
-            this.updateTxInfo(WebBrowser.locationtool.getParam());
-            let href = WebBrowser.locationtool.getUrl() + "/transactions";
+            var appchain = WebBrowser.locationtool.getParam2();
+            if (appchain && appchain.length == 40) {
+                this.updateTxInfo(WebBrowser.locationtool.getParam3());
+                var href = WebBrowser.locationtool.getUrl() + "/transactions/" + appchain;
+            }
+            else {
+                this.updateTxInfo(WebBrowser.locationtool.getParam());
+                var href = WebBrowser.locationtool.getUrl() + "/transactions";
+            }
             let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("tran_goalltran") + '</a>';
             $("#goalltrans").empty();
             $("#goalltrans").append(html);
@@ -5639,7 +5703,13 @@ var WebBrowser;
         }
         updateTxInfo(txid) {
             return __awaiter(this, void 0, void 0, function* () {
-                let txInfo = yield WebBrowser.WWW.getrawtransaction(txid);
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var txInfo = yield WebBrowser.WWW.getappchainrawtransaction(appchain, txid);
+                }
+                else {
+                    var txInfo = yield WebBrowser.WWW.getrawtransaction(txid);
+                }
                 $("#type").text(txInfo.type.replace("Transaction", ""));
                 $("#txid").text(txInfo.txid);
                 $("#blockindex").empty();
@@ -5697,7 +5767,13 @@ var WebBrowser;
                 // 	$("#to").append(html);
                 // });
                 $("#txidnep5").empty();
-                let txidNep = yield WebBrowser.WWW.api_getnep5transferbytxid(txid);
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var txidNep = yield WebBrowser.WWW.api_getappchainnep5transferbytxid(appchain, txid);
+                }
+                else {
+                    var txidNep = yield WebBrowser.WWW.api_getnep5transferbytxid(txid);
+                }
                 //console.log(txidNep);
                 if (txidNep) {
                     $(".txidnep-warp").show();
@@ -5713,7 +5789,7 @@ var WebBrowser;
         loadTxidNep5View(asset, from, to, value) {
             return __awaiter(this, void 0, void 0, function* () {
                 let href = WebBrowser.Url.href_nep5(asset);
-                let nep5Name = yield WebBrowser.WWW.api_getnep5(asset);
+                //let nep5Name = await WWW.api_getnep5(asset); 
                 let html = `
                     <tr>
                     <td> <a href="` + href + `" target="_self">` + asset + `</a></td>

@@ -53,8 +53,15 @@ namespace WebBrowser {
 			this.getLangs()
 
 			//this.div.innerHTML = pages.transaction;
-			this.updateTxInfo(locationtool.getParam()); 
-			let href = locationtool.getUrl() + "/transactions";
+			var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+				this.updateTxInfo(locationtool.getParam3()); 
+				var href = locationtool.getUrl() + "/transactions/" + appchain;
+			}else{
+				this.updateTxInfo(locationtool.getParam());
+				var href = locationtool.getUrl() + "/transactions"; 
+			}
+			
 			let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("tran_goalltran") + '</a>'; 
 
 			$("#goalltrans").empty();
@@ -63,7 +70,12 @@ namespace WebBrowser {
 			this.footer.hidden = false;
 		}
 		public async updateTxInfo(txid: string) {
-			let txInfo: Tx = await WWW.getrawtransaction(txid);
+			var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+				var txInfo: Tx = await WWW.getappchainrawtransaction(appchain, txid);
+			}else{
+				var txInfo: Tx = await WWW.getrawtransaction(txid);
+			}
 			$("#type").text(txInfo.type.replace("Transaction", ""));
 			$("#txid").text(txInfo.txid);
 			$("#blockindex").empty();
@@ -127,7 +139,12 @@ namespace WebBrowser {
 			// });
 
 			$("#txidnep5").empty();
-			let txidNep = await WWW.api_getnep5transferbytxid(txid);
+			var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+				var txidNep = await WWW.api_getappchainnep5transferbytxid(appchain, txid);
+			}else{
+				var txidNep = await WWW.api_getnep5transferbytxid(txid);
+			}
 			//console.log(txidNep);
 			if (txidNep) {
 				$(".txidnep-warp").show();
@@ -141,7 +158,7 @@ namespace WebBrowser {
 
 		async loadTxidNep5View(asset: string, from: string, to: string, value: number) {
 			let href = Url.href_nep5(asset);
-			let nep5Name = await WWW.api_getnep5(asset); 
+			//let nep5Name = await WWW.api_getnep5(asset); 
 			let html = `
                     <tr>
                     <td> <a href="`+ href + `" target="_self">` + asset + `</a></td>

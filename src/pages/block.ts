@@ -88,13 +88,13 @@
                 if (index.indexOf("0x") < 0){
                     blocks = await WWW.getacblock(appchain, index);
                 }else{
-                    blocks = await WWW.getacblock(appchain, index);
+                    blocks = await WWW.getappchainblockFromHash(appchain, index);
                 }	
             }else{
                 if (index.indexOf("0x") < 0){
                     blocks = await WWW.getblock(index);
                 }else{
-                    blocks = await WWW.getblock(index);
+                    blocks = await WWW.getblockFromHash(index);
                 }	
             }           		
             let block: Block = blocks[0];

@@ -130,6 +130,29 @@ namespace WebBrowser {
 			return r as Block[];
 		}
 
+		/**
+         * 获取区块列表
+         * @param size 记录条数
+         * @param page 页码
+         */
+		static async getblocksdesc(size: number, page: number)      
+		{
+			var str = WWW.makeRpcUrl("getblocksdesc", size, page);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r as Block[];
+		}
+
+		static async getappchainblocksdesc(appchain:string ,size: number, page: number)      
+		{
+			var str = WWW.makeRpcUrl("getappchainblocksdesc", appchain ,size, page);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r as Block[];
+		}
+
 		static async getblock(index: number)      
 		{
 			var str = WWW.makeRpcUrl("getblock", index);
@@ -184,6 +207,25 @@ namespace WebBrowser {
 			return r as Tx[]; // needs most recent 10 txs returned, needs a sorting by txtype
 		}
 
+		//查询交易列表
+		static async getrawtransactionsdesc(size: number, page: number, txtype: string) {
+
+			var str = WWW.makeRpcUrl("getrawtransactionsdesc", size, page, txtype);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r as Tx[]; // needs most recent 10 txs returned, needs a sorting by txtype
+		}
+
+		static async getappchainrawtransactionsdesc(appchain:string , size: number, page: number) {
+
+			var str = WWW.makeRpcUrl("getappchainrawtransactionsdesc", appchain,size, page);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r as Tx[]; // needs most recent 10 txs returned, needs a sorting by txtype
+		}
+
 		static async getaddrs(size: number, page: number) {
 			var str = WWW.makeRpcUrl("getaddrs", size, page);
 			var result = await fetch(str, { "method": "get" });
@@ -210,7 +252,7 @@ namespace WebBrowser {
 
 		static async getappchainrawtransaction(ac: string ,txid: string) 
 		{
-			var str = WWW.makeRpcUrl("getrawactransaction", ac,txid);
+			var str = WWW.makeRpcUrl("getacrawtransaction", ac,txid);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
@@ -431,6 +473,13 @@ namespace WebBrowser {
 		//根据txid获取nep5
 		static async api_getnep5transferbytxid(txid: string) { 
 			var str = WWW.makeRpcUrl("getnep5transferbytxid", txid);
+			var result = await fetch(str, { "method": "get" });
+			var json = await result.json();
+			var r = json["result"];
+			return r;
+		}
+		static async api_getappchainnep5transferbytxid(ac:string, txid: string) { 
+			var str = WWW.makeRpcUrl("getappchainnep5transferbytxid", ac, txid);
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];

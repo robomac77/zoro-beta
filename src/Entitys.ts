@@ -150,6 +150,10 @@ namespace WebBrowser
             return locationtool.getUrl() +  '/gui'
         }
 		static href_blockh(block: string) {
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                return locationtool.getUrl() +  "/block/" + appchain + "/"+ block;
+            }
 			return locationtool.getUrl() + '/block/' + block;
 		}
         static href_transaction( tx: string )
