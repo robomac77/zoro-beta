@@ -97,6 +97,10 @@ var WebBrowser;
             return WebBrowser.locationtool.getUrl() + '/appchainblock/' + appchain + '/' + index;
         }
         static href_nep5info(nep5id) {
+            var appchain = WebBrowser.locationtool.getParam2();
+            if (appchain && appchain.length == 40) {
+                return WebBrowser.locationtool.getUrl() + '/nep5info/' + appchain + '/' + nep5id;
+            }
             return WebBrowser.locationtool.getUrl() + '/nep5info/' + nep5id;
         }
         static href_transactions() {
@@ -2045,7 +2049,7 @@ var WebBrowser;
                 var result = yield fetch(str, { "method": "get" });
                 var json = yield result.json();
                 var r = json["result"];
-                return r;
+                return r[0];
             });
         }
         static api_getallnep5assetofaddress(nep5) {
@@ -6261,25 +6265,7 @@ var WebBrowser;
         getLangs() {
             if (this.langType != this.app.langmgr.type) {
                 let page_lang = [
-                    "asset_title",
-                    "asset_id",
-                    "asset_asset",
-                    "asset_type",
-                    "asset_ava",
-                    "asset_pre",
-                    "asset_pre2",
-                    "asset_pre3",
-                    "asset_pre4",
-                    "asset_adm",
-                    "asset_title2",
-                    "asset_rank",
-                    "asset_addr",
-                    "asset_balance",
-                    "asset_title3",
-                    "asset_txid",
-                    "asset_from",
-                    "asset_to",
-                    "asset_height",
+                    "nep5asset_title",
                     "nep5assetid",
                     "nep5name",
                     "nep5assettotalsupply",
@@ -6294,59 +6280,60 @@ var WebBrowser;
         }
         start() {
             return __awaiter(this, void 0, void 0, function* () {
-                var nep5assetid = WebBrowser.locationtool.getParam();
-                let href = WebBrowser.locationtool.getUrl() + "/assets";
-                let html = '<a href="' + href + '" target="_self">&lt&lt&ltBack to all assets</a>';
-                if (location.pathname == '/zh/') {
-                    html = '<a href="' + href + '" target="_self">&lt&lt&lt返回</a>';
+                this.getLangs();
+                var nep5assetid = WebBrowser.locationtool.getParam3();
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var href = WebBrowser.locationtool.getUrl() + "/asset/" + appchain;
                 }
+                else {
+                    var href = WebBrowser.locationtool.getUrl();
+                }
+                let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("back_chainmessage") + '</a>';
                 $("#nep5asset").empty();
                 $("#nep5asset").append(html);
                 this.loadAssetInfoView(nep5assetid);
-                var assetType = WebBrowser.locationtool.getType();
-                if (assetType == 'nep5') {
-                    //$(".asset-nep5-warp").show();
-                    $(".nep5-tran-warp").show();
-                }
-                else {
-                    //$(".asset-nep5-warp").hide();
-                    $(".nep5-tran-warp").hide();
-                }
+                // var assetType = locationtool.getType();
+                // if (assetType == 'nep5') {
+                //     //$(".asset-nep5-warp").show();
+                //     $(".nep5-tran-warp").show();
+                // } else {
+                //     //$(".asset-nep5-warp").hide();
+                //     $(".nep5-tran-warp").hide();
+                // }
                 //资产排行
-                var rankcount = yield WebBrowser.WWW.api_getrankbyassetcount(nep5assetid);
-                this.rankPageUtil = new WebBrowser.PageUtil(rankcount[0].count, 10);
-                this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
+                // var rankcount = await WWW.api_getrankbyassetcount(nep5assetid);
+                // this.rankPageUtil = new PageUtil(rankcount[0].count, 10);
+                //this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
                 //排行翻页
-                $("#assets-balance-next").off("click").click(() => {
-                    if (this.rankPageUtil.currentPage == this.rankPageUtil.totalPage) {
-                        this.rankPageUtil.currentPage = this.rankPageUtil.totalPage;
-                    }
-                    else {
-                        this.rankPageUtil.currentPage += 1;
-                        this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
-                    }
-                });
-                $("#assets-balance-previous").off("click").click(() => {
-                    if (this.rankPageUtil.currentPage <= 1) {
-                        this.rankPageUtil.currentPage = 1;
-                    }
-                    else {
-                        this.rankPageUtil.currentPage -= 1;
-                        this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
-                    }
-                });
-                $("#assets-input").val('');
-                $("#assets-input").off("input").on('input', () => {
-                    this.doGoPage(nep5assetid, false);
-                });
-                $("#assets-input").off("keydown").keydown((e) => {
-                    if (e.keyCode == 13) {
-                        this.doGoPage(nep5assetid, true);
-                    }
-                });
-                $("#assets-gopage").off("click").click(() => {
-                    this.doGoPage(nep5assetid, true);
-                });
+                // $("#assets-balance-next").off("click").click(() => {
+                //     if (this.rankPageUtil.currentPage == this.rankPageUtil.totalPage) {
+                //         this.rankPageUtil.currentPage = this.rankPageUtil.totalPage;
+                //     } else {
+                //         this.rankPageUtil.currentPage += 1;
+                //         this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
+                //     }
+                // });
+                // $("#assets-balance-previous").off("click").click(() => {
+                //     if (this.rankPageUtil.currentPage <= 1) {
+                //         this.rankPageUtil.currentPage = 1;
+                //     } else {
+                //         this.rankPageUtil.currentPage -= 1;
+                //         this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
+                //     }
+                // });
+                // $("#assets-input").val('');
+                // $("#assets-input").off("input").on('input', () => {
+                //     this.doGoPage(nep5assetid,false)
+                // });
+                // $("#assets-input").off("keydown").keydown((e) => {
+                //     if (e.keyCode == 13) {
+                //         this.doGoPage(nep5assetid,true);
+                //     }
+                // });
+                // $("#assets-gopage").off("click").click(() => {
+                //     this.doGoPage(nep5assetid,true)
+                // });
                 this.div.hidden = false;
                 this.footer.hidden = false;
             });
@@ -6373,16 +6360,43 @@ var WebBrowser;
             this.footer.hidden = true;
         }
         loadAssetInfoView(nep5assetid) {
-            //this.div.innerHTML = pages.asset;
-            WebBrowser.WWW.api_getnep5(nep5assetid).then((data) => {
-                var asset = data[0];
-                asset.names = WebBrowser.CoinTool.assetID2name[asset.id];
-                $("#nep5assetid").text(asset.assetid);
-                $("#nep5name").text(asset.name);
-                $("#nep5assettotalsupply").text(asset.totalsupply);
-                $("#nep5symbol").text(asset.symbol);
-                $("#nep5decimals").text(asset.decimals);
-                // $("#nep5admin").text(asset.admin);                
+            return __awaiter(this, void 0, void 0, function* () {
+                var appchain = WebBrowser.locationtool.getParam2();
+                if (appchain && appchain.length == 40) {
+                    var asset = yield WebBrowser.WWW.api_getappchainnep5(appchain, nep5assetid);
+                }
+                else {
+                    var asset = yield WebBrowser.WWW.api_getnep5(nep5assetid);
+                }
+                if (asset.symbol.indexOf("{") >= 0) {
+                    var json = JSON.parse(asset.symbol);
+                    for (var i = 0; i < json.length; i++) {
+                        if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN") {
+                            asset.symbol = json[i].name;
+                            break;
+                        }
+                        else if (this.app.langmgr.type == json[i].lang) {
+                            asset.symbol = json[i].name;
+                            break;
+                        }
+                    }
+                    var json = JSON.parse(asset.name);
+                    for (var i = 0; i < json.length; i++) {
+                        if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN") {
+                            asset.name = json[i].name;
+                            break;
+                        }
+                        else if (this.app.langmgr.type == json[i].lang) {
+                            asset.name = json[i].name;
+                            break;
+                        }
+                    }
+                }
+                $("#nep5_assetid").text(asset.assetid);
+                $("#nep5_name").text(asset.name);
+                $("#nep5_assettotalsupply").text(asset.totalsupply);
+                $("#nep5_symbol").text(asset.symbol);
+                $("#nep5_decimals").text(asset.decimals);
             });
         }
         updateAssetBalanceView(nep5assetid, pageUtil) {
@@ -6761,9 +6775,9 @@ var WebBrowser;
                 i_viewtxlist: "查看所有 >>>>",
                 i_assets_title: "资产",
                 i_nep5assets_asset: "资产ID",
-                i_nep5assets_ava: "所属",
+                i_nep5assets_ava: "资产全称",
                 i_nep5assets_pre: "总量",
-                i_nep5assets_val: "应用链资产",
+                i_nep5assets_val: "资产",
                 i_nep5assets_id: "小数点后位数",
                 // blocks
                 blocks_title: "区块列表",
@@ -6874,16 +6888,18 @@ var WebBrowser;
                 assets_pre: "应用链版本",
                 //nep5assets
                 nep5assets_asset: "资产ID",
-                nep5assets_ava: "所属",
+                nep5assets_ava: "资产全称",
                 nep5assets_pre: "总量",
-                nep5assets_val: "应用链资产",
+                nep5assets_val: "资产",
                 nep5assets_id: "小数点后位数",
                 //nep5assetinfo
+                nep5asset_title: "资产详情",
                 nep5assetid: "资产ID",
                 nep5name: "所属",
                 nep5assettotalsupply: "总量",
                 nep5symbol: "应用链资产",
                 nep5decimals: "小数点后位数",
+                back_chainmessage: "返回",
                 // appchain
                 asset_title: "应用链信息",
                 asset_id: "应用链",
@@ -6921,9 +6937,9 @@ var WebBrowser;
                 ac_chaindata: "应用链数据",
                 ac_assets_title: "资产",
                 ac_nep5assets_asset: "资产ID",
-                ac_nep5assets_ava: "所属",
+                ac_nep5assets_ava: "资产全称",
                 ac_nep5assets_pre: "总量",
-                ac_nep5assets_val: "应用链资产",
+                ac_nep5assets_val: "资产",
                 ac_nep5assets_id: "小数点后位数",
                 ac_summary: "统计",
                 ac_lastblock: "上一个区块",
@@ -7102,11 +7118,13 @@ var WebBrowser;
                 nep5assets_val: "Symbol",
                 nep5assets_id: "Decimals",
                 //nep5assetinfo
+                nep5asset_title: "Asset Information",
                 nep5assetid: "Asset ID",
                 nep5name: "Name",
                 nep5assettotalsupply: "Total Supply",
                 nep5symbol: "Symbol",
                 nep5decimals: "Decimals",
+                back_chainmessage: "Back to chain message",
                 // asset
                 asset_title: "App Chain Information",
                 asset_id: "App Chain Hash",

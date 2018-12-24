@@ -9,29 +9,8 @@
 
 		getLangs() {
 			if (this.langType != this.app.langmgr.type) {
-				let page_lang = [
-					"asset_title",
-					"asset_id",
-					"asset_asset",
-					"asset_type",
-					"asset_ava",
-					"asset_pre",
-					"asset_pre2",
-					"asset_pre3",
-					"asset_pre4",
-					"asset_adm",
-
-					"asset_title2",
-					"asset_rank",
-					"asset_addr",
-					"asset_balance",
-
-					"asset_title3",
-					"asset_txid",
-					"asset_from",
-					"asset_to",
-					"asset_height",
-
+				let page_lang = [	
+                    "nep5asset_title",			
 					"nep5assetid",
 					"nep5name",
 					"nep5assettotalsupply",
@@ -60,59 +39,62 @@
         rankPageUtil: PageUtil;
         async start()
         {
+            this.getLangs();
             
-            var nep5assetid = locationtool.getParam();
-            let href = locationtool.getUrl() + "/assets";
-            let html = '<a href="' + href + '" target="_self">&lt&lt&ltBack to all assets</a>';
-            if (location.pathname == '/zh/') {
-                html = '<a href="' + href + '" target="_self">&lt&lt&lt返回</a>';
+            var nep5assetid = locationtool.getParam3();
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                var href = locationtool.getUrl() + "/asset/" + appchain;
+            }else{
+                var href = locationtool.getUrl();
             }
+            let html = '<a href="' + href + '" target="_self">&lt&lt&lt' + this.app.langmgr.get("back_chainmessage") + '</a>';
             $("#nep5asset").empty();
             $("#nep5asset").append(html);
 
             this.loadAssetInfoView(nep5assetid);
 
-            var assetType = locationtool.getType();
-            if (assetType == 'nep5') {
-                //$(".asset-nep5-warp").show();
-                $(".nep5-tran-warp").show();
-            } else {
-                //$(".asset-nep5-warp").hide();
-                $(".nep5-tran-warp").hide();
-            }
+            // var assetType = locationtool.getType();
+            // if (assetType == 'nep5') {
+            //     //$(".asset-nep5-warp").show();
+            //     $(".nep5-tran-warp").show();
+            // } else {
+            //     //$(".asset-nep5-warp").hide();
+            //     $(".nep5-tran-warp").hide();
+            // }
             //资产排行
-            var rankcount = await WWW.api_getrankbyassetcount(nep5assetid);
-            this.rankPageUtil = new PageUtil(rankcount[0].count, 10);
-            this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
+            // var rankcount = await WWW.api_getrankbyassetcount(nep5assetid);
+            // this.rankPageUtil = new PageUtil(rankcount[0].count, 10);
+            //this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
             //排行翻页
-            $("#assets-balance-next").off("click").click(() => {
-                if (this.rankPageUtil.currentPage == this.rankPageUtil.totalPage) {
-                    this.rankPageUtil.currentPage = this.rankPageUtil.totalPage;
-                } else {
-                    this.rankPageUtil.currentPage += 1;
-                    this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
-                }
-            });
-            $("#assets-balance-previous").off("click").click(() => {
-                if (this.rankPageUtil.currentPage <= 1) {
-                    this.rankPageUtil.currentPage = 1;
-                } else {
-                    this.rankPageUtil.currentPage -= 1;
-                    this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
-                }
-            });
-            $("#assets-input").val('');
-            $("#assets-input").off("input").on('input', () => {
-                this.doGoPage(nep5assetid,false)
-            });
-            $("#assets-input").off("keydown").keydown((e) => {
-                if (e.keyCode == 13) {
-                    this.doGoPage(nep5assetid,true);
-                }
-            });
-            $("#assets-gopage").off("click").click(() => {
-                this.doGoPage(nep5assetid,true)
-            });
+            // $("#assets-balance-next").off("click").click(() => {
+            //     if (this.rankPageUtil.currentPage == this.rankPageUtil.totalPage) {
+            //         this.rankPageUtil.currentPage = this.rankPageUtil.totalPage;
+            //     } else {
+            //         this.rankPageUtil.currentPage += 1;
+            //         this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
+            //     }
+            // });
+            // $("#assets-balance-previous").off("click").click(() => {
+            //     if (this.rankPageUtil.currentPage <= 1) {
+            //         this.rankPageUtil.currentPage = 1;
+            //     } else {
+            //         this.rankPageUtil.currentPage -= 1;
+            //         this.updateAssetBalanceView(nep5assetid, this.rankPageUtil);
+            //     }
+            // });
+            // $("#assets-input").val('');
+            // $("#assets-input").off("input").on('input', () => {
+            //     this.doGoPage(nep5assetid,false)
+            // });
+            // $("#assets-input").off("keydown").keydown((e) => {
+            //     if (e.keyCode == 13) {
+            //         this.doGoPage(nep5assetid,true);
+            //     }
+            // });
+            // $("#assets-gopage").off("click").click(() => {
+            //     this.doGoPage(nep5assetid,true)
+            // });
 
             this.div.hidden = false;
             this.footer.hidden = false;
@@ -138,21 +120,42 @@
             this.div.hidden = true;
             this.footer.hidden = true;
         }
-        loadAssetInfoView(nep5assetid: string)
+        async loadAssetInfoView(nep5assetid: string)
         {            
-            //this.div.innerHTML = pages.asset;
-            WWW.api_getnep5(nep5assetid).then((data) =>
-            {
-                var asset = data[0];
-                
-                asset.names = CoinTool.assetID2name[asset.id];
-                $("#nep5assetid").text(asset.assetid);
-                $("#nep5name").text(asset.name);
-                $("#nep5assettotalsupply").text(asset.totalsupply);
-                $("#nep5symbol").text(asset.symbol);
-                $("#nep5decimals").text(asset.decimals);
-               // $("#nep5admin").text(asset.admin);                
-            })
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){
+                var asset = await WWW.api_getappchainnep5(appchain, nep5assetid);
+            }else{
+                var asset = await WWW.api_getnep5(nep5assetid)
+            }   
+            if (asset.symbol.indexOf("{") >= 0){
+                var json = JSON.parse(asset.symbol);
+                for (var i = 0; i < json.length; i++){
+                    if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN"){
+                        asset.symbol = json[i].name;
+                        break;
+                    }else if (this.app.langmgr.type == json[i].lang) {
+                        asset.symbol = json[i].name;
+                        break;
+                    }
+                }
+                var json = JSON.parse(asset.name);
+                for (var i = 0; i < json.length; i++){
+                    if (this.app.langmgr.type == "cn" && json[i].lang == "zh-CN"){
+                        asset.name = json[i].name;
+                        break;
+                    }else if (this.app.langmgr.type == json[i].lang) {
+                        asset.name = json[i].name;
+                        break;
+                    }
+                }
+            }
+            
+            $("#nep5_assetid").text(asset.assetid);
+            $("#nep5_name").text(asset.name);
+            $("#nep5_assettotalsupply").text(asset.totalsupply);
+            $("#nep5_symbol").text(asset.symbol);
+            $("#nep5_decimals").text(asset.decimals);         
         }
         async updateAssetBalanceView(nep5assetid: string, pageUtil: PageUtil) {
             let balanceList = await WWW.getrankbyasset(nep5assetid, pageUtil.pageSize, pageUtil.currentPage);

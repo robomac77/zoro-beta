@@ -382,7 +382,7 @@ namespace WebBrowser {
 			var result = await fetch(str, { "method": "get" });
 			var json = await result.json();
 			var r = json["result"];
-			return r;
+			return r[0];
 		}
 
 		static async api_getallnep5assetofaddress(nep5: string) {  

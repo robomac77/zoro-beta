@@ -110,8 +110,12 @@ namespace WebBrowser
 			return locationtool.getUrl() + '/appchainblock/' + appchain + '/' + index;
 		}
 
-		static href_nep5info(nep5id: string) {         
-			return locationtool.getUrl() + '/nep5info/' + nep5id;
+		static href_nep5info(nep5id: string) {   
+            var appchain = locationtool.getParam2();
+            if (appchain && appchain.length == 40){      
+                return locationtool.getUrl() + '/nep5info/' + appchain + '/' + nep5id;
+            }
+            return locationtool.getUrl() + '/nep5info/' + nep5id;
 		}
 		
         static href_transactions()

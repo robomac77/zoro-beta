@@ -53,9 +53,9 @@ namespace WebBrowser
 
             i_assets_title:"资产",
             i_nep5assets_asset : "资产ID",
-	        i_nep5assets_ava: "所属",
+	        i_nep5assets_ava: "资产全称",
 			i_nep5assets_pre: "总量",
-			i_nep5assets_val: "应用链资产", 
+			i_nep5assets_val: "资产", 
 			i_nep5assets_id: "小数点后位数", 
 
             // blocks
@@ -190,17 +190,19 @@ namespace WebBrowser
 			//nep5assets
 
 			nep5assets_asset : "资产ID",
-	        nep5assets_ava: "所属",
+	        nep5assets_ava: "资产全称",
 			nep5assets_pre: "总量",
-			nep5assets_val: "应用链资产", 
+			nep5assets_val: "资产", 
 			nep5assets_id: "小数点后位数", 
 
-			//nep5assetinfo
+            //nep5assetinfo
+            nep5asset_title:"资产详情",
 			nep5assetid: "资产ID",
 			nep5name: "所属",
 			nep5assettotalsupply: "总量",
 			nep5symbol: "应用链资产",
-			nep5decimals: "小数点后位数", 
+            nep5decimals: "小数点后位数", 
+            back_chainmessage:"返回",
 
             // appchain
 			asset_title: "应用链信息",
@@ -242,9 +244,9 @@ namespace WebBrowser
             ac_chaindata:"应用链数据",
             ac_assets_title:"资产",
             ac_nep5assets_asset : "资产ID",
-	        ac_nep5assets_ava: "所属",
+	        ac_nep5assets_ava: "资产全称",
 			ac_nep5assets_pre: "总量",
-			ac_nep5assets_val: "应用链资产", 
+			ac_nep5assets_val: "资产", 
             ac_nep5assets_id: "小数点后位数", 
             ac_summary: "统计",
             ac_lastblock: "上一个区块",

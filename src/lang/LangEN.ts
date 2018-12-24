@@ -195,12 +195,14 @@ namespace WebBrowser
 			nep5assets_val: "Symbol",
 			nep5assets_id: "Decimals", 
 
-			//nep5assetinfo
+            //nep5assetinfo
+            nep5asset_title:"Asset Information",
 		    nep5assetid: "Asset ID",
 			nep5name: "Name",
 			nep5assettotalsupply: "Total Supply",
 			nep5symbol: "Symbol",
-			nep5decimals: "Decimals", 
+            nep5decimals: "Decimals", 
+            back_chainmessage: "Back to chain message",
 
             // asset
             asset_title: "App Chain Information",
