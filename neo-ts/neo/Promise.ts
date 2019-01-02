@@ -50,7 +50,7 @@ class NeoPromise<T> implements PromiseLike<T>
         });
     }
 
-    public catch<TResult>(onRejected: Func<any, TResult | PromiseLike<TResult>>): PromiseLike<TResult> {
+    public catch<TResult>(onRejected: Func<any, TResult | PromiseLike<TResult>>): PromiseLike<T|TResult> {
         return this.then(null, onRejected);
     }
 
@@ -90,7 +90,7 @@ class NeoPromise<T> implements PromiseLike<T>
         this.checkState();
     }
 
-    public static reject(reason: any): PromiseLike<any> {
+    public static reject(reason: any): NeoPromise<any> {
         return new NeoPromise((resolve, reject) => reject(reason));
     }
 
@@ -100,22 +100,34 @@ class NeoPromise<T> implements PromiseLike<T>
         this.checkState();
     }
 
-    public static resolve<T>(value: T | PromiseLike<T>): PromiseLike<T> {
+    public static resolve<T>(value: T | PromiseLike<T>): NeoPromise<T> {
         if (value instanceof NeoPromise) return value;
         return new NeoPromise<T>((resolve, reject) => resolve(value));
     }
 
-    public then<TResult>(onFulfilled?: Func<T, TResult | PromiseLike<TResult>>, onRejected?: Func<any, TResult | PromiseLike<TResult>>): PromiseLike<TResult> {
+    public then<TResult1 = T, TResult2 = never>(onFulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, onRejected?: (reason: any) => TResult2 | PromiseLike<TResult2>):PromiseLike<TResult1 | TResult2>{
         this._onFulfilled = onFulfilled;
         this._onRejected = onRejected;
         this._callback_attached = true;
         if (this._state == PromiseState.pending) {
-            this._next_promise = new NeoPromise<TResult>(null);
+            this._next_promise = new NeoPromise<TResult1>(null);
             return this._next_promise;
         }
         else {
             return this.checkState();
         }
     }
+    // public then<TResult>(onFulfilled?: Func<T, TResult | NeoPromise<TResult>>, onRejected?: Func<any, TResult | NeoPromise<TResult>>): NeoPromise<TResult> {
+    //     this._onFulfilled = onFulfilled;
+    //     this._onRejected = onRejected;
+    //     this._callback_attached = true;
+    //     if (this._state == PromiseState.pending) {
+    //         this._next_promise = new NeoPromise<TResult>(null);
+    //         return this._next_promise;
+    //     }
+    //     else {
+    //         return this.checkState();
+    //     }
+    // }
 }
 

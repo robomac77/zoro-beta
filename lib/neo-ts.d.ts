@@ -168,13 +168,13 @@ declare class NeoPromise<T> implements PromiseLike<T> {
     private _tag;
     constructor(executor: PromiseExecutor<T>);
     static all(iterable: NeoPromise<any>[]): NeoPromise<any[]>;
-    catch<TResult>(onRejected: Func<any, TResult | PromiseLike<TResult>>): PromiseLike<TResult>;
+    catch<TResult>(onRejected: Func<any, TResult | PromiseLike<TResult>>): PromiseLike<T | TResult>;
     private checkState;
     private reject;
-    static reject(reason: any): PromiseLike<any>;
+    static reject(reason: any): NeoPromise<any>;
     private resolve;
-    static resolve<T>(value: T | PromiseLike<T>): PromiseLike<T>;
-    then<TResult>(onFulfilled?: Func<T, TResult | PromiseLike<TResult>>, onRejected?: Func<any, TResult | PromiseLike<TResult>>): PromiseLike<TResult>;
+    static resolve<T>(value: T | PromiseLike<T>): NeoPromise<T>;
+    then<TResult1 = T, TResult2 = never>(onFulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, onRejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): PromiseLike<TResult1 | TResult2>;
 }
 declare namespace Neo {
     class Uint160 extends UintVariable {
@@ -703,6 +703,8 @@ declare namespace ThinNeo {
     class InvokeTransData implements IExtData {
         script: Uint8Array;
         gas: Neo.Fixed8;
+        gasPrice: Neo.Fixed8;
+        ScriptHash: Neo.Uint160;
         Serialize(trans: Transaction, writer: Neo.IO.BinaryWriter): void;
         Deserialize(trans: Transaction, reader: Neo.IO.BinaryReader): void;
     }

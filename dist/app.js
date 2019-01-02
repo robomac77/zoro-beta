@@ -3473,10 +3473,72 @@ var WebBrowser;
     }
     WebBrowser.Appchains = Appchains;
 })(WebBrowser || (WebBrowser = {}));
+/// <reference path="../../lib/neo-ts.d.ts"/>
+var WebBrowser;
+/// <reference path="../../lib/neo-ts.d.ts"/>
+(function (WebBrowser) {
+    class WebHelper {
+        static getScriptBuilderCreate(type, ..._params) {
+            var sb = new ThinNeo.ScriptBuilder();
+            switch (type) {
+                case Nep5Type.Neo:
+                    sb.EmitPushString(_params[0]);
+                    sb.EmitPushString(_params[1]);
+                    sb.EmitPushString(_params[2]);
+                    sb.EmitPushString(_params[3]);
+                    sb.EmitPushString(_params[4]);
+                    sb.EmitPushNumber(new Neo.BigInteger(_params[5]));
+                    sb.EmitPushBytes(_params[6]);
+                    sb.EmitPushBytes(_params[7]);
+                    var contract = new Uint8Array(_params[8]);
+                    sb.EmitPushBytes(contract);
+                    sb.EmitSysCall("Neo.Contract.Create");
+                    break;
+                case Nep5Type.Zoro:
+                    sb.EmitPushString(_params[0]);
+                    sb.EmitPushString(_params[1]);
+                    sb.EmitPushString(_params[2]);
+                    sb.EmitPushString(_params[3]);
+                    sb.EmitPushString(_params[4]);
+                    sb.EmitPushNumber(new Neo.BigInteger(_params[5]));
+                    sb.EmitPushBytes(_params[6]);
+                    sb.EmitPushBytes(_params[7]);
+                    var contract = new Uint8Array(_params[8]);
+                    sb.EmitPushBytes(contract);
+                    sb.EmitSysCall("Zoro.Contract.Create");
+                    break;
+                case Nep5Type.NativeNep5:
+                    var script = ThinNeo.Helper.GetAddressCheckScriptFromPublicKey(_params[0]);
+                    var scripthash = Neo.Cryptography.Sha256.computeHash(script);
+                    scripthash = Neo.Cryptography.RIPEMD160.computeHash(scripthash);
+                    var ss = new Neo.Uint160(scripthash).toString();
+                    sb.EmitPushString(ss);
+                    sb.EmitPushBytes(_params[0]);
+                    sb.EmitPushNumber(new Neo.BigInteger(_params[1]));
+                    var amount = _params[2] * Math.pow(10, _params[1]);
+                    sb.EmitPushNumber(new Neo.BigInteger(amount));
+                    sb.EmitPushString(_params[3]);
+                    sb.EmitPushString(_params[4]);
+                    sb.EmitSysCall("Zoro.NativeNEP5.Create");
+                    break;
+            }
+            return sb;
+        }
+    }
+    WebBrowser.WebHelper = WebHelper;
+    let Nep5Type;
+    (function (Nep5Type) {
+        Nep5Type[Nep5Type["Neo"] = 0] = "Neo";
+        Nep5Type[Nep5Type["Zoro"] = 1] = "Zoro";
+        Nep5Type[Nep5Type["NativeNep5"] = 2] = "NativeNep5";
+    })(Nep5Type = WebBrowser.Nep5Type || (WebBrowser.Nep5Type = {}));
+})(WebBrowser || (WebBrowser = {}));
 /// <reference path="../tools/wwwtool.ts"/>
+/// <reference path="../tools/WebHelper.ts"/>
 /// <reference path="../../lib/neo-ts.d.ts"/>
 var WebBrowser;
 /// <reference path="../tools/wwwtool.ts"/>
+/// <reference path="../tools/WebHelper.ts"/>
 /// <reference path="../../lib/neo-ts.d.ts"/>
 (function (WebBrowser) {
     class AppChainTool {
@@ -3584,6 +3646,49 @@ var WebBrowser;
             select.selectedIndex = num - 1;
             return select;
         }
+        static SendNativeContract(presion, totalsupply, symbol, name, chainHash, pubkey, prikey) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var sb = new ThinNeo.ScriptBuilder();
+                sb = WebBrowser.WebHelper.getScriptBuilderCreate(WebBrowser.Nep5Type.NativeNep5, pubkey, presion, totalsupply, symbol, name);
+                var scripthash = Neo.Cryptography.Sha256.computeHash(sb.ToArray());
+                scripthash = Neo.Cryptography.RIPEMD160.computeHash(scripthash);
+                alert(new Neo.Uint160(scripthash).toString());
+                var postArray = [];
+                postArray.push(chainHash);
+                postArray.push(sb.ToArray().toHexString());
+                var result = yield WebBrowser.WWW.rpc_invokeScript(postArray);
+                var gas = Neo.Fixed8.parse(result["gas_consumed"].toString());
+                var extdata = new ThinNeo.InvokeTransData();
+                extdata.script = sb.ToArray();
+                extdata.gas = gas;
+                extdata.gasPrice = Neo.Fixed8.One;
+                var pubkeyScriptHash = Neo.Cryptography.Sha256.computeHash(ThinNeo.Helper.GetPublicKeyScriptHashFromPublicKey(pubkey));
+                pubkeyScriptHash = Neo.Cryptography.RIPEMD160.computeHash(pubkeyScriptHash);
+                extdata.ScriptHash = new Neo.Uint160(pubkeyScriptHash);
+                var tran = new ThinNeo.Transaction();
+                tran.type = ThinNeo.TransactionType.InvocationTransaction;
+                tran.version = 2;
+                tran.inputs = [];
+                tran.outputs = [];
+                tran.attributes = [];
+                // tran.attributes[0] = new ThinNeo.Attribute();
+                // tran.attributes[0].usage = ThinNeo.TransactionAttributeUsage.Script;
+                // tran.attributes[0].data = ThinNeo.Helper.GetPublicKeyScriptHashFromPublicKey(pubkey);          
+                tran.extdata = extdata;
+                var msg = tran.GetMessage();
+                var signdata = ThinNeo.Helper.Sign(msg, prikey);
+                tran.AddWitness(signdata, pubkey, ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+                var data = tran.GetRawData();
+                var rawdata = data.toHexString();
+                var postRawArray = [];
+                postRawArray.push(chainHash);
+                postRawArray.push(rawdata);
+                var NativeNep5Result = yield WebBrowser.WWW.rpc_sendrawtransaction(postRawArray);
+                alert(JSON.stringify(NativeNep5Result));
+                //NativeNep5 Hash
+                return new Neo.Uint160(scripthash);
+            });
+        }
         static SendContract(need_storage, need_canCharge, description, email, auther, version, name, ContractAvm, chainHash, pubkey, prikey) {
             return __awaiter(this, void 0, void 0, function* () {
                 var parameter__list = "0710".hexToBytes();
@@ -3596,17 +3701,11 @@ var WebBrowser;
                 nep4 = nep4;
                 canCharge = need_canCharge ? canCharge : 4;
                 var ss = storage | nep4 | canCharge;
-                sb.EmitPushString(description);
-                sb.EmitPushString(email);
-                sb.EmitPushString(auther);
-                sb.EmitPushString(version);
-                sb.EmitPushString(name);
-                sb.EmitPushNumber(new Neo.BigInteger(ss));
-                sb.EmitPushBytes(return_type);
-                sb.EmitPushBytes(parameter__list);
-                var contract = new Uint8Array(ContractAvm);
-                sb.EmitPushBytes(contract);
-                sb.EmitSysCall("Neo.Contract.Create");
+                if (chainHash == "NEO")
+                    sb = WebBrowser.WebHelper.getScriptBuilderCreate(WebBrowser.Nep5Type.Neo, description, email, auther, version, name, ss, return_type, parameter__list, ContractAvm);
+                else {
+                    sb = WebBrowser.WebHelper.getScriptBuilderCreate(WebBrowser.Nep5Type.Zoro, description, email, auther, version, name, ss, return_type, parameter__list, ContractAvm);
+                }
                 var scriptPublish = sb.ToArray().toHexString();
                 var postArray = [];
                 postArray.push(chainHash);
@@ -4694,89 +4793,54 @@ var WebBrowser;
             var select = document.createElement("select");
             contractBackGround.appendChild(select);
             WebBrowser.AppChainTool.getChain(select);
-            var ContractText = document.createElement('span');
-            ContractText.style.color = "#eeeeee";
-            ContractText.textContent = "合约";
-            contractBackGround.appendChild(ContractText);
-            var storageName = document.createElement('span');
-            storageName.style.color = "#eeeeee";
-            storageName.textContent = "storage";
-            contractBackGround.appendChild(storageName);
-            var need_storage = document.createElement('input');
-            need_storage.type = "checkbox";
-            need_storage.checked = false;
-            contractBackGround.appendChild(need_storage);
-            var canChargeName = document.createElement('span');
-            canChargeName.style.color = "#eeeeee";
-            canChargeName.textContent = "canCharge";
-            contractBackGround.appendChild(canChargeName);
-            var need_canCharge = document.createElement('input');
-            need_canCharge.type = "checkbox";
-            need_canCharge.checked = false;
-            contractBackGround.appendChild(need_canCharge);
-            var nameText = document.createElement('span');
-            nameText.style.color = "#eeeeee";
-            nameText.textContent = "NAME";
-            contractBackGround.appendChild(nameText);
-            var name = document.createElement('input');
-            name.value = "name";
-            contractBackGround.appendChild(name);
-            var versionText = document.createElement('span');
-            versionText.style.color = "#eeeeee";
-            versionText.textContent = "VERSION";
-            contractBackGround.appendChild(versionText);
-            var version = document.createElement('input');
-            version.value = "1.0";
-            contractBackGround.appendChild(version);
-            var autherText = document.createElement('span');
-            autherText.style.color = "#eeeeee";
-            autherText.textContent = "AUTHOR";
-            contractBackGround.appendChild(autherText);
-            var auther = document.createElement('input');
-            auther.value = "auther";
-            contractBackGround.appendChild(auther);
-            var emailText = document.createElement('span');
-            emailText.style.color = "#eeeeee";
-            emailText.textContent = "EMAIL";
-            contractBackGround.appendChild(emailText);
-            var email = document.createElement('input');
-            email.value = "email";
-            contractBackGround.appendChild(email);
-            var descriptionText = document.createElement('span');
-            descriptionText.style.color = "#eeeeee";
-            descriptionText.textContent = "DESCRIPTION";
-            contractBackGround.appendChild(descriptionText);
-            var description = document.createElement('input');
-            description.value = "description";
-            contractBackGround.appendChild(description);
-            var fileText = document.createElement('span');
-            fileText.style.color = "#eeeeee";
-            fileText.textContent = "FILE";
-            contractBackGround.appendChild(fileText);
-            var file = document.createElement('input');
-            file.type = "file";
-            contractBackGround.appendChild(file);
-            var btnSend = document.createElement('button');
-            btnSend.textContent = "send";
-            contractBackGround.appendChild(btnSend);
-            var ContractAvm = null;
-            btnSend.onclick = () => __awaiter(this, void 0, void 0, function* () {
-                if (!ContractAvm) {
-                    alert("it can be .avm file.");
-                    return;
+            var chooseNative = document.createElement("div");
+            contractBackGround.appendChild(chooseNative);
+            var nativeBackGround = document.createElement('div');
+            chooseNative.appendChild(nativeBackGround);
+            var BoolNativeNep5 = null;
+            select.onchange = () => {
+                if (select.childNodes[select.selectedIndex].value != "NEO") {
+                    if (chooseNative.firstChild)
+                        chooseNative.removeChild(chooseNative.firstChild);
+                    var nativeBackGround = document.createElement('div');
+                    chooseNative.appendChild(nativeBackGround);
+                    var nativeName = document.createElement('span');
+                    nativeBackGround.appendChild(nativeName);
+                    nativeName.style.color = "#eeeeee";
+                    nativeName.textContent = "选择是否NativeNep5类型";
+                    BoolNativeNep5 = document.createElement('input');
+                    BoolNativeNep5.type = "checkbox";
+                    BoolNativeNep5.checked = false;
+                    nativeBackGround.appendChild(BoolNativeNep5);
+                    var nativeBackGround2 = document.createElement('div');
+                    nativeBackGround.appendChild(nativeBackGround2);
+                    BoolNativeNep5.onchange = () => {
+                        if (BoolNativeNep5.checked) {
+                            if (nativeBackGround2)
+                                nativeBackGround.removeChild(nativeBackGround2);
+                            nativeBackGround2 = document.createElement('div');
+                            nativeBackGround.appendChild(nativeBackGround2);
+                            this.createNativeContract(nativeBackGround2, select);
+                        }
+                        else {
+                            if (nativeBackGround2)
+                                nativeBackGround.removeChild(nativeBackGround2);
+                            nativeBackGround2 = document.createElement('div');
+                            nativeBackGround.appendChild(nativeBackGround2);
+                            this.createContract(nativeBackGround2, select);
+                        }
+                    };
+                    this.createContract(nativeBackGround2, select);
                 }
-                WebBrowser.AppChainTool.SendContract(need_storage.checked, need_canCharge.checked, description.value, email.value, auther.value, version.value, name.value, ContractAvm, select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
-            });
-            var reader = new FileReader();
-            reader.onload = (e) => {
-                ContractAvm = reader.result;
+                else {
+                    if (chooseNative.firstChild)
+                        chooseNative.removeChild(chooseNative.firstChild);
+                    var nativeBackGround = document.createElement('div');
+                    chooseNative.appendChild(nativeBackGround);
+                    this.createContract(nativeBackGround, select);
+                }
             };
-            file.onchange = (ev) => {
-                if (file.files.length > 0)
-                    if (file.files[0].name.includes(".avm")) {
-                        reader.readAsArrayBuffer(file.files[0]);
-                    }
-            };
+            this.createContract(nativeBackGround, select);
         }
         useContract(div, use) {
             if (div.firstChild)
@@ -4930,6 +4994,127 @@ var WebBrowser;
                     txMessage = JSON.stringify(txMessage);
                 }
                 txText.textContent = (use ? "txid = " : "invokeMessage = ") + txMessage;
+            });
+        }
+        createContract(nativeBackGround, select) {
+            var ContractText = document.createElement('span');
+            ContractText.style.color = "#eeeeee";
+            ContractText.textContent = "合约";
+            nativeBackGround.appendChild(ContractText);
+            var storageName = document.createElement('span');
+            storageName.style.color = "#eeeeee";
+            storageName.textContent = "storage";
+            nativeBackGround.appendChild(storageName);
+            var need_storage = document.createElement('input');
+            need_storage.type = "checkbox";
+            need_storage.checked = false;
+            nativeBackGround.appendChild(need_storage);
+            var canChargeName = document.createElement('span');
+            canChargeName.style.color = "#eeeeee";
+            canChargeName.textContent = "canCharge";
+            nativeBackGround.appendChild(canChargeName);
+            var need_canCharge = document.createElement('input');
+            need_canCharge.type = "checkbox";
+            need_canCharge.checked = false;
+            nativeBackGround.appendChild(need_canCharge);
+            var nameText = document.createElement('span');
+            nameText.style.color = "#eeeeee";
+            nameText.textContent = "NAME";
+            nativeBackGround.appendChild(nameText);
+            var name = document.createElement('input');
+            name.value = "name";
+            nativeBackGround.appendChild(name);
+            var versionText = document.createElement('span');
+            versionText.style.color = "#eeeeee";
+            versionText.textContent = "VERSION";
+            nativeBackGround.appendChild(versionText);
+            var version = document.createElement('input');
+            version.value = "1.0";
+            nativeBackGround.appendChild(version);
+            var autherText = document.createElement('span');
+            autherText.style.color = "#eeeeee";
+            autherText.textContent = "AUTHOR";
+            nativeBackGround.appendChild(autherText);
+            var auther = document.createElement('input');
+            auther.value = "auther";
+            nativeBackGround.appendChild(auther);
+            var emailText = document.createElement('span');
+            emailText.style.color = "#eeeeee";
+            emailText.textContent = "EMAIL";
+            nativeBackGround.appendChild(emailText);
+            var email = document.createElement('input');
+            email.value = "email";
+            nativeBackGround.appendChild(email);
+            var descriptionText = document.createElement('span');
+            descriptionText.style.color = "#eeeeee";
+            descriptionText.textContent = "DESCRIPTION";
+            nativeBackGround.appendChild(descriptionText);
+            var description = document.createElement('input');
+            description.value = "description";
+            nativeBackGround.appendChild(description);
+            var fileText = document.createElement('span');
+            fileText.style.color = "#eeeeee";
+            fileText.textContent = "FILE";
+            nativeBackGround.appendChild(fileText);
+            var file = document.createElement('input');
+            file.type = "file";
+            nativeBackGround.appendChild(file);
+            var btnSend = document.createElement('button');
+            btnSend.textContent = "send";
+            nativeBackGround.appendChild(btnSend);
+            var ContractAvm = null;
+            btnSend.onclick = () => __awaiter(this, void 0, void 0, function* () {
+                if (!ContractAvm) {
+                    alert("it can be .avm file.");
+                    return;
+                }
+                WebBrowser.AppChainTool.SendContract(need_storage.checked, need_canCharge.checked, description.value, email.value, auther.value, version.value, name.value, ContractAvm, select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
+            });
+            var reader = new FileReader();
+            reader.onload = (e) => {
+                ContractAvm = reader.result;
+            };
+            file.onchange = (ev) => {
+                if (file.files.length > 0)
+                    if (file.files[0].name.includes(".avm")) {
+                        reader.readAsArrayBuffer(file.files[0]);
+                    }
+            };
+        }
+        createNativeContract(nativeBackGround, select) {
+            var nameText = document.createElement('span');
+            nameText.style.color = "#eeeeee";
+            nameText.textContent = "NAME";
+            nativeBackGround.appendChild(nameText);
+            var name = document.createElement('input');
+            name.value = "InvokeContractTest_NativeNEP5";
+            nativeBackGround.appendChild(name);
+            var symbolText = document.createElement('span');
+            symbolText.style.color = "#eeeeee";
+            symbolText.textContent = "SYMBOL";
+            nativeBackGround.appendChild(symbolText);
+            var symbol = document.createElement('input');
+            symbol.value = "InvokeContractTest";
+            nativeBackGround.appendChild(symbol);
+            var totalSupplyText = document.createElement('span');
+            totalSupplyText.style.color = "#eeeeee";
+            totalSupplyText.textContent = "TotalSupply";
+            nativeBackGround.appendChild(totalSupplyText);
+            var totalSupply = document.createElement('input');
+            totalSupply.value = "2000000000";
+            nativeBackGround.appendChild(totalSupply);
+            var presionText = document.createElement('span');
+            presionText.style.color = "#eeeeee";
+            presionText.textContent = "Presion";
+            nativeBackGround.appendChild(presionText);
+            var presion = document.createElement('input');
+            presion.value = "8";
+            nativeBackGround.appendChild(presion);
+            var btnSend = document.createElement('button');
+            btnSend.textContent = "send";
+            nativeBackGround.appendChild(btnSend);
+            btnSend.onclick = () => __awaiter(this, void 0, void 0, function* () {
+                WebBrowser.AppChainTool.SendNativeContract(parseInt(presion.value), parseInt(totalSupply.value), symbol.value, name.value, select.childNodes[select.selectedIndex].value, WebBrowser.GUITool.pubkey, WebBrowser.GUITool.prikey);
             });
         }
     }

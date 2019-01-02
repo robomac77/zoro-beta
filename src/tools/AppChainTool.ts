@@ -1,4 +1,5 @@
 /// <reference path="../tools/wwwtool.ts"/>
+/// <reference path="../tools/WebHelper.ts"/>
 /// <reference path="../../lib/neo-ts.d.ts"/>
 namespace WebBrowser
 {
@@ -145,6 +146,56 @@ namespace WebBrowser
             return select;       
         }
 
+        static async SendNativeContract(presion:number, totalsupply:number, symbol:string, name:string, chainHash:any,pubkey:any,prikey:any):Promise<Neo.Uint160>{
+          var sb = new ThinNeo.ScriptBuilder();
+          sb = WebHelper.getScriptBuilderCreate(Nep5Type.NativeNep5, pubkey, presion, totalsupply, symbol, name);
+
+          var scripthash = Neo.Cryptography.Sha256.computeHash(sb.ToArray());          
+          scripthash = Neo.Cryptography.RIPEMD160.computeHash(scripthash);  
+          alert(new Neo.Uint160(scripthash).toString());       
+          
+          var postArray = [];
+          postArray.push(chainHash);
+          postArray.push(sb.ToArray().toHexString());
+          var result = await WWW.rpc_invokeScript(postArray);
+          var gas = Neo.Fixed8.parse(result["gas_consumed"].toString());
+
+          var extdata = new ThinNeo.InvokeTransData();
+          extdata.script = sb.ToArray();
+          extdata.gas = gas;
+          extdata.gasPrice = Neo.Fixed8.One;
+          var pubkeyScriptHash = Neo.Cryptography.Sha256.computeHash(ThinNeo.Helper.GetPublicKeyScriptHashFromPublicKey(pubkey));          
+          pubkeyScriptHash = Neo.Cryptography.RIPEMD160.computeHash(pubkeyScriptHash);     
+          extdata.ScriptHash = new Neo.Uint160(pubkeyScriptHash);
+
+          var tran = new  ThinNeo.Transaction();
+          tran.type = ThinNeo.TransactionType.InvocationTransaction;
+          tran.version = 2;
+          tran.inputs = [];
+          tran.outputs = [];
+          tran.attributes = [];
+          // tran.attributes[0] = new ThinNeo.Attribute();
+          // tran.attributes[0].usage = ThinNeo.TransactionAttributeUsage.Script;
+          // tran.attributes[0].data = ThinNeo.Helper.GetPublicKeyScriptHashFromPublicKey(pubkey);          
+
+          tran.extdata = extdata;
+
+          var msg = tran.GetMessage();
+          var signdata = ThinNeo.Helper.Sign(msg, prikey);
+          tran.AddWitness(signdata, pubkey, ThinNeo.Helper.GetAddressFromPublicKey(pubkey));
+          var data = tran.GetRawData();
+          var rawdata = data.toHexString();
+
+          var postRawArray = [];
+          postRawArray.push(chainHash);
+          postRawArray.push(rawdata);
+          var NativeNep5Result = await WWW.rpc_sendrawtransaction(postRawArray);
+          alert(JSON.stringify(NativeNep5Result));
+
+          //NativeNep5 Hash
+          return new Neo.Uint160(scripthash);
+        }
+
         static async SendContract(need_storage:boolean,need_canCharge:boolean,description:string,email:string,
           auther:string,version:string, name:string, ContractAvm:any, chainHash:any,pubkey:any,prikey:any){
           var parameter__list = "0710".hexToBytes();
@@ -157,17 +208,11 @@ namespace WebBrowser
                 nep4 = nep4;
                 canCharge = need_canCharge?canCharge:4;
                 var ss = storage|nep4|canCharge;
-                sb.EmitPushString(description); 
-                sb.EmitPushString(email); 
-                sb.EmitPushString(auther);
-                sb.EmitPushString(version); 
-                sb.EmitPushString(name);   
-                sb.EmitPushNumber(new Neo.BigInteger(ss));
-                sb.EmitPushBytes(return_type);
-                sb.EmitPushBytes(parameter__list);
-                var contract = new Uint8Array(ContractAvm);
-                sb.EmitPushBytes(contract);
-                sb.EmitSysCall("Neo.Contract.Create"); 
+                if (chainHash == "NEO")
+                  sb = WebHelper.getScriptBuilderCreate(Nep5Type.Neo, description, email, auther, version, name, ss, return_type, parameter__list, ContractAvm);
+                else{
+                  sb = WebHelper.getScriptBuilderCreate(Nep5Type.Zoro, description, email, auther, version, name, ss, return_type, parameter__list, ContractAvm);
+                }
                 
                 var scriptPublish = sb.ToArray().toHexString();
                 var postArray = [];
@@ -209,8 +254,8 @@ namespace WebBrowser
                 {
                   alert("txid=" + tran.GetHash().toHexString());
               }
-        }    
-        
+        }                   
+
         static async SendInvokeContractMethod(chainHash, pubkey, prikey, method, contract){
           var sb = new ThinNeo.ScriptBuilder();
                 for (var i = 0; i < method.length; i++) {

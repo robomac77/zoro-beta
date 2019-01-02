@@ -135,12 +135,19 @@ namespace ThinNeo
     {
         public script: Uint8Array;
         public gas: Neo.Fixed8;
+        public gasPrice:Neo.Fixed8;
+        public ScriptHash:Neo.Uint160;
         public Serialize(trans: Transaction, writer: Neo.IO.BinaryWriter): void
         {
             writer.writeVarBytes(this.script.buffer);
             if (trans.version >= 1)
             {
                 writer.writeUint64(this.gas.getData());
+            }
+            if (trans.version >= 2)
+            {
+                writer.writeUint64(this.gasPrice.getData());
+                writer.writeVarBytes(this.ScriptHash.toArray());
             }
         }
         public Deserialize(trans: Transaction, reader: Neo.IO.BinaryReader): void
@@ -150,6 +157,11 @@ namespace ThinNeo
             if (trans.version >= 1)
             {
                 this.gas = new Neo.Fixed8(reader.readUint64());
+            }
+            if (trans.version >= 2)
+            {
+                this.gasPrice = new Neo.Fixed8(reader.readUint64());
+                this.ScriptHash = new Neo.Uint160(reader.readVarBytes());
             }
         }
 
@@ -488,17 +500,17 @@ namespace ThinNeo
         //增加个人账户见证人（就是用这个人的私钥对交易签个名，signdata传进来）
         public AddWitness(signdata: Uint8Array, pubkey: Uint8Array, addrs: string): void
         {
-            {//额外的验证
-                var msg = this.GetMessage();
+            // {//额外的验证
+            //     var msg = this.GetMessage();
 
-                var bsign = ThinNeo.Helper.VerifySignature(msg, signdata, pubkey);
-                if (bsign == false)
-                    throw new Error("wrong sign");
+            //     var bsign = ThinNeo.Helper.VerifySignature(msg, signdata, pubkey);
+            //     if (bsign == false)
+            //         throw new Error("wrong sign");
 
-                var addr = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
-                if (addr != addrs)
-                    throw new Error("wrong script");
-            }
+            //     var addr = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
+            //     if (addr != addrs)
+            //         throw new Error("wrong script");
+            // }
 
             var vscript = ThinNeo.Helper.GetAddressCheckScriptFromPublicKey(pubkey);
 

@@ -83,112 +83,65 @@ namespace WebBrowser
             contractBackGround.appendChild(select);
             AppChainTool.getChain(select);
 
-            var ContractText = document.createElement('span') as HTMLSpanElement;
-            ContractText.style.color = "#eeeeee";
-            ContractText.textContent = "合约";
-            contractBackGround.appendChild(ContractText);
+            var chooseNative = document.createElement("div") as HTMLDivElement;
+            contractBackGround.appendChild(chooseNative);
 
-            var storageName = document.createElement('span') as HTMLSpanElement;
-            storageName.style.color = "#eeeeee";
-            storageName.textContent = "storage";
-            contractBackGround.appendChild(storageName);
+            var nativeBackGround = document.createElement('div') as HTMLDivElement;
+            chooseNative.appendChild(nativeBackGround);
 
-            var need_storage = document.createElement('input') as HTMLInputElement;
-            need_storage.type = "checkbox";
-            need_storage.checked = false;
-            contractBackGround.appendChild(need_storage);
+            var BoolNativeNep5 = null;
+            select.onchange = () => {
+                if ((select.childNodes[select.selectedIndex] as HTMLOptionElement).value != "NEO"){
+                    if (chooseNative.firstChild)
+                    chooseNative.removeChild(chooseNative.firstChild);
 
-            var canChargeName = document.createElement('span') as HTMLSpanElement;
-            canChargeName.style.color = "#eeeeee";
-            canChargeName.textContent = "canCharge";
-            contractBackGround.appendChild(canChargeName);
+                    var nativeBackGround = document.createElement('div') as HTMLDivElement;
+                    chooseNative.appendChild(nativeBackGround);
 
-            var need_canCharge = document.createElement('input') as HTMLInputElement;
-            need_canCharge.type = "checkbox";
-            need_canCharge.checked = false;
-            contractBackGround.appendChild(need_canCharge);
+                    var nativeName = document.createElement('span') as HTMLSpanElement;
+                    nativeBackGround.appendChild(nativeName);
+                    nativeName.style.color = "#eeeeee";
+                    nativeName.textContent = "选择是否NativeNep5类型";
 
-            var nameText = document.createElement('span') as HTMLSpanElement;
-            nameText.style.color = "#eeeeee";
-            nameText.textContent = "NAME";
-            contractBackGround.appendChild(nameText);
+                    BoolNativeNep5 = document.createElement('input') as HTMLInputElement;
+                    BoolNativeNep5.type = "checkbox";
+                    BoolNativeNep5.checked = false;
+                    nativeBackGround.appendChild(BoolNativeNep5);  
+                    
+                    var nativeBackGround2 = document.createElement('div') as HTMLDivElement;
+                    nativeBackGround.appendChild(nativeBackGround2);
 
-            var name = document.createElement('input') as HTMLInputElement;
-            name.value = "name";
-            contractBackGround.appendChild(name);
+                    BoolNativeNep5.onchange = () => {
+                        if (BoolNativeNep5.checked) {
+                            if (nativeBackGround2)
+                            nativeBackGround.removeChild(nativeBackGround2);
 
-            var versionText = document.createElement('span') as HTMLSpanElement;
-            versionText.style.color = "#eeeeee";
-            versionText.textContent = "VERSION";
-            contractBackGround.appendChild(versionText);
+                            nativeBackGround2 = document.createElement('div') as HTMLDivElement;
+                            nativeBackGround.appendChild(nativeBackGround2);
 
-            var version = document.createElement('input') as HTMLInputElement;
-            version.value = "1.0";
-            contractBackGround.appendChild(version);
+                            this.createNativeContract(nativeBackGround2, select);
+                        }else{
+                            if (nativeBackGround2)
+                            nativeBackGround.removeChild(nativeBackGround2);
 
-            var autherText = document.createElement('span') as HTMLSpanElement;
-            autherText.style.color = "#eeeeee";
-            autherText.textContent = "AUTHOR";
-            contractBackGround.appendChild(autherText);
+                            nativeBackGround2 = document.createElement('div') as HTMLDivElement;
+                            nativeBackGround.appendChild(nativeBackGround2);
 
-            var auther = document.createElement('input') as HTMLInputElement;
-            auther.value = "auther";
-            contractBackGround.appendChild(auther);
+                            this.createContract(nativeBackGround2, select);
+                        }
+                    }
+                    this.createContract(nativeBackGround2, select);
+                }else{
+                    if (chooseNative.firstChild)
+                    chooseNative.removeChild(chooseNative.firstChild);
 
-            var emailText = document.createElement('span') as HTMLSpanElement;
-            emailText.style.color = "#eeeeee";
-            emailText.textContent = "EMAIL";
-            contractBackGround.appendChild(emailText);
+                    var nativeBackGround = document.createElement('div') as HTMLDivElement;
+                    chooseNative.appendChild(nativeBackGround);
 
-            var email = document.createElement('input') as HTMLInputElement;
-            email.value = "email";
-            contractBackGround.appendChild(email);
-
-            var descriptionText = document.createElement('span') as HTMLSpanElement;
-            descriptionText.style.color = "#eeeeee";
-            descriptionText.textContent = "DESCRIPTION";
-            contractBackGround.appendChild(descriptionText);
-
-            var description = document.createElement('input') as HTMLInputElement;
-            description.value = "description";
-            contractBackGround.appendChild(description);
-
-            var fileText = document.createElement('span') as HTMLSpanElement;
-            fileText.style.color = "#eeeeee";
-            fileText.textContent = "FILE";
-            contractBackGround.appendChild(fileText);
-
-            var file = document.createElement('input') as HTMLInputElement;
-            file.type = "file";
-            contractBackGround.appendChild(file);
-
-            var btnSend = document.createElement('button') as HTMLButtonElement;
-            btnSend.textContent = "send";
-            contractBackGround.appendChild(btnSend);
-
-            var ContractAvm = null;
-            btnSend.onclick = async () => {
-                if (!ContractAvm){
-                    alert("it can be .avm file.");
-                    return;
+                    this.createContract(nativeBackGround, select);
                 }
-                AppChainTool.SendContract(need_storage.checked,need_canCharge.checked,description.value,email.value,auther.value,version.value,
-                    name.value, ContractAvm, (select.childNodes[select.selectedIndex] as HTMLOptionElement).value, GUITool.pubkey, GUITool.prikey);               
             }
-
-            var reader = new FileReader();
-            reader.onload = (e: Event) =>
-            {                
-                ContractAvm = reader.result as ArrayBuffer;                                                           
-            }   
-            file.onchange = (ev: Event) =>
-            {
-                if (file.files.length > 0)
-                if (file.files[0].name.includes(".avm"))
-                {
-                    reader.readAsArrayBuffer(file.files[0]);
-                }
-            }      
+            this.createContract(nativeBackGround, select);
         }
 
         useContract(div:HTMLDivElement, use:boolean){
@@ -370,6 +323,162 @@ namespace WebBrowser
             }       
             
             
+        }
+
+        createContract(nativeBackGround:HTMLDivElement, select:HTMLSelectElement){
+            var ContractText = document.createElement('span') as HTMLSpanElement;
+            ContractText.style.color = "#eeeeee";
+            ContractText.textContent = "合约";
+            nativeBackGround.appendChild(ContractText);
+
+            var storageName = document.createElement('span') as HTMLSpanElement;
+            storageName.style.color = "#eeeeee";
+            storageName.textContent = "storage";
+            nativeBackGround.appendChild(storageName);
+
+            var need_storage = document.createElement('input') as HTMLInputElement;
+            need_storage.type = "checkbox";
+            need_storage.checked = false;
+            nativeBackGround.appendChild(need_storage);
+
+            var canChargeName = document.createElement('span') as HTMLSpanElement;
+            canChargeName.style.color = "#eeeeee";
+            canChargeName.textContent = "canCharge";
+            nativeBackGround.appendChild(canChargeName);
+
+            var need_canCharge = document.createElement('input') as HTMLInputElement;
+            need_canCharge.type = "checkbox";
+            need_canCharge.checked = false;
+            nativeBackGround.appendChild(need_canCharge);
+
+            var nameText = document.createElement('span') as HTMLSpanElement;
+            nameText.style.color = "#eeeeee";
+            nameText.textContent = "NAME";
+            nativeBackGround.appendChild(nameText);
+
+            var name = document.createElement('input') as HTMLInputElement;
+            name.value = "name";
+            nativeBackGround.appendChild(name);
+
+            var versionText = document.createElement('span') as HTMLSpanElement;
+            versionText.style.color = "#eeeeee";
+            versionText.textContent = "VERSION";
+            nativeBackGround.appendChild(versionText);
+
+            var version = document.createElement('input') as HTMLInputElement;
+            version.value = "1.0";
+            nativeBackGround.appendChild(version);
+
+            var autherText = document.createElement('span') as HTMLSpanElement;
+            autherText.style.color = "#eeeeee";
+            autherText.textContent = "AUTHOR";
+            nativeBackGround.appendChild(autherText);
+
+            var auther = document.createElement('input') as HTMLInputElement;
+            auther.value = "auther";
+            nativeBackGround.appendChild(auther);
+
+            var emailText = document.createElement('span') as HTMLSpanElement;
+            emailText.style.color = "#eeeeee";
+            emailText.textContent = "EMAIL";
+            nativeBackGround.appendChild(emailText);
+
+            var email = document.createElement('input') as HTMLInputElement;
+            email.value = "email";
+            nativeBackGround.appendChild(email);
+
+            var descriptionText = document.createElement('span') as HTMLSpanElement;
+            descriptionText.style.color = "#eeeeee";
+            descriptionText.textContent = "DESCRIPTION";
+            nativeBackGround.appendChild(descriptionText);
+
+            var description = document.createElement('input') as HTMLInputElement;
+            description.value = "description";
+            nativeBackGround.appendChild(description);
+
+            var fileText = document.createElement('span') as HTMLSpanElement;
+            fileText.style.color = "#eeeeee";
+            fileText.textContent = "FILE";
+            nativeBackGround.appendChild(fileText);
+
+            var file = document.createElement('input') as HTMLInputElement;
+            file.type = "file";
+            nativeBackGround.appendChild(file);
+
+            var btnSend = document.createElement('button') as HTMLButtonElement;
+            btnSend.textContent = "send";
+            nativeBackGround.appendChild(btnSend);
+
+            var ContractAvm = null;
+            btnSend.onclick = async () => {
+                if (!ContractAvm){
+                    alert("it can be .avm file.");
+                    return;
+                }
+                AppChainTool.SendContract(need_storage.checked,need_canCharge.checked,description.value,email.value,auther.value,version.value,
+                    name.value, ContractAvm, (select.childNodes[select.selectedIndex] as HTMLOptionElement).value, GUITool.pubkey, GUITool.prikey);                             
+            }
+
+            var reader = new FileReader();
+            reader.onload = (e: Event) =>
+            {                
+                ContractAvm = reader.result as ArrayBuffer;                                                           
+            }   
+            file.onchange = (ev: Event) =>
+            {
+                if (file.files.length > 0)
+                if (file.files[0].name.includes(".avm"))
+                {
+                    reader.readAsArrayBuffer(file.files[0]);
+                }
+            }      
+        }
+
+        createNativeContract(nativeBackGround:HTMLDivElement, select:HTMLSelectElement){
+            var nameText = document.createElement('span') as HTMLSpanElement;
+            nameText.style.color = "#eeeeee";
+            nameText.textContent = "NAME";
+            nativeBackGround.appendChild(nameText);
+
+            var name = document.createElement('input') as HTMLInputElement;
+            name.value = "InvokeContractTest_NativeNEP5";
+            nativeBackGround.appendChild(name);
+
+            var symbolText = document.createElement('span') as HTMLSpanElement;
+            symbolText.style.color = "#eeeeee";
+            symbolText.textContent = "SYMBOL";
+            nativeBackGround.appendChild(symbolText);
+
+            var symbol = document.createElement('input') as HTMLInputElement;
+            symbol.value = "InvokeContractTest";
+            nativeBackGround.appendChild(symbol);
+
+            var totalSupplyText = document.createElement('span') as HTMLSpanElement;
+            totalSupplyText.style.color = "#eeeeee";
+            totalSupplyText.textContent = "TotalSupply";
+            nativeBackGround.appendChild(totalSupplyText);
+
+            var totalSupply = document.createElement('input') as HTMLInputElement;
+            totalSupply.value = "2000000000";
+            nativeBackGround.appendChild(totalSupply);
+
+            var presionText = document.createElement('span') as HTMLSpanElement;
+            presionText.style.color = "#eeeeee";
+            presionText.textContent = "Presion";
+            nativeBackGround.appendChild(presionText);
+
+            var presion = document.createElement('input') as HTMLInputElement;
+            presion.value = "8";
+            nativeBackGround.appendChild(presion);       
+
+            var btnSend = document.createElement('button') as HTMLButtonElement;
+            btnSend.textContent = "send";
+            nativeBackGround.appendChild(btnSend);
+
+            btnSend.onclick = async () => {           
+                AppChainTool.SendNativeContract(parseInt(presion.value), parseInt(totalSupply.value), symbol.value, name.value, 
+                (select.childNodes[select.selectedIndex] as HTMLOptionElement).value, GUITool.pubkey, GUITool.prikey);                           
+            }    
         }
     }
 }
