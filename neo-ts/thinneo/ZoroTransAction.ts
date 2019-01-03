@@ -1,7 +1,7 @@
-﻿///<reference path="helper.ts"/>
+///<reference path="helper.ts"/>
 namespace ThinNeo
 {
-    export enum TransactionType
+    export enum ZoroTransactionType
     {
         /// <summary>
         /// 用于分配字节费的特殊交易
@@ -33,7 +33,7 @@ namespace ThinNeo
         PublishTransaction = 0xd0,
         InvocationTransaction = 0xd1
     }
-    export enum TransactionAttributeUsage
+    export enum ZoroTransactionAttributeUsage
     {
         /// <summary>
         /// 外部合同的散列值
@@ -95,23 +95,13 @@ namespace ThinNeo
         Remark14 = 0xfe,
         Remark15 = 0xff
     }
-    export class Attribute
+    export class ZoroAttribute
     {
-        public usage: TransactionAttributeUsage;
+        public usage: ZoroTransactionAttributeUsage;
         public data: Uint8Array;
     }
-    export class TransactionOutput
-    {
-        public assetId: Uint8Array;
-        public value: Neo.Fixed8;
-        public toAddress: Uint8Array;
-    }
-    export class TransactionInput
-    {
-        public hash: Uint8Array;
-        public index: number;
-    }
-    export class Witness
+
+    export class ZoroWitness
     {
         public InvocationScript: Uint8Array;//设置参数脚本，通常是吧signdata push进去
         public VerificationScript: Uint8Array;//校验脚本，通常是 push 公钥, CheckSig 两条指令   验证的东西就是未签名的交易
@@ -123,107 +113,63 @@ namespace ThinNeo
         }
     }
 
-
-
-    export interface IExtData
+    export interface ZoroIExtData
     {
-        Serialize(trans: Transaction, writer: Neo.IO.BinaryWriter): void;
-        Deserialize(trans: Transaction, reader: Neo.IO.BinaryReader): void;
+        Serialize(trans: ZoroTransaction, writer: Neo.IO.BinaryWriter): void;
+        Deserialize(trans: ZoroTransaction, reader: Neo.IO.BinaryReader): void;
     }
 
-    export class InvokeTransData implements IExtData
+    export class ZoroInvokeTransData implements ZoroIExtData
     {
         public script: Uint8Array;
-        public gas: Neo.Fixed8;
-        public Serialize(trans: Transaction, writer: Neo.IO.BinaryWriter): void
+        public gasLimit: Neo.Fixed8;
+        public gasPrice:Neo.Fixed8;
+        public ScriptHash:Neo.Uint160;
+        public Serialize(trans: ZoroTransaction, writer: Neo.IO.BinaryWriter): void
         {
             writer.writeVarBytes(this.script.buffer);
             if (trans.version >= 1)
             {
-                writer.writeUint64(this.gas.getData());
+                writer.writeUint64(this.gasLimit.getData());
+            }
+            if (trans.version >= 2)
+            {
+                writer.writeUint64(this.gasPrice.getData());
+                writer.writeVarBytes(this.ScriptHash.toArray());
             }
         }
-        public Deserialize(trans: Transaction, reader: Neo.IO.BinaryReader): void
+        public Deserialize(trans: ZoroTransaction, reader: Neo.IO.BinaryReader): void
         {
             var buf = reader.readVarBytes(10000000);
             this.script = new Uint8Array(buf, 0, buf.byteLength);
             if (trans.version >= 1)
             {
-                this.gas = new Neo.Fixed8(reader.readUint64());
+                this.gasLimit = new Neo.Fixed8(reader.readUint64());
+            }
+            if (trans.version >= 2)
+            {
+                this.gasPrice = new Neo.Fixed8(reader.readUint64());
+                this.ScriptHash = new Neo.Uint160(reader.readVarBytes());
             }
         }
 
-    }
-    export class ClaimTransData implements IExtData
-    {
-        public claims: TransactionInput[];
-        public Serialize(trans: Transaction, writer: Neo.IO.BinaryWriter): void
-        {
-            writer.writeVarInt(this.claims.length);
-            for (var i = 0; i < this.claims.length; i++)
-            {
-                writer.write(this.claims[i].hash, 0, 32);
-                writer.writeUint16(this.claims[i].index);
-            }
-        }
-        public Deserialize(trans: Transaction, reader: Neo.IO.BinaryReader): void
-        {
-            var countClaims = reader.readVarInt();
-            this.claims = [];//new TransactionInput[countInputs];
-            for (var i = 0; i < countClaims; i++)
-            {
-                this.claims.push(new TransactionInput());
-                //this.inputs[i] = new TransactionInput();
-                var arr = reader.readBytes(32);
-                this.claims[i].hash = new Uint8Array(arr, 0, arr.byteLength);
-                this.claims[i].index = reader.readUint16();
-            }
-        }
-    }
-    export class MinerTransData implements IExtData
-    {
-        public nonce: number;
-        public Serialize(trans: Transaction, writer: Neo.IO.BinaryWriter): void
-        {
-            writer.writeUint32(this.nonce);
-
-        }
-        public Deserialize(trans: Transaction, reader: Neo.IO.BinaryReader): void
-        {
-            this.nonce = reader.readUint32();
-        }
-    }
+    }    
    
-    export class Transaction
+    export class ZoroTransaction
     {
-        public type: TransactionType;
+        public type: ZoroTransactionType;
         public version: number;
-        public attributes: Attribute[];
-        public inputs: TransactionInput[];
-        public outputs: TransactionOutput[];
-        public witnesses: Witness[];//见证人
+        public attributes: ZoroAttribute[];
+        public witnesses: ZoroWitness[];//见证人
         public SerializeUnsigned(writer: Neo.IO.BinaryWriter): void
         {
-            //write type
-            writer.writeByte(this.type as number);
-            //write version
-            writer.writeByte(this.version);
-            //SerializeExclusiveData(writer);
-            if (this.type == TransactionType.ContractTransaction ||
-                this.type == TransactionType.IssueTransaction)//每个交易类型有一些自己独特的处理
+            if (this.type == ZoroTransactionType.ContractTransaction ||
+                this.type == ZoroTransactionType.IssueTransaction)//每个交易类型有一些自己独特的处理
             {
                 //ContractTransaction 就是最常见的转账交易
                 //他没有自己的独特处理
             }
-            else if (this.type == TransactionType.InvocationTransaction)
-            {
-                this.extdata.Serialize(this, writer);
-            }
-            else if (this.type == TransactionType.ClaimTransaction)
-            {
-                this.extdata.Serialize(this, writer);
-            }
-            else if (this.type == TransactionType.MinerTransaction)
+            else if (this.type == ZoroTransactionType.InvocationTransaction)
             {
                 this.extdata.Serialize(this, writer);
             }
@@ -239,24 +185,24 @@ namespace ThinNeo
                 var attributeData = this.attributes[i].data;
                 var Usage = this.attributes[i].usage;
                 writer.writeByte(Usage as number);
-                if (Usage == TransactionAttributeUsage.ContractHash || Usage == TransactionAttributeUsage.Vote || (Usage >= TransactionAttributeUsage.Hash1 && Usage <= TransactionAttributeUsage.Hash15))
+                if (Usage == ZoroTransactionAttributeUsage.ContractHash || Usage == ZoroTransactionAttributeUsage.Vote || (Usage >= ZoroTransactionAttributeUsage.Hash1 && Usage <= ZoroTransactionAttributeUsage.Hash15))
                 {
                     //attributeData =new byte[32];
                     writer.write(attributeData.buffer, 0, 32);
                 }
-                else if (Usage == TransactionAttributeUsage.ECDH02 || Usage == TransactionAttributeUsage.ECDH03)
+                else if (Usage == ZoroTransactionAttributeUsage.ECDH02 || Usage == ZoroTransactionAttributeUsage.ECDH03)
                 {
                     //attributeData = new byte[33];
                     //attributeData[0] = (byte)Usage;
                     writer.write(attributeData.buffer, 1, 32);
                 }
-                else if (Usage == TransactionAttributeUsage.Script)
+                else if (Usage == ZoroTransactionAttributeUsage.Script)
                 {
                     //attributeData = new byte[20];
 
                     writer.write(attributeData.buffer, 0, 20);
                 }
-                else if (Usage == TransactionAttributeUsage.DescriptionUrl)
+                else if (Usage == ZoroTransactionAttributeUsage.DescriptionUrl)
                 {
                     //var len = (byte)ms.ReadByte();
                     //attributeData = new byte[len];
@@ -264,7 +210,7 @@ namespace ThinNeo
                     writer.writeByte(len);
                     writer.write(attributeData.buffer, 0, len);
                 }
-                else if (Usage == TransactionAttributeUsage.Description || Usage >= TransactionAttributeUsage.Remark)
+                else if (Usage == ZoroTransactionAttributeUsage.Description || Usage >= ZoroTransactionAttributeUsage.Remark)
                 {
                     //var len = (int)readVarInt(ms, 65535);
                     //attributeData = new byte[len];
@@ -275,31 +221,7 @@ namespace ThinNeo
                 else
                     throw new Error();
             }
-            //#endregion
-            //#region write Input
-            var countInputs = this.inputs.length;
-            writer.writeVarInt(countInputs);
-            for (var i = 0; i < countInputs; i++)
-            {
-                writer.write(this.inputs[i].hash, 0, 32);
-                writer.writeUint16(this.inputs[i].index);
-            }
-            //#endregion
-            //#region write Outputs
-            var countOutputs = this.outputs.length;
-            writer.writeVarInt(countOutputs);
-            for (var i = 0; i < countOutputs; i++)
-            {
-                var item = this.outputs[i];
-                //资产种类
-                writer.write(item.assetId.buffer, 0, 32);
-
-                writer.writeUint64(item.value.getData());
-
-                writer.write(item.toAddress.buffer, 0, 20);
-
-            }
-            //#endregion
+            //#endregion           
         }
         public Serialize(writer: Neo.IO.BinaryWriter): void
         {
@@ -314,40 +236,20 @@ namespace ThinNeo
                 writer.writeVarBytes(_witness.VerificationScript.buffer);
             }
         }
-        public extdata: IExtData;
+        public extdata: ZoroIExtData;
 
         public DeserializeUnsigned(ms: Neo.IO.BinaryReader): void
         {
-            //参考源码来自
-            //      https://github.com/neo-project/neo
-            //      Transaction.cs
-            //      源码采用c#序列化技术
-
-            //参考源码2
-            //      https://github.com/AntSharesSDK/antshares-ts
-            //      Transaction.ts
-            //      采用typescript开发
-
-            this.type = ms.readByte() as TransactionType;//读一个字节，交易类型
-            this.version = ms.readByte();
-            if (this.type == TransactionType.ContractTransaction
-                || this.type == TransactionType.IssueTransaction)//每个交易类型有一些自己独特的处理
+            if (this.type == ZoroTransactionType.ContractTransaction
+                || this.type == ZoroTransactionType.IssueTransaction)//每个交易类型有一些自己独特的处理
             {
                 //ContractTransaction 就是最常见的合约交易，
                 //他没有自己的独特处理
                 this.extdata = null;
             }
-            else if (this.type == TransactionType.InvocationTransaction)
+            else if (this.type == ZoroTransactionType.InvocationTransaction)
             {
-                this.extdata = new InvokeTransData();
-            }
-            else if (this.type == TransactionType.ClaimTransaction)
-            {
-                this.extdata = new ClaimTransData();
-            }
-            else if (this.type == TransactionType.MinerTransaction)
-            {
-                this.extdata = new MinerTransData();
+                this.extdata = new ZoroInvokeTransData();
             }
             else
             {
@@ -367,13 +269,13 @@ namespace ThinNeo
 
                 //读取attributes
                 var attributeData: Uint8Array = null;
-                var Usage = ms.readByte() as TransactionAttributeUsage;
-                if (Usage == TransactionAttributeUsage.ContractHash || Usage == TransactionAttributeUsage.Vote || (Usage >= TransactionAttributeUsage.Hash1 && Usage <= TransactionAttributeUsage.Hash15))
+                var Usage = ms.readByte() as ZoroTransactionAttributeUsage;
+                if (Usage == ZoroTransactionAttributeUsage.ContractHash || Usage == ZoroTransactionAttributeUsage.Vote || (Usage >= ZoroTransactionAttributeUsage.Hash1 && Usage <= ZoroTransactionAttributeUsage.Hash15))
                 {
                     var arr = ms.readBytes(32);
                     attributeData = new Uint8Array(arr, 0, arr.byteLength);
                 }
-                else if (Usage == TransactionAttributeUsage.ECDH02 || Usage == TransactionAttributeUsage.ECDH03)
+                else if (Usage == ZoroTransactionAttributeUsage.ECDH02 || Usage == ZoroTransactionAttributeUsage.ECDH03)
                 {
                     var arr = ms.readBytes(32);
                     var data = new Uint8Array(arr, 0, arr.byteLength);
@@ -384,18 +286,18 @@ namespace ThinNeo
                         attributeData[i + 1] = data[i];
                     }
                 }
-                else if (Usage == TransactionAttributeUsage.Script)
+                else if (Usage == ZoroTransactionAttributeUsage.Script)
                 {
                     var arr = ms.readBytes(20);
                     attributeData = new Uint8Array(arr, 0, arr.byteLength);
                 }
-                else if (Usage == TransactionAttributeUsage.DescriptionUrl)
+                else if (Usage == ZoroTransactionAttributeUsage.DescriptionUrl)
                 {
                     var len = ms.readByte();
                     var arr = ms.readBytes(len);
                     attributeData = new Uint8Array(arr, 0, arr.byteLength);
                 }
-                else if (Usage == TransactionAttributeUsage.Description || Usage >= TransactionAttributeUsage.Remark)
+                else if (Usage == ZoroTransactionAttributeUsage.Description || Usage >= ZoroTransactionAttributeUsage.Remark)
                 {
                     var len = ms.readVarInt(65535);
                     var arr = ms.readBytes(len);
@@ -404,50 +306,11 @@ namespace ThinNeo
                 else
                     throw new Error();
 
-                var attr = new Attribute();
+                var attr = new ZoroAttribute();
                 attr.usage = Usage;
                 attr.data = attributeData;
                 this.attributes.push(attr);
-            }
-
-            //inputs  输入表示基于哪些交易
-            var countInputs = ms.readVarInt();
-            //Console.WriteLine("countInputs:" + countInputs);
-            this.inputs = [];//new TransactionInput[countInputs];
-            for (var i = 0; i < countInputs; i++)
-            {
-                this.inputs.push(new TransactionInput());
-                //this.inputs[i] = new TransactionInput();
-                var arr = ms.readBytes(32);
-                this.inputs[i].hash = new Uint8Array(arr, 0, arr.byteLength);
-                this.inputs[i].index = ms.readUint16();
-            }
-
-            //outputes 输出表示最后有哪几个地址得到多少钱，肯定有一个是自己的地址,因为每笔交易都会把之前交易的余额清空,刨除自己,就是要转给谁多少钱
-
-            //这个机制叫做UTXO
-            var countOutputs = ms.readVarInt();
-            //Console.WriteLine("countOutputs:" + countOutputs);
-            this.outputs = [];//new TransactionOutput[countOutputs];
-            for (var i = 0; i < countOutputs; i++)
-            {
-                this.outputs.push(new TransactionOutput());
-                var outp = this.outputs[i];
-                //资产种类
-                var arr = ms.readBytes(32);
-                var assetid = new Uint8Array(arr, 0, arr.byteLength);
-                var value = new Neo.Fixed8(ms.readUint64());
-                //资产数量
-
-                var arr = ms.readBytes(20);
-                var scripthash = new Uint8Array(arr, 0, arr.byteLength);
-                outp.assetId = assetid;
-                outp.value = value;
-                outp.toAddress = scripthash;
-
-                this.outputs[i] = outp;
-
-            }
+            }           
         }
         public Deserialize(ms: Neo.IO.BinaryReader): void
         {
@@ -488,22 +351,7 @@ namespace ThinNeo
         //增加个人账户见证人（就是用这个人的私钥对交易签个名，signdata传进来）
         public AddWitness(signdata: Uint8Array, pubkey: Uint8Array, addrs: string): void
         {
-            // {//额外的验证
-            //     var msg = this.GetMessage();
-
-            //     var bsign = ThinNeo.Helper.VerifySignature(msg, signdata, pubkey);
-            //     if (bsign == false)
-            //         throw new Error("wrong sign");
-
-            //     var addr = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
-            //     if (addr != addrs)
-            //         throw new Error("wrong script");
-            // }
-
             var vscript = ThinNeo.Helper.GetAddressCheckScriptFromPublicKey(pubkey);
-
-            //iscript 对个人账户见证人他是一条pushbytes 指令
-
             var sb = new ThinNeo.ScriptBuilder();
             sb.EmitPushBytes(signdata);
 

@@ -160,19 +160,17 @@ namespace WebBrowser
           var result = await WWW.rpc_invokeScript(postArray);
           var gas = Neo.Fixed8.parse(result["gas_consumed"].toString());
 
-          var extdata = new ThinNeo.InvokeTransData();
+          var extdata = new ThinNeo.ZoroInvokeTransData();
           extdata.script = sb.ToArray();
-          extdata.gas = gas;
+          extdata.gasLimit = gas;
           extdata.gasPrice = Neo.Fixed8.One;
           var pubkeyScriptHash = Neo.Cryptography.Sha256.computeHash(ThinNeo.Helper.GetPublicKeyScriptHashFromPublicKey(pubkey));          
           pubkeyScriptHash = Neo.Cryptography.RIPEMD160.computeHash(pubkeyScriptHash);     
           extdata.ScriptHash = new Neo.Uint160(pubkeyScriptHash);
 
-          var tran = new  ThinNeo.Transaction();
-          tran.type = ThinNeo.TransactionType.InvocationTransaction;
+          var tran = new  ThinNeo.ZoroTransaction();
+          tran.type = ThinNeo.ZoroTransactionType.InvocationTransaction;
           tran.version = 2;
-          tran.inputs = [];
-          tran.outputs = [];
           tran.attributes = [];
           // tran.attributes[0] = new ThinNeo.Attribute();
           // tran.attributes[0].usage = ThinNeo.TransactionAttributeUsage.Script;

@@ -32,15 +32,15 @@ namespace WebBrowser
                     sb.EmitPushBytes(contract);
                     sb.EmitSysCall("Zoro.Contract.Create");
                 break;
-                case Nep5Type.NativeNep5:
+                case Nep5Type.NativeNep5:               
+                    var amount = _params[2] * Math.pow(10, _params[1]);                        
                     var script = ThinNeo.Helper.GetAddressCheckScriptFromPublicKey(_params[0]);
                     var scripthash = Neo.Cryptography.Sha256.computeHash(script);
                     scripthash = Neo.Cryptography.RIPEMD160.computeHash(scripthash);
                     var ss = new Neo.Uint160(scripthash).toString();
                     sb.EmitPushString(ss);
                     sb.EmitPushBytes(_params[0]);                   
-                    sb.EmitPushNumber(new Neo.BigInteger(_params[1]));
-                    var amount = _params[2] * Math.pow(10, _params[1]);
+                    sb.EmitPushNumber(new Neo.BigInteger(_params[1]));                   
                     sb.EmitPushNumber(new Neo.BigInteger(amount));
                     sb.EmitPushString(_params[3]);
                     sb.EmitPushString(_params[4]);
